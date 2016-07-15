@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+.ipadMiniScreen {
+	border: solid 1px red;
+	width: 768px;
+	height: 1024px;
+	left: 0px;
+	z-index: -1;
+	position: absolute;
+}
+.iphoneScreen {
+	border: solid 1px green;
+	width: 480px;
+	height: 640px;
+	position: fixed;
+	z-index: -1;
+}
+
+.ipadMiniScreenLandscape {
+	border: solid 1px red;
+	width: 1024px;
+	height: 768px;
+	left: 0px;
+	z-index: -1;
+	position: absolute;
+}
+.iphoneScreenLandscape {
+	border: solid 1px green;
+	width: 640px;
+	height: 480px;
+	position: fixed;
+	z-index: -1;
+}
+
+.w3-sidenav a {padding:16px;font-weight:bold}
+
+.search-input {
+    font-size: 16px;
+    background-image: url('../images/searchicon.png');
+    background-position: right;
+    background-repeat: no-repeat;
+    padding: 0px 0px 0px 0px;
+}

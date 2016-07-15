@@ -1,0 +1,95 @@
+/* Month header */
+
+.calendar {
+    width: 251px;
+    height: 218px;
+    box-sizing: border-box;
+}
+
+.calendarMonth {
+    width: 100%;
+    background: #1abc9c;
+}
+
+
+/* Month list */
+
+.calendarMonth ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.calendarMonth ul li {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+/* Previous button inside month header */
+
+.calendarMonth .calendarPrev {
+    float: left;
+    padding-left: 10px;
+}
+
+
+/* Next button */
+
+.calendarMonth .calendarNext {
+    float: right;
+    padding-right: 10px;
+}
+
+
+/* Weekdays (Mon-Sun) */
+
+.calendarWeekdays {
+    margin: 0;
+    padding: 5px 0;
+    background-color: #ddd;
+}
+
+.calendarWeekdays li {
+    display: inline-block;
+    width: 11.6%;
+    color: #666;
+    text-align: center;
+}
+
+
+/* Days (1-31) */
+
+.calendarDays {
+    padding: 10px 0;
+    background: #eee;
+    margin: 0;
+}
+
+.calendarDays li {
+    list-style-type: none;
+    display: inline-block;
+    width: 13.6%;
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 12px;
+    color: #777;
+}
+
+
+/* Highlight the "current" day */
+.calendarDays .calendarDayActive {
+    padding: 5px;
+    background: #1abc9c;
+    color: white !important;
+}
+
+.calendarDays .calendarInactive {
+    color : white;
+}
+        
+
+.calendarDays .calendarActive:hover {
+    cursor: pointer;
+}
