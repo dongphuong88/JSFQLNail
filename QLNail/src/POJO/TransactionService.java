@@ -1,22 +1,27 @@
 package POJO;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 
-public class TransactionService {
-	private int transactionServicesID;
+public class TransactionService implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1005108082893154569L;
+	private int transactionServiceID;
 	private int transactionID;
-	private String serviceName;
-	private String employeeName;
+	private String serviceName = "";
+	private String employeeName = "";
 	private Date date;
 	private Time start;
 	private Time finish;
 	private double amount;
-	public int getTransactionServicesID() {
-		return transactionServicesID;
+	public int getTransactionServiceID() {
+		return transactionServiceID;
 	}
-	public void setTransactionServicesID(int transactionServicesID) {
-		this.transactionServicesID = transactionServicesID;
+	public void setTransactionServiceID(int transactionServicesID) {
+		this.transactionServiceID = transactionServicesID;
 	}
 	public int getTransactionID() {
 		return transactionID;

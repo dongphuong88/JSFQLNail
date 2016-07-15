@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<h:outputStylesheet library="css" name="common.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	
+	<style>
+		.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
+			text-align:left;
+		}
+	</style>
+	<title>Insert title here</title>
+</h:head>
+<h:body>
+<div class="ipadMiniScreenLandscape"></div>
+<h:form id="transactionForm">
+	<div class="w3-container" style="width:800px; float:left">
+		<h3>Pay by:</h3>
+		<div class="w3-third">
+			<h:outputLabel value="Gift Card#:"></h:outputLabel>
+			<p:inputText style="width:160px;"></p:inputText>
+			<h:outputLabel value="Gift Card Amount:"></h:outputLabel>
+			<p:inputText style="width:110px;" type="number"></p:inputText>
+		</div>
+		<div class="w3-third">
+			<h:outputLabel value="Credit: "></h:outputLabel>
+			<p:inputText type="number"></p:inputText>
+			<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;"></h:outputLabel>
+			<p:inputText type="number"></p:inputText>
+		</div>
+		<div class="w3-third">
+			<h:outputLabel value="Tip: "></h:outputLabel>
+			<p:inputText type="number" value="#{checkoutBean.tipAmount}"></p:inputText>
+			
+			<p:selectOneRadio id="tipAmount" valueChangeListener="#{checkoutBean.updateTipAmount()}" value="#{checkoutBean.radioTipAmount}" layout="grid" columns="1" style="margin-left:30px">
+	            <f:selectItem itemLabel="15% - $100.00" itemValue="t15" />
+	            <f:selectItem itemLabel="18% - $100.00" itemValue="t18" />
+	            <f:selectItem itemLabel="20% - $100.00" itemValue="t20" />
+	        </p:selectOneRadio>
+		</div>
+	</div>
+	<div class="w3-left">
+		<h1>Total: #{checkoutBean.totalTransaction}</h1>
+		<p:commandButton style="width:180px;height:50px;display:block;" value="Print" actionListener="#{checkoutBean.updateTipAmount()}"></p:commandButton>
+		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" actionListener="#{checkoutBean.updateTipAmount()}"></p:commandButton>
+	</div>
+</h:form>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+</h:body>
+</html>

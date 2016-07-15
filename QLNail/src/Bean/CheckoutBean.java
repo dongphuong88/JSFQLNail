@@ -1,12 +1,15 @@
 package Bean;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 
 import org.primefaces.context.RequestContext;
@@ -15,16 +18,77 @@ import POJO.TransactionService;
 
 @ViewScoped
 @ManagedBean
-public class CheckoutBean {
+public class CheckoutBean implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4510301457190253664L;
 	private ArrayList<TransactionService> services = new ArrayList<>();
-	private String currDateTime;
+	TransactionService newTransactionService = new TransactionService();
+	TransactionService editTransactionService = new TransactionService();
+	
+	private String currDateTime = (new SimpleDateFormat("MM/dd/yyyy - hh:mm aa")).format(new Date());
 	private double totalServiceAmount;
+
 	private double totalTransaction;
 	private String giftCardNo;
 	private double giftCardAmount;
 	private double creditCardAmount;
 	private double cashAmount;
 	private double tipAmount;
+	
+	private String radioTipAmount;
+
+	public CheckoutBean() {
+		
+		// 
+		for(int i = 0; i < 5; ++i) {
+			TransactionService ser = new TransactionService();
+			ser.setTransactionServiceID(i);
+			ser.setServiceName("service name " + i);
+			ser.setEmployeeName("Employee Name " + i);
+			ser.setAmount(i*i);
+			services.add(ser);
+			
+		}
+		updateServicesAmount();
+	}
+	
+	public void addServiceRow() {
+		services.add(newTransactionService);
+		newTransactionService = new TransactionService();
+		
+		updateServicesAmount();
+	}
+	
+	public void updateServicesAmount() {
+		totalServiceAmount = 0;
+		for( TransactionService ser : services) {
+			totalServiceAmount += ser.getAmount();
+		}
+		updateTransactionAmount();
+		System.out.println("test");
+	}
+	
+	public void updateTipAmount() {
+		System.out.println("update");
+		System.out.println(radioTipAmount);
+	}
+	
+	public void updateTransactionAmount() {
+		totalTransaction = totalServiceAmount;
+	}
+	
+	public void deleteTransactionService( TransactionService deleteObj) {
+		services.remove(deleteObj);
+		updateServicesAmount();
+	}
+	
+	public void clickedPrint( ) {
+		services.forEach( service-> {
+			totalServiceAmount += service.getAmount();
+		}); 
+	}
 
 	public String getGiftCardNo() {
 		return giftCardNo;
@@ -66,8 +130,8 @@ public class CheckoutBean {
 		this.tipAmount = tipAmount;
 	}
 
-	public double getTotalTransaction() {
-		return totalTransaction;
+	public String getTotalTransaction() {
+		return new DecimalFormat("$###,##0.00").format(totalTransaction);
 	}
 
 	public void setTotalTransaction(double totalTransaction) {
@@ -75,7 +139,7 @@ public class CheckoutBean {
 	}
 
 	public String getTotalServiceAmount() {
-		return new DecimalFormat("$###,###.00").format(totalServiceAmount);
+		return new DecimalFormat("$###,##0.00").format(totalServiceAmount);
 	}
 
 	public void setTotalServiceAmount(double totalServiceAmount) {
@@ -98,26 +162,27 @@ public class CheckoutBean {
 		this.currDateTime = currDateTime;
 	}
 
-	public CheckoutBean() {
-		// get currDateTime
-		currDateTime = (new SimpleDateFormat("MM/dd/yyyy - hh:mm aa")).format(new Date());
+	public TransactionService getNewTransactionService() {
+		return newTransactionService;
 	}
 
-	public void addNewServiceRow() {
-		services.add( new TransactionService()); 
-		RequestContext.getCurrentInstance().execute("updateServiceTotal()");
+	public void setNewTransactionService(TransactionService newTransactionService) {
+		this.newTransactionService = newTransactionService;
 	}
-	
-	public void deleteTransactionRow( TransactionService ser) {
-		services.remove(ser);
-		RequestContext.getCurrentInstance().execute("updateServiceTotal()");
+
+	public TransactionService getEditTransactionService() {
+		return editTransactionService;
 	}
-	
-	public void clickedPrint( ) {
-		totalServiceAmount = 0;
-		services.forEach( service-> {
-			totalServiceAmount += service.getAmount();
-		}); 
+
+	public void setEditTransactionService(TransactionService editTransactionService) {
+		this.editTransactionService = editTransactionService;
 	}
-	
+
+	public String getRadioTipAmount() {
+		return radioTipAmount;
+	}
+
+	public void setRadioTipAmount(String radioTipAmount) {
+		this.radioTipAmount = radioTipAmount;
+	}
 }

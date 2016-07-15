@@ -9,10 +9,7 @@
 	<meta http-equiv="x-ua-compatible" content="ie=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	<h:outputStylesheet library="css" name="w3.css" />
 	<h:outputStylesheet library="css" name="common.css" />
-	<h:outputStylesheet library="css" name="font-awesome.min.css" />
-	<h:outputScript library="js" name="jquery-2.2.4.min.js"> </h:outputScript>
 	
 	<style>
 		.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
@@ -22,95 +19,81 @@
 	<title>Insert title here</title>
 </h:head>
 <h:body>
-<div class="w3-container">
+
+<div>
 	<h3><label class="w3-label">Date/Time: </label>
 	<h:outputText value="#{checkoutBean.currDateTime}" /></h3>
 </div>
 
-<h:form id="form">
-<div class="w3-container">
-	
-		<p:growl id="msgs" showDetail="true" />
-		<p:dataTable id="services" var="service" value="#{checkoutBean.services}"
-			editable="true" editMode="cell" widgetVar="cellService">
-
-			<p:column style="width:64px;text-align: center">
-	             <p:commandButton update=":form:services" icon="ui-icon-closethick" title="View" action="#{checkoutBean.deleteTransactionRow(service)}">
+<h:form id="serviceForm" style="height:100%">
+		<p:dataTable id="services" var="service" value="#{checkoutBean.services}">
+			<p:column style="width:100px;text-align: center;padding:0px;">
+	             <p:commandButton update=":serviceForm:editServiceDialogID" oncomplete="PF('editServiceDialogVar').show()" icon="ui-icon-pencil" title="Edit">
+	                <f:setPropertyActionListener value="#{service}" target="#{checkoutBean.editTransactionService}" />
+	            </p:commandButton>
+	            <p:commandButton update=":serviceForm:services" actionListener="#{checkoutBean.deleteTransactionService(service)}" icon="ui-icon-closethick" title="Delete">
 	            </p:commandButton>
 	        </p:column>
-			
 			<p:column headerText="Service">
-				<p:cellEditor>
-					<f:facet name="output">
-						<h:outputText value="#{service.serviceName}" placeholder="Enter Service"/>
-					</f:facet>
-					<f:facet name="input">
-						<p:inputText id="modelInput" value="#{service.serviceName}" style="width:96%; padding: 8px;display: block;border: none;border-bottom: 1px solid #808080;width: 100%;" label="Service" placeholder="test"/>
-					</f:facet>
-				</p:cellEditor>
+				<h:outputText value="#{service.serviceName}" />
 			</p:column>
-
 			<p:column headerText="Employee">
-				<p:cellEditor>
-					<f:facet name="output">
-						<h:outputText value="#{service.employeeName}" />
-					</f:facet>
-					<f:facet name="input">
-						<p:inputText value="#{service.employeeName}" style="width:96%" label="Employee"/>
-					</f:facet>
-				</p:cellEditor>
+				<h:outputText value="#{service.employeeName}" />
 			</p:column>
-
 			<p:column headerText="Amount">
-				<p:inputText value="#{service.amount}" type="number" styleClass="serviceAmount" style="width:96%" label="Amount" onchange="updateServiceTotal()"  onfocus="$(this).select()"/>
+				<h:outputText value="#{service.amount}" >
+					<f:convertNumber currencySymbol="$" type="currency"/>
+				</h:outputText>
 			</p:column>
 			<p:columnGroup type="footer">
-	            <p:row>
-	                <p:column colspan="3" style="text-align:right" footerText="Totals:" />
-	                <p:column styleClass="serviceTotal" style="text-align:left" footerText="#{checkoutBean.totalServiceAmount}" />
-	            </p:row>
-	        </p:columnGroup>
-	        <f:facet name="footer">
-	            <p:commandButton update=":form:services" actionListener="#{checkoutBean.addNewServiceRow()}" value="Add Service" id="btnAddService" icon="ui-icon-circle-plus" />
-	        </f:facet>
+				<p:row>
+					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
+					<p:column styleClass="serviceTotal" style="text-align:left"
+						footerText="#{checkoutBean.totalServiceAmount}" >
+						</p:column>
+				</p:row>
+			</p:columnGroup>
+			<f:facet name="footer">
+				<p:commandButton onclick="PF('newServiceDialogVar').show();$('#serviceForm\\:addServicePanel input').val('');" value="Add Service" id="btnAddService" icon="ui-icon-circle-plus" />
+				
+			</f:facet>
 		</p:dataTable>
-	
-	</div>
-	<div class="w3-container w3-threequarter">
-		<h3>Pay by:</h3>
-		<div class="w3-third">
-			<label class="w3-label">Gift Card #:</label>
-			<input class="w3-input" type="text" value="${checkoutBean.giftCardNo}"></input>
-			<label class="w3-label">Gift Card Amount:</label>
-			<input class="w3-input" type="number" value="${checkoutBean.giftCardAmount}"></input>
-		</div>
-		<div class="w3-third w3-container">
-			<label class="w3-label">Credit Card:</label>
-			<input class="w3-input" type="number" value="${checkoutBean.creditCardAmount}"></input>
-			<label class="w3-label">Cash:</label>
-			<input class="w3-input" type="number" value="${checkoutBean.cashAmount}"></input>
-		</div>
-		<div class="w3-third w3-container">
-			<label class="w3-label">Tip:</label>
-			<input class="w3-input" type="number" value="${checkoutBean.tipAmount}"></input>
-			<label class="w3-validate" style="display:block"><input class="w3-radio" type="radio" name="tipPercent" value="tipPercent15"/>
-			15% - $10.00</label>
-			<label class="w3-validate" style="display:block"><input class="w3-radio" type="radio" name="tipPercent" value="tipPercent15"/>
-			18% - $10.00</label>
-			<label class="w3-validate" style="display:block"><input class="w3-radio" type="radio" name="tipPercent" value="tipPercent15"/>
-			20% - $10.00</label>
-		</div>
-	</div>
-	<div class="w3-container">
-		<h1>Total: <h:outputText value="#{checkoutBean.totalTransaction}" >
-			<f:convertNumber type="currency" currencySymbol="$" />
-		</h:outputText></h1>
-	</div>
-	<div class="w3-container w3-center" style="margin-top:10px;">
-		<p:commandLink actionListener="#{checkoutBean.clickedPrint()}" styleClass="w3-btn" style=" width:200px;" value="Print"></p:commandLink>
-		<a class="w3-btn" style=" width:200px;" onclick="updateServiceTotal()">Email</a>
-	</div>
+
+		<p:dialog id="newServiceDialogID" position="center" widgetVar="newServiceDialogVar" header="Add New Service"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false" >
+			<h:panelGrid columns="2" cellpadding="0" id="addServicePanel">
+				<p:outputLabel value="Service:" for="txtNewService" />
+				<p:inputText id="txtNewService" placeholder="Enter Service" value="#{checkoutBean.newTransactionService.serviceName}"></p:inputText>
+				
+				<p:outputLabel value="Employye:" for="txtNewEmployee" />
+				<p:inputText id="txtNewEmployee" placeholder="Enter Employee" value="#{checkoutBean.newTransactionService.employeeName}"></p:inputText>
+				
+				<p:outputLabel value="Amount:" for="txtNewAmount" />
+				<p:inputText id="txtNewAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.newTransactionService.amount}"></p:inputText>
+				
+				<p:commandButton update=":serviceForm:services"  onclick="PF('newServiceDialogVar').hide();" actionListener="${checkoutBean.addServiceRow()}" value="Add" icon="ui-icon-circle-plus" />
+				<p:commandButton onclick="PF('newServiceDialogVar').hide();" value="Cancel" icon="ui-icon-circle-plus" />
+			</h:panelGrid>
+		</p:dialog>
+		
+		<p:dialog id="editServiceDialogID" position="center" widgetVar="editServiceDialogVar" header="Edit Service"
+			modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+			<h:panelGrid columns="2" cellpadding="0" id="editServicePanel">
+				<p:outputLabel value="Service:" for="txtEditService" />
+				<p:inputText id="txtEditService" placeholder="Enter Service" value="#{checkoutBean.editTransactionService.serviceName}"></p:inputText>
+				
+				<p:outputLabel value="Employye:" for="txtEditEmployee" />
+				<p:inputText id="txtEditEmployee" placeholder="Enter Employee" value="#{checkoutBean.editTransactionService.employeeName}"></p:inputText>
+				
+				<p:outputLabel value="Amount:" for="txtEditAmount" />
+				<p:inputText id="txtEditAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.editTransactionService.amount}"></p:inputText>
+				
+				<p:commandButton update=":serviceForm:services" actionListener="#{checkoutBean.updateServicesAmount()}" onclick="PF('editServiceDialogVar').hide();" value="Save" icon="ui-icon-circle-plus" />
+				<p:commandButton onclick="PF('editServiceDialogVar').hide();" value="Cancel" icon="ui-icon-circle-plus" />
+			</h:panelGrid>
+		</p:dialog>
 	</h:form>
+	
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
 		function updateServiceTotal() {
