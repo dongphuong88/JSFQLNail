@@ -10,11 +10,6 @@ $(function () {
     $('input').on("focus", function() {
         $(this).select();
     });
-    
-    // Set current Time
-    var today = new Date();
-    $('.currentDate').html((today.getMonth() + 1) + '/' + today.getDate() + '/' + today.getFullYear());
-    $('.currentTime').html((today.getHours() < 10 ? '0' + today.getHours() : today.getHours()) + ':' + (today.getMinutes()<10? '0' + today.getMinutes() : today.getMinutes()));
 })
 
 // Get back number from currency string

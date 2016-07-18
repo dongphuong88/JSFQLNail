@@ -9,6 +9,7 @@ import javax.faces.bean.RequestScoped;
 @ManagedBean
 public class TestBean {
 	private Date date1;
+	private String val;
 	
    public Date getDate1() {
 		return date1;
@@ -23,6 +24,15 @@ public TestBean() {
    }
 	
    public String getMessage() {
+	   System.out.println(val);
       return "Hello World!";
    }
+
+public String getVal() {
+	return val;
+}
+
+public void setVal(String val) {
+	this.val = val;
+}
 }

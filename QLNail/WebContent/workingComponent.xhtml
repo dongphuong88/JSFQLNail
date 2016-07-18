@@ -22,50 +22,19 @@
 <h:body>
 <div class="ipadMiniScreenLandscape"></div>
 <h:form id="transactionForm">
-	<div class="w3-container" style="width:800px; float:left">
-		<h3>Pay by:</h3>
-		<div class="w3-third">
-			<h:outputLabel value="Gift Card#:" for="giftNo"></h:outputLabel>
-			<p:inputText id="giftNo" style="width:160px;" value="#{checkoutBean.giftCardNo}"></p:inputText>
-			<h:outputLabel value="Gift Card Amount:" for="gift"></h:outputLabel>
-			<p:inputText id="gift" style="width:110px;" type="number" value="#{checkoutBean.giftCardAmount}"></p:inputText>
-		</div>
-		<div class="w3-third">
-			<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
-			<p:inputText id="credit" type="number" value="#{checkoutBean.creditCardAmount}"></p:inputText>
-			<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;" for="cash"></h:outputLabel>
-			<p:inputText id="cash" type="number" value="#{checkoutBean.cashAmount}"></p:inputText>
-		</div>
-		<div class="w3-third">
-			<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
-			<p:inputText id="tip" type="number" value="#{checkoutBean.tipAmount}"></p:inputText>
-			
-			<p:selectOneRadio id="tipAmount" onchange="updateTip(200)" layout="grid" columns="1" style="margin-left:30px">
-	            <f:selectItem name="tip" itemLabel="15% - $100.00" itemValue="15" />
-	            <f:selectItem name="tip" itemLabel="18% - $100.00" itemValue="18" />
-	            <f:selectItem name="tip" itemLabel="20% - $100.00" itemValue="20" />
-	        </p:selectOneRadio>
-		</div>
-	</div>
-	<div class="w3-left">
-		<h1>Total: <p:outputLabel id="total" value="#{checkoutBean.totalTransaction}"></p:outputLabel></h1>
-		<p:commandButton style="width:180px;height:50px;display:block;" value="Print"></p:commandButton>
-		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" onclick="updateTip()"></p:commandButton>
-	</div>
+	<p:selectOneRadio id="tipAmount" onchange="updateTip()" value="#{testBean.val}" layout="grid" columns="1" style="margin-left:30px">
+         <f:selectItem escape="true" name="tip" itemLabel="15% - $0.00" itemValue="15" />
+         <f:selectItem escape="true" name="tip" itemLabel="18% - $0.00" itemValue="18" />
+         <f:selectItem escape="true" name="tip" itemLabel="20% - $0.00" itemValue="20" />
+     </p:selectOneRadio>
+     <p:remoteCommand name="myRemote" actionListener="#{testBean.getMessage()}" />
 </h:form>
 
 	<h:outputScript library="js" name="common.js"></h:outputScript> 
 	<script>
-		function updateTip(amount) {
-			var tipPercent = +$('input[name="transactionForm\\:tipAmount"]:checked', '#transactionForm').val();
-			$('#transactionForm\\:tip').val(amount*tipPercent/100);
-			
-			updateAmount();
-		}
-		function updateAmount() {
-			var tip = $('#transactionForm\\:tip').val();
-			$('#transactionForm\\:total').text(50 + +tip);
-			$('#transactionForm\\:total').formatCurrency();
+		function updateTip() {
+			alert("test");
+			myRemote();
 		}
 	</script>
 </h:body>

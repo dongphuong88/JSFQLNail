@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -27,15 +29,7 @@ public class CheckoutBean implements Serializable{
 	TransactionService newTransactionService = new TransactionService();
 	TransactionService editTransactionService = new TransactionService();
 	
-	private String currDateTime = (new SimpleDateFormat("MM/dd/yyyy - hh:mm aa")).format(new Date());
 	private double totalServiceAmount;
-
-	private double totalTransaction;
-	private String giftCardNo;
-	private double giftCardAmount;
-	private double creditCardAmount;
-	private double cashAmount;
-	private double tipAmount;
 
 	public CheckoutBean() {
 		
@@ -68,7 +62,7 @@ public class CheckoutBean implements Serializable{
 	}
 	
 	public void updateTransactionAmount() {
-		totalTransaction = totalServiceAmount;
+		//totalTransaction = totalServiceAmount;
 		RequestContext.getCurrentInstance().execute("updateAmount()");
 	}
 	
@@ -76,59 +70,30 @@ public class CheckoutBean implements Serializable{
 		services.remove(deleteObj);
 		updateServicesAmount();
 	}
+
+	public void update() {
+		Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		double tip = Double.parseDouble(map.get("tip") != "" ? map.get("tip") : "0");
+		String giftCardNo = map.get("giftCardNo" )!= "" ? map.get("giftCardNo") : "0";
+		double giftCardAmount = Double.parseDouble(map.get("giftCard") != "" ? map.get("giftCard") : "0");
+		double creditCardAmount = Double.parseDouble(map.get("credit") != "" ? map.get("credit") : "0");
+		double cashAmount = Double.parseDouble(map.get("cash") != "" ? map.get("cash") : "0");
+		
+		System.out.println(tip + "-" + giftCardNo + "-" + giftCardAmount + "-" + creditCardAmount + "-" + cashAmount );
+	}
 	
 	public void clickedPrint( ) {
 		services.forEach( service-> {
-			totalServiceAmount += service.getAmount();
+			System.out.println(service.getAmount());
 		}); 
+		System.out.println("total services:" + totalServiceAmount);
 	}
-
-	public String getGiftCardNo() {
-		return giftCardNo;
-	}
-
-	public void setGiftCardNo(String giftCardNo) {
-		this.giftCardNo = giftCardNo;
-	}
-
-	public double getGiftCardAmount() {
-		return giftCardAmount;
-	}
-
-	public void setGiftCardAmount(double giftCardAmount) {
-		this.giftCardAmount = giftCardAmount;
-	}
-
-	public double getCreditCardAmount() {
-		return creditCardAmount;
-	}
-
-	public void setCreditCardAmount(double creditCardAmount) {
-		this.creditCardAmount = creditCardAmount;
-	}
-
-	public double getCashAmount() {
-		return cashAmount;
-	}
-
-	public void setCashAmount(double cashAmount) {
-		this.cashAmount = cashAmount;
-	}
-
-	public double getTipAmount() {
-		return tipAmount;
-	}
-
-	public void setTipAmount(double tipAmount) {
-		this.tipAmount = tipAmount;
-	}
-
-	public String getTotalTransaction() {
-		return new DecimalFormat("$###,##0.00").format(totalTransaction);
-	}
-
-	public void setTotalTransaction(double totalTransaction) {
-		this.totalTransaction = totalTransaction;
+	
+	public void clickedEmail( ) {
+		services.forEach( service-> {
+			System.out.println(service.getAmount());
+		}); 
+		System.out.println("total services:" + totalServiceAmount);
 	}
 
 	public String getTotalServiceAmount() {
@@ -145,14 +110,6 @@ public class CheckoutBean implements Serializable{
 
 	public void setServices(ArrayList<TransactionService> services) {
 		this.services = services;
-	}
-
-	public String getCurrDateTime() {
-		return currDateTime;
-	}
-
-	public void setCurrDateTime(String currDateTime) {
-		this.currDateTime = currDateTime;
 	}
 
 	public TransactionService getNewTransactionService() {

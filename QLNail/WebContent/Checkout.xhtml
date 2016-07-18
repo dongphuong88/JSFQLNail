@@ -10,6 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript> 
+	<h:outputScript library="js" name="jquery-dateFormat.min.js"></h:outputScript> 
 
 	<h:outputStylesheet library="css" name="common.css" />
 	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
@@ -25,16 +26,16 @@
 
 <div>
 	<h3><label class="w3-label">Date/Time: </label>
-	<h:outputText value="#{checkoutBean.currDateTime}" /></h3>
+	<label class="currentDateTime"></label></h3>
 </div>
 
 <h:form id="serviceForm" style="height:100%">
-		<p:dataTable id="services" var="service" value="#{checkoutBean.services}">
+		<p:dataTable id="services" var="service" value="#{checkoutBeanPure.services}">
 			<p:column style="width:100px;text-align: center;padding:0px;">
 	             <p:commandButton update=":serviceForm:editServiceDialogID" oncomplete="PF('editServiceDialogVar').show()" icon="ui-icon-pencil" title="Edit">
-	                <f:setPropertyActionListener value="#{service}" target="#{checkoutBean.editTransactionService}" />
+	                <f:setPropertyActionListener value="#{service}" target="#{checkoutBeanPure.editTransactionService}" />
 	            </p:commandButton>
-	            <p:commandButton update=":serviceForm:services" actionListener="#{checkoutBean.deleteTransactionService(service)}" icon="ui-icon-closethick" title="Delete">
+	            <p:commandButton update=":serviceForm:services" actionListener="#{checkoutBeanPure.deleteTransactionService(service)}" icon="ui-icon-closethick" title="Delete">
 	            </p:commandButton>
 	        </p:column>
 			<p:column headerText="Service">
@@ -102,19 +103,19 @@
 		<h3>Pay by:</h3>
 		<div class="w3-third">
 			<h:outputLabel value="Gift Card#:" for="giftNo"></h:outputLabel>
-			<p:inputText id="giftNo" style="width:160px;" value="#{checkoutBean.giftCardNo}"></p:inputText>
+			<p:inputText id="giftNo" style="width:160px;"></p:inputText>
 			<h:outputLabel value="Gift Card Amount:" for="gift"></h:outputLabel>
-			<p:inputText id="gift" style="width:110px;" type="number" value="#{checkoutBean.giftCardAmount}"></p:inputText>
+			<p:inputText id="gift" style="width:110px;" type="number"></p:inputText>
 		</div>
 		<div class="w3-third">
 			<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
-			<p:inputText id="credit" type="number" value="#{checkoutBean.creditCardAmount}"></p:inputText>
+			<p:inputText id="credit" type="number"></p:inputText>
 			<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;" for="cash"></h:outputLabel>
-			<p:inputText id="cash" type="number" value="#{checkoutBean.cashAmount}"></p:inputText>
+			<p:inputText id="cash" type="number"></p:inputText>
 		</div>
 		<div class="w3-third">
 			<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
-			<p:inputText id="tip" type="number" value="#{checkoutBean.tipAmount}" onchange="updateAmount()"></p:inputText>
+			<p:inputText id="tip" type="number" onchange="updateAmount()"></p:inputText>
 			
 			<p:selectOneRadio id="tipAmount" onchange="updateTip($('#serviceForm .serviceTotal').getCurrencyNumber())" layout="grid" columns="1" style="margin-left:30px">
 	            <f:selectItem escape="true" name="tip" itemLabel="15% - $0.00" itemValue="15" />
@@ -124,10 +125,11 @@
 		</div>
 	</div>
 	<div class="w3-left">
-		<h1>Total: <p:outputLabel id="total" value="#{checkoutBean.totalTransaction}"></p:outputLabel></h1>
-		<p:commandButton style="width:180px;height:50px;display:block;" value="Print"></p:commandButton>
-		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" onclick="updateTip()"></p:commandButton>
+		<h1>Total: <p:outputLabel id="total"></p:outputLabel></h1>
+		<p:commandButton style="width:180px;height:50px;display:block;" value="Print" actionListener="#{checkoutBean.clickedPrint()}"></p:commandButton>
+		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" onclick="updateServer()" actionListener="#{checkoutBean.clickedEmail()}"></p:commandButton>
 	</div>
+	<p:remoteCommand name="myRemote" actionListener="#{checkoutBean.update()}" />
 </h:form>
 
 
@@ -157,6 +159,15 @@
 			$('label[for="transactionForm\\:tipAmount\\:2"]').text(servicesTotal * 20 / 100);
 			$('label[for="transactionForm\\:tipAmount\\:2"]').formatCurrency();
 			$('label[for="transactionForm\\:tipAmount\\:2"]').text("20% - " + $('label[for="transactionForm\\:tipAmount\\:2"]').text());
+	
+		}
+		
+		function updateServer() {
+			myRemote([{name:'tip', value:$('#transactionForm\\:tip').val()},
+			          {name:'giftCardNo', value:$('#transactionForm\\:giftNo').val()},
+			          {name:'giftCard', value:$('#transactionForm\\:gift').val()},
+			          {name:'credit', value:$('#transactionForm\\:credit').val()},
+			          {name:'cash', value:$('#transactionForm\\:cash').val()}]);
 		}
 	</script>
 </h:body>
