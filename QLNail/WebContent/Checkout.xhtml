@@ -9,7 +9,10 @@
 	<meta http-equiv="x-ua-compatible" content="ie=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript> 
+
 	<h:outputStylesheet library="css" name="common.css" />
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
 	
 	<style>
 		.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
@@ -48,7 +51,7 @@
 			<p:columnGroup type="footer">
 				<p:row>
 					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
-					<p:column styleClass="serviceTotal" style="text-align:left"
+					<p:column id="serviceTotal" styleClass="serviceTotal" style="text-align:left"
 						footerText="#{checkoutBean.totalServiceAmount}" >
 						</p:column>
 				</p:row>
@@ -94,18 +97,66 @@
 		</p:dialog>
 	</h:form>
 	
+<h:form id="transactionForm">
+	<div class="w3-container" style="width:800px; float:left">
+		<h3>Pay by:</h3>
+		<div class="w3-third">
+			<h:outputLabel value="Gift Card#:" for="giftNo"></h:outputLabel>
+			<p:inputText id="giftNo" style="width:160px;" value="#{checkoutBean.giftCardNo}"></p:inputText>
+			<h:outputLabel value="Gift Card Amount:" for="gift"></h:outputLabel>
+			<p:inputText id="gift" style="width:110px;" type="number" value="#{checkoutBean.giftCardAmount}"></p:inputText>
+		</div>
+		<div class="w3-third">
+			<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
+			<p:inputText id="credit" type="number" value="#{checkoutBean.creditCardAmount}"></p:inputText>
+			<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;" for="cash"></h:outputLabel>
+			<p:inputText id="cash" type="number" value="#{checkoutBean.cashAmount}"></p:inputText>
+		</div>
+		<div class="w3-third">
+			<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
+			<p:inputText id="tip" type="number" value="#{checkoutBean.tipAmount}" onchange="updateAmount()"></p:inputText>
+			
+			<p:selectOneRadio id="tipAmount" onchange="updateTip($('#serviceForm .serviceTotal').getCurrencyNumber())" layout="grid" columns="1" style="margin-left:30px">
+	            <f:selectItem escape="true" name="tip" itemLabel="15% - $0.00" itemValue="15" />
+	            <f:selectItem escape="true" name="tip" itemLabel="18% - $0.00" itemValue="18" />
+	            <f:selectItem escape="true" name="tip" itemLabel="20% - $0.00" itemValue="20" />
+	        </p:selectOneRadio>
+		</div>
+	</div>
+	<div class="w3-left">
+		<h1>Total: <p:outputLabel id="total" value="#{checkoutBean.totalTransaction}"></p:outputLabel></h1>
+		<p:commandButton style="width:180px;height:50px;display:block;" value="Print"></p:commandButton>
+		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" onclick="updateTip()"></p:commandButton>
+	</div>
+</h:form>
+
+
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
-		function updateServiceTotal() {
-			var total = 0;
-			$("#form .serviceAmount").each( function() {
-				//var amount = $(this).text().substring(1, $(this).text().length).replace(",","");
-				
-				total += +$(this).val();//parseFloat(amount);
-			} );
-			$("#form .serviceTotal").html("$" + total.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+		function updateTip(amount) {
+			var tipPercent = +$('input[name="transactionForm\\:tipAmount"]:checked', '#transactionForm').val();
+			$('#transactionForm\\:tip').val(amount*tipPercent/100);
 			
+			updateAmount();
+		}
+		function updateAmount() {
+			var tip = +$('#transactionForm\\:tip').val();
+			var servicesTotal = +$("#serviceForm .serviceTotal").getCurrencyNumber();
+			$('#transactionForm\\:total').text( servicesTotal + tip);
+			$('#transactionForm\\:total').formatCurrency();
 			
+			// change tip hint
+			$('label[for="transactionForm\\:tipAmount\\:0"]').text(servicesTotal * 15 / 100);
+			$('label[for="transactionForm\\:tipAmount\\:0"]').formatCurrency();
+			$('label[for="transactionForm\\:tipAmount\\:0"]').text("15% - " + $('label[for="transactionForm\\:tipAmount\\:0"]').text());
+			
+			$('label[for="transactionForm\\:tipAmount\\:1"]').text(servicesTotal * 18 / 100);
+			$('label[for="transactionForm\\:tipAmount\\:1"]').formatCurrency();
+			$('label[for="transactionForm\\:tipAmount\\:1"]').text("18% - " + $('label[for="transactionForm\\:tipAmount\\:1"]').text());
+			
+			$('label[for="transactionForm\\:tipAmount\\:2"]').text(servicesTotal * 20 / 100);
+			$('label[for="transactionForm\\:tipAmount\\:2"]').formatCurrency();
+			$('label[for="transactionForm\\:tipAmount\\:2"]').text("20% - " + $('label[for="transactionForm\\:tipAmount\\:2"]').text());
 		}
 	</script>
 </h:body>

@@ -17,7 +17,11 @@ $(function () {
     $('.currentTime').html((today.getHours() < 10 ? '0' + today.getHours() : today.getHours()) + ':' + (today.getMinutes()<10? '0' + today.getMinutes() : today.getMinutes()));
 })
 
-// Format 2 decimal place
+// Get back number from currency string
+$.fn.getCurrencyNumber = function() {
+	return Number(this.text().replace(/[^0-9\.-]+/g,""));
+}
+
 
 
 // Retrieve GET parameter

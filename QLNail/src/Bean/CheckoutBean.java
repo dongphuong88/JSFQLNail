@@ -36,8 +36,6 @@ public class CheckoutBean implements Serializable{
 	private double creditCardAmount;
 	private double cashAmount;
 	private double tipAmount;
-	
-	private String radioTipAmount;
 
 	public CheckoutBean() {
 		
@@ -67,16 +65,11 @@ public class CheckoutBean implements Serializable{
 			totalServiceAmount += ser.getAmount();
 		}
 		updateTransactionAmount();
-		System.out.println("test");
-	}
-	
-	public void updateTipAmount() {
-		System.out.println("update");
-		System.out.println(radioTipAmount);
 	}
 	
 	public void updateTransactionAmount() {
 		totalTransaction = totalServiceAmount;
+		RequestContext.getCurrentInstance().execute("updateAmount()");
 	}
 	
 	public void deleteTransactionService( TransactionService deleteObj) {
@@ -176,13 +169,5 @@ public class CheckoutBean implements Serializable{
 
 	public void setEditTransactionService(TransactionService editTransactionService) {
 		this.editTransactionService = editTransactionService;
-	}
-
-	public String getRadioTipAmount() {
-		return radioTipAmount;
-	}
-
-	public void setRadioTipAmount(String radioTipAmount) {
-		this.radioTipAmount = radioTipAmount;
 	}
 }
