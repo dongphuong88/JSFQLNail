@@ -58,8 +58,18 @@
 			</p:column>
 			<p:columnGroup type="footer">
 				<p:row>
-					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
-					<p:column id="serviceTotal" styleClass="serviceTotal" style="text-align:left"
+					<p:column>
+						<f:facet name="footer">
+							<p:outputLabel value="Discount: " />
+						</f:facet>
+					</p:column>
+					<p:column>
+						<f:facet name="footer">
+							<p:inputText placeholder="Enter Discount" value="#{checkoutBean.newTransactionService.serviceName}" style="width:150px;"></p:inputText>
+						</f:facet>
+					</p:column>
+					<p:column style="text-align:right" footerText="Totals:" />
+					<p:column colspan="2" id="serviceTotal" styleClass="serviceTotal" style="text-align:left"
 						footerText="#{checkoutBean.totalServiceAmount}" ></p:column>
 				</p:row>
 			</p:columnGroup>
@@ -103,6 +113,15 @@
 				<p:outputLabel value="Amount:" for="txtEditAmount" />
 				<p:inputText id="txtEditAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.editTransactionService.amount}" onfocus="$(this).select();"></p:inputText>
 				
+				<p:outputLabel value="Discount:" for="txtEditDiscount" />
+				<p:inputText id="txtEditDiscount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.editTransactionService.discount}"></p:inputText>
+				
+				<p:outputLabel value="Discount %:" for="txtEditDiscountPercent" />
+				<p:selectOneMenu id="txtEditDiscountPercent" value="#{checkoutBean.discountSelected}">
+	                <f:selectItem itemLabel="Select Discount" itemValue="" noSelectionOption="true" />
+	                <f:selectItems value="#{checkoutBean.discountTypes}" />
+	            </p:selectOneMenu>
+	            
 				<p:commandButton update=":serviceForm:services,transactionForm" actionListener="#{checkoutBean.updateServicesAmount()}" onclick="PF('editServiceDialogVar').hide();" value="Save" icon="ui-icon-circle-plus" />
 				<p:commandButton onclick="PF('editServiceDialogVar').hide();" value="Cancel" icon="ui-icon-circle-plus" />
 			</h:panelGrid>
@@ -117,8 +136,8 @@
 			<div class="w3-quarter w3-xlarge">
 				<h:panelGrid columns="1" cellpadding="0">
 					<h:outputLabel value="&nbsp;"></h:outputLabel>
-					<h:outputLabel value="Total: "></h:outputLabel>
-					<h:outputLabel value="Pay by:"></h:outputLabel>
+					<h:outputLabel value="&nbsp; "></h:outputLabel>
+					<h:outputLabel value="&nbsp;"></h:outputLabel>
 				</h:panelGrid>
 			</div>
 			<div class="w3-threequarter">
@@ -126,14 +145,17 @@
 					<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
 					<p:inputText id="tip" type="number" value="#{checkoutBean.tip}" onfocus="$(this).select()"></p:inputText>
 					<h:outputLabel value="" for="tipAmount"></h:outputLabel>
-					<p:selectOneRadio id="tipAmount" value="#{checkoutBean.tipSelected}" onchange="tipChange()" style="margin-left:-50px; width:250px; padding:0px; font-size:75%;">
-						<f:selectItems value="#{checkoutBean.tipTypes}" var="c" itemLabel="#{tipType}" itemValue="#{tipType}"/>
+					<p:selectOneRadio id="tipAmount" value="#{checkoutBean.tipSelected}" onchange="tipChange()" style="margin-left:-60px; width:300px; padding:0px; font-size:75%;padding:0px;">
+						<f:selectItems value="#{checkoutBean.tipTypes}" var="c" itemLabel="#{tipType}" itemValue="#{tipType}" />
 			        </p:selectOneRadio>
 			        
-					<h:outputLabel value="" styleClass="w3-xlarge"></h:outputLabel>
+					<h:outputLabel value="" styleClass="w3-xlarge">Total: </h:outputLabel>
 					<p:outputLabel value="#{checkoutBean.total}" styleClass="w3-xlarge">
 						<f:convertNumber pattern="$#0.00" />
 					</p:outputLabel>
+					
+					<h:outputLabel value="" styleClass="w3-large">Pay by: </h:outputLabel>
+					<h:outputLabel value="&nbsp;"></h:outputLabel>
 			
 					<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
 					<p:inputText id="credit" type="number" value="#{checkoutBean.credit}" onfocus="$(this).select()"></p:inputText>
