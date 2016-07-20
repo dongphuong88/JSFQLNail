@@ -5,14 +5,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 
 import org.primefaces.context.RequestContext;
 
@@ -24,12 +20,26 @@ public class CheckoutBean implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4510301457190253664L;
+	private static final long serialVersionUID = -95083139120347266L;
+
+	private Date currDateTime = new Date();
+	
 	private ArrayList<TransactionService> services = new ArrayList<>();
 	TransactionService newTransactionService = new TransactionService();
 	TransactionService editTransactionService = new TransactionService();
 	
+	private List<String> discountTypes = new ArrayList<String>();
+	private String discountSelected;
+	
 	private double totalServiceAmount;
+	private String giftCardNo;
+	private double giftCard;
+	private double cash;
+	private double credit;
+	private double tip;
+	private List<String> tipTypes = new ArrayList<String>();
+	private String tipSelected;
+	private double total;
 
 	public CheckoutBean() {
 		
@@ -43,6 +53,11 @@ public class CheckoutBean implements Serializable{
 			services.add(ser);
 			
 		}
+		
+		// 
+		discountTypes.add("10%");
+		discountTypes.add("20%");
+		
 		updateServicesAmount();
 	}
 	
@@ -52,56 +67,48 @@ public class CheckoutBean implements Serializable{
 		
 		updateServicesAmount();
 	}
+	public void deleteServiceRow( TransactionService deleteObj) {
+		services.remove(deleteObj);
+		updateServicesAmount();
+	}
 	
 	public void updateServicesAmount() {
 		totalServiceAmount = 0;
 		for( TransactionService ser : services) {
 			totalServiceAmount += ser.getAmount();
 		}
+		
+		updateTipHint();
 		updateTransactionAmount();
 	}
 	
-	public void updateTransactionAmount() {
-		//totalTransaction = totalServiceAmount;
-		RequestContext.getCurrentInstance().execute("updateAmount()");
-	}
-	
-	public void deleteTransactionService( TransactionService deleteObj) {
-		services.remove(deleteObj);
-		updateServicesAmount();
-	}
-
-	public void update() {
-		Map<String, String> map = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		double tip = Double.parseDouble(map.get("tip") != "" ? map.get("tip") : "0");
-		String giftCardNo = map.get("giftCardNo" )!= "" ? map.get("giftCardNo") : "0";
-		double giftCardAmount = Double.parseDouble(map.get("giftCard") != "" ? map.get("giftCard") : "0");
-		double creditCardAmount = Double.parseDouble(map.get("credit") != "" ? map.get("credit") : "0");
-		double cashAmount = Double.parseDouble(map.get("cash") != "" ? map.get("cash") : "0");
+	public void tipChange() {
+		tip = Integer.parseInt(tipSelected.substring(0,2)) * totalServiceAmount / 100;
+		total = totalServiceAmount + tip;
 		
-		System.out.println(tip + "-" + giftCardNo + "-" + giftCardAmount + "-" + creditCardAmount + "-" + cashAmount );
+		RequestContext.getCurrentInstance().update("transactionForm");
+		
+		System.out.println( tip);
 	}
 	
-	public void clickedPrint( ) {
-		services.forEach( service-> {
-			System.out.println(service.getAmount());
-		}); 
-		System.out.println("total services:" + totalServiceAmount);
+	public void updateTipHint() {
+		tipTypes.clear();
+		DecimalFormat f = new DecimalFormat("$###,###,##0.00");
+		tipTypes.add("15% - " + f.format(totalServiceAmount*15/100));
+		tipTypes.add("18% - " + f.format(totalServiceAmount*18/100));
+		tipTypes.add("20% - " + f.format(totalServiceAmount*20/100));
 	}
 	
-	public void clickedEmail( ) {
-		services.forEach( service-> {
-			System.out.println(service.getAmount());
-		}); 
-		System.out.println("total services:" + totalServiceAmount);
+	public void updateTransactionAmount() {
+		total = totalServiceAmount;
 	}
 
-	public String getTotalServiceAmount() {
-		return new DecimalFormat("$###,##0.00").format(totalServiceAmount);
+	public Date getCurrDateTime() {
+		return currDateTime;
 	}
 
-	public void setTotalServiceAmount(double totalServiceAmount) {
-		this.totalServiceAmount = totalServiceAmount;
+	public void setCurrDateTime(Date currDateTime) {
+		this.currDateTime = currDateTime;
 	}
 
 	public ArrayList<TransactionService> getServices() {
@@ -126,5 +133,93 @@ public class CheckoutBean implements Serializable{
 
 	public void setEditTransactionService(TransactionService editTransactionService) {
 		this.editTransactionService = editTransactionService;
+	}
+
+	public String getTotalServiceAmount() {
+		return new DecimalFormat("$###,###,##0.00").format(totalServiceAmount);
+	}
+
+	public void setTotalServiceAmount(double totalServiceAmount) {
+		this.totalServiceAmount = totalServiceAmount;
+	}
+
+	public String getGiftCardNo() {
+		return giftCardNo;
+	}
+
+	public void setGiftCardNo(String giftCardNo) {
+		this.giftCardNo = giftCardNo;
+	}
+
+	public double getGiftCard() {
+		return giftCard;
+	}
+
+	public void setGiftCard(double giftCard) {
+		this.giftCard = giftCard;
+	}
+
+	public double getCash() {
+		return cash;
+	}
+
+	public void setCash(double cash) {
+		this.cash = cash;
+	}
+
+	public double getCredit() {
+		return credit;
+	}
+
+	public void setCredit(double credit) {
+		this.credit = credit;
+	}
+
+	public double getTip() {
+		return tip;
+	}
+
+	public void setTip(double tip) {
+		this.tip = tip;
+	}
+
+	public String getTipSelected() {
+		return tipSelected;
+	}
+
+	public void setTipSelected(String tipSelected) {
+		this.tipSelected = tipSelected;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+
+	public List<String> getTipTypes() {
+		return tipTypes;
+	}
+
+	public void setTipTypes(List<String> tipTypes) {
+		this.tipTypes = tipTypes;
+	}
+
+	public List<String> getDiscountTypes() {
+		return discountTypes;
+	}
+
+	public void setDiscountTypes(List<String> discountTypes) {
+		this.discountTypes = discountTypes;
+	}
+
+	public String getDiscountSelected() {
+		return discountSelected;
+	}
+
+	public void setDiscountSelected(String discountSelected) {
+		this.discountSelected = discountSelected;
 	}
 }

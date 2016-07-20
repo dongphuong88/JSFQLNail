@@ -3,14 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
-	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta charset="utf-8" http-equiv="x-ua-compatible" content="ie=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript> 
-	<h:outputScript library="js" name="jquery-dateFormat.min.js"></h:outputScript> 
 
 	<h:outputStylesheet library="css" name="common.css" />
 	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
@@ -20,22 +17,27 @@
 			text-align:left;
 		}
 	</style>
+	
 	<title>Insert title here</title>
 </h:head>
 <h:body>
-
-<div>
-	<h3><label class="w3-label">Date/Time: </label>
-	<label class="currentDateTime"></label></h3>
-</div>
-
-<h:form id="serviceForm" style="height:100%">
-		<p:dataTable id="services" var="service" value="#{checkoutBeanPure.services}">
+	<div class="w3-container w3-xlarge">
+		<label class="w3-label">Date/Time: </label>
+		<h:outputText value="#{checkoutBean.currDateTime}">
+			<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a"/>
+		</h:outputText>
+	</div>
+	
+	<h:form id="serviceForm" style="height:100%; padding:0px;" styleClass="w3-container">
+		<p:dataTable id="services" var="service" value="#{checkoutBean.services}">
 			<p:column style="width:100px;text-align: center;padding:0px;">
+				<f:facet name="header">
+					<p:commandButton onclick="PF('newServiceDialogVar').show();$('#serviceForm\\:addServicePanel input').val('');" value="Add Service" id="btnAddService"/>
+				</f:facet>
 	             <p:commandButton update=":serviceForm:editServiceDialogID" oncomplete="PF('editServiceDialogVar').show()" icon="ui-icon-pencil" title="Edit">
-	                <f:setPropertyActionListener value="#{service}" target="#{checkoutBeanPure.editTransactionService}" />
+	                <f:setPropertyActionListener value="#{service}" target="#{checkoutBean.editTransactionService}" />
 	            </p:commandButton>
-	            <p:commandButton update=":serviceForm:services" actionListener="#{checkoutBeanPure.deleteTransactionService(service)}" icon="ui-icon-closethick" title="Delete">
+	            <p:commandButton update=":serviceForm:services,transactionForm" actionListener="#{checkoutBean.deleteServiceRow(service)}" icon="ui-icon-closethick" title="Delete">
 	            </p:commandButton>
 	        </p:column>
 			<p:column headerText="Service">
@@ -49,18 +51,18 @@
 					<f:convertNumber currencySymbol="$" type="currency"/>
 				</h:outputText>
 			</p:column>
+			<p:column headerText="Discount">
+				<h:outputText value="#{service.discount}" >
+					<f:convertNumber currencySymbol="$" type="currency"/>
+				</h:outputText>
+			</p:column>
 			<p:columnGroup type="footer">
 				<p:row>
 					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
 					<p:column id="serviceTotal" styleClass="serviceTotal" style="text-align:left"
-						footerText="#{checkoutBean.totalServiceAmount}" >
-						</p:column>
+						footerText="#{checkoutBean.totalServiceAmount}" ></p:column>
 				</p:row>
 			</p:columnGroup>
-			<f:facet name="footer">
-				<p:commandButton onclick="PF('newServiceDialogVar').show();$('#serviceForm\\:addServicePanel input').val('');" value="Add Service" id="btnAddService" icon="ui-icon-circle-plus" />
-				
-			</f:facet>
 		</p:dataTable>
 
 		<p:dialog id="newServiceDialogID" position="center" widgetVar="newServiceDialogVar" header="Add New Service"
@@ -75,7 +77,16 @@
 				<p:outputLabel value="Amount:" for="txtNewAmount" />
 				<p:inputText id="txtNewAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.newTransactionService.amount}"></p:inputText>
 				
-				<p:commandButton update=":serviceForm:services"  onclick="PF('newServiceDialogVar').hide();" actionListener="${checkoutBean.addServiceRow()}" value="Add" icon="ui-icon-circle-plus" />
+				<p:outputLabel value="Discount:" for="txtNewDiscount" />
+				<p:inputText id="txtNewDiscount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.newTransactionService.discount}"></p:inputText>
+				
+				<p:outputLabel value="Discount %:" for="txtNewDiscountPercent" />
+				<p:selectOneMenu id="txtNewDiscountPercent" value="#{checkoutBean.discountSelected}">
+	                <f:selectItem itemLabel="Select Discount" itemValue="" noSelectionOption="true" />
+	                <f:selectItems value="#{checkoutBean.discountTypes}" />
+	            </p:selectOneMenu>
+				
+				<p:commandButton update=":serviceForm:services,transactionForm"  onclick="PF('newServiceDialogVar').hide();" actionListener="${checkoutBean.addServiceRow()}" value="Add" icon="ui-icon-circle-plus" />
 				<p:commandButton onclick="PF('newServiceDialogVar').hide();" value="Cancel" icon="ui-icon-circle-plus" />
 			</h:panelGrid>
 		</p:dialog>
@@ -84,90 +95,72 @@
 			modal="true" showEffect="fade" hideEffect="fade" resizable="false">
 			<h:panelGrid columns="2" cellpadding="0" id="editServicePanel">
 				<p:outputLabel value="Service:" for="txtEditService" />
-				<p:inputText id="txtEditService" placeholder="Enter Service" value="#{checkoutBean.editTransactionService.serviceName}"></p:inputText>
+				<p:inputText id="txtEditService" placeholder="Enter Service" value="#{checkoutBean.editTransactionService.serviceName}" onfocus="$(this).select();"></p:inputText>
 				
-				<p:outputLabel value="Employye:" for="txtEditEmployee" />
-				<p:inputText id="txtEditEmployee" placeholder="Enter Employee" value="#{checkoutBean.editTransactionService.employeeName}"></p:inputText>
+				<p:outputLabel value="Employee:" for="txtEditEmployee" />
+				<p:inputText id="txtEditEmployee" placeholder="Enter Employee" value="#{checkoutBean.editTransactionService.employeeName}" onfocus="$(this).select();"></p:inputText>
 				
 				<p:outputLabel value="Amount:" for="txtEditAmount" />
-				<p:inputText id="txtEditAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.editTransactionService.amount}"></p:inputText>
+				<p:inputText id="txtEditAmount" placeholder="Enter Amount" type="number"  value="#{checkoutBean.editTransactionService.amount}" onfocus="$(this).select();"></p:inputText>
 				
-				<p:commandButton update=":serviceForm:services" actionListener="#{checkoutBean.updateServicesAmount()}" onclick="PF('editServiceDialogVar').hide();" value="Save" icon="ui-icon-circle-plus" />
+				<p:commandButton update=":serviceForm:services,transactionForm" actionListener="#{checkoutBean.updateServicesAmount()}" onclick="PF('editServiceDialogVar').hide();" value="Save" icon="ui-icon-circle-plus" />
 				<p:commandButton onclick="PF('editServiceDialogVar').hide();" value="Cancel" icon="ui-icon-circle-plus" />
 			</h:panelGrid>
 		</p:dialog>
 	</h:form>
 	
-<h:form id="transactionForm">
-	<div class="w3-container" style="width:800px; float:left">
-		<h3>Pay by:</h3>
-		<div class="w3-third">
-			<h:outputLabel value="Gift Card#:" for="giftNo"></h:outputLabel>
-			<p:inputText id="giftNo" style="width:160px;"></p:inputText>
-			<h:outputLabel value="Gift Card Amount:" for="gift"></h:outputLabel>
-			<p:inputText id="gift" style="width:110px;" type="number"></p:inputText>
-		</div>
-		<div class="w3-third">
-			<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
-			<p:inputText id="credit" type="number"></p:inputText>
-			<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;" for="cash"></h:outputLabel>
-			<p:inputText id="cash" type="number"></p:inputText>
-		</div>
-		<div class="w3-third">
-			<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
-			<p:inputText id="tip" type="number" onchange="updateAmount()"></p:inputText>
+	<h:form id="transactionForm" styleClass="w3-container" style="padding:0px;">
+		<div class="w3-container w3-half w3-xlarge">
 			
-			<p:selectOneRadio id="tipAmount" onchange="updateTip($('#serviceForm .serviceTotal').getCurrencyNumber())" layout="grid" columns="1" style="margin-left:30px">
-	            <f:selectItem escape="true" name="tip" itemLabel="15% - $0.00" itemValue="15" />
-	            <f:selectItem escape="true" name="tip" itemLabel="18% - $0.00" itemValue="18" />
-	            <f:selectItem escape="true" name="tip" itemLabel="20% - $0.00" itemValue="20" />
-	        </p:selectOneRadio>
 		</div>
+		<div class="w3-container w3-half">
+			<div class="w3-quarter w3-xlarge">
+				<h:panelGrid columns="1" cellpadding="0">
+					<h:outputLabel value="&nbsp;"></h:outputLabel>
+					<h:outputLabel value="Total: "></h:outputLabel>
+					<h:outputLabel value="Pay by:"></h:outputLabel>
+				</h:panelGrid>
+			</div>
+			<div class="w3-threequarter">
+				<h:panelGrid columns="2" cellpadding="0">
+					<h:outputLabel value="Tip: " for="tip"></h:outputLabel>
+					<p:inputText id="tip" type="number" value="#{checkoutBean.tip}" onfocus="$(this).select()"></p:inputText>
+					<h:outputLabel value="" for="tipAmount"></h:outputLabel>
+					<p:selectOneRadio id="tipAmount" value="#{checkoutBean.tipSelected}" onchange="tipChange()" style="margin-left:-50px; width:250px; padding:0px; font-size:75%;">
+						<f:selectItems value="#{checkoutBean.tipTypes}" var="c" itemLabel="#{tipType}" itemValue="#{tipType}"/>
+			        </p:selectOneRadio>
+			        
+					<h:outputLabel value="" styleClass="w3-xlarge"></h:outputLabel>
+					<p:outputLabel value="#{checkoutBean.total}" styleClass="w3-xlarge">
+						<f:convertNumber pattern="$#0.00" />
+					</p:outputLabel>
+			
+					<h:outputLabel value="Credit: " for="credit"></h:outputLabel>
+					<p:inputText id="credit" type="number" value="#{checkoutBean.credit}" onfocus="$(this).select()"></p:inputText>
+					<h:outputLabel value="Cash:&nbsp;&nbsp;&nbsp;" for="cash"></h:outputLabel>
+					<p:inputText id="cash" type="number" value="#{checkoutBean.cash}" onfocus="$(this).select()"></p:inputText>
+					
+					<h:outputLabel value="Gift:" for="gift"></h:outputLabel>
+					<p:inputText id="gift" style="width:110px;" type="number" value="#{checkoutBean.giftCard}" onfocus="$(this).select()"></p:inputText>
+					<h:outputLabel value="Gift#:" for="giftNo"></h:outputLabel>
+					<p:inputText id="giftNo" style="width:160px;" value="#{checkoutBean.giftCardNo}" onfocus="$(this).select()"></p:inputText>
+					
+					
+			     </h:panelGrid>
+			</div>
+		</div>
+		<p:remoteCommand name="myRemote" actionListener="#{checkoutBean.tipChange()}" />
+	</h:form>
+	
+	<div class="w3-center w3-container">
+		<p:commandButton style="width:180px;height:50px;" value="Print"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
 	</div>
-	<div class="w3-left">
-		<h1>Total: <p:outputLabel id="total"></p:outputLabel></h1>
-		<p:commandButton style="width:180px;height:50px;display:block;" value="Print" actionListener="#{checkoutBean.clickedPrint()}"></p:commandButton>
-		<p:commandButton style="width:180px;height:50px;margin-top:10px" value="Email" onclick="updateServer()" actionListener="#{checkoutBean.clickedEmail()}"></p:commandButton>
-	</div>
-	<p:remoteCommand name="myRemote" actionListener="#{checkoutBean.update()}" />
-</h:form>
-
 
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
-		function updateTip(amount) {
-			var tipPercent = +$('input[name="transactionForm\\:tipAmount"]:checked', '#transactionForm').val();
-			$('#transactionForm\\:tip').val(amount*tipPercent/100);
-			
-			updateAmount();
-		}
-		function updateAmount() {
-			var tip = +$('#transactionForm\\:tip').val();
-			var servicesTotal = +$("#serviceForm .serviceTotal").getCurrencyNumber();
-			$('#transactionForm\\:total').text( servicesTotal + tip);
-			$('#transactionForm\\:total').formatCurrency();
-			
-			// change tip hint
-			$('label[for="transactionForm\\:tipAmount\\:0"]').text(servicesTotal * 15 / 100);
-			$('label[for="transactionForm\\:tipAmount\\:0"]').formatCurrency();
-			$('label[for="transactionForm\\:tipAmount\\:0"]').text("15% - " + $('label[for="transactionForm\\:tipAmount\\:0"]').text());
-			
-			$('label[for="transactionForm\\:tipAmount\\:1"]').text(servicesTotal * 18 / 100);
-			$('label[for="transactionForm\\:tipAmount\\:1"]').formatCurrency();
-			$('label[for="transactionForm\\:tipAmount\\:1"]').text("18% - " + $('label[for="transactionForm\\:tipAmount\\:1"]').text());
-			
-			$('label[for="transactionForm\\:tipAmount\\:2"]').text(servicesTotal * 20 / 100);
-			$('label[for="transactionForm\\:tipAmount\\:2"]').formatCurrency();
-			$('label[for="transactionForm\\:tipAmount\\:2"]').text("20% - " + $('label[for="transactionForm\\:tipAmount\\:2"]').text());
-	
-		}
-		
-		function updateServer() {
-			myRemote([{name:'tip', value:$('#transactionForm\\:tip').val()},
-			          {name:'giftCardNo', value:$('#transactionForm\\:giftNo').val()},
-			          {name:'giftCard', value:$('#transactionForm\\:gift').val()},
-			          {name:'credit', value:$('#transactionForm\\:credit').val()},
-			          {name:'cash', value:$('#transactionForm\\:cash').val()}]);
+		function tipChange() {
+			myRemote();
 		}
 	</script>
 </h:body>

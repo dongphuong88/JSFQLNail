@@ -17,6 +17,8 @@ public class TransactionService implements Serializable{
 	private Time start;
 	private Time finish;
 	private double amount;
+	private double discount;
+	
 	public int getTransactionServiceID() {
 		return transactionServiceID;
 	}
@@ -64,6 +66,12 @@ public class TransactionService implements Serializable{
 	}
 	public void setAmount(double amount) {
 		this.amount = amount;
+	}
+	public double getDiscount() {
+		return discount;
+	}
+	public void setDiscount(double discount) {
+		this.discount = discount;
 	}
 	
 	
