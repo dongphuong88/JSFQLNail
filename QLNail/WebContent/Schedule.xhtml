@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<h:outputStylesheet library="css" name="common.css" />
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	
+	<title>Insert title here</title>
+</h:head>
+<h:body>
+	<div class="w3-half">
+		<p:schedule value="#{scheduleBean.model}" view="basicDay">
+		</p:schedule>
+	</div>
+	<div class="w3-half">
+		<p:schedule value="#{scheduleBean.model}"></p:schedule>
+	</div>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+</h:body>
+</html>

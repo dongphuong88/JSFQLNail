@@ -12,6 +12,7 @@ import javax.faces.bean.ViewScoped;
 
 import org.primefaces.context.RequestContext;
 
+import POJO.GiftCard;
 import POJO.TransactionService;
 
 @ViewScoped
@@ -25,20 +26,16 @@ public class CheckoutBean implements Serializable{
 	private Date currDateTime = new Date();
 	
 	private ArrayList<TransactionService> services = new ArrayList<>();
-	TransactionService newTransactionService = new TransactionService();
-	TransactionService editTransactionService = new TransactionService();
 	
-	private List<String> discountTypes = new ArrayList<String>();
-	private String discountSelected;
-	
-	private double totalServiceAmount;
-	private String giftCardNo;
-	private double giftCard;
-	private double cash;
-	private double credit;
+	private double dcAmount;
+	private double dcPercent;
 	private double tip;
-	private List<String> tipTypes = new ArrayList<String>();
-	private String tipSelected;
+	private double cash;
+	private List<Double> credit;
+	private List<GiftCard> gifts;
+	
+	private boolean isStaffDiscount;
+	private double totalServiceAmount;
 	private double total;
 
 	public CheckoutBean() {
@@ -49,59 +46,36 @@ public class CheckoutBean implements Serializable{
 			ser.setTransactionServiceID(i);
 			ser.setServiceName("service name " + i);
 			ser.setEmployeeName("Employee Name " + i);
-			ser.setAmount(i*i);
+			ser.setAmount(i*i + 1000);
 			services.add(ser);
-			
 		}
 		
-		// 
-		discountTypes.add("10%");
-		discountTypes.add("20%");
-		
-		updateServicesAmount();
+		//updateServicesAmount();
 	}
 	
 	public void addServiceRow() {
-		services.add(newTransactionService);
-		newTransactionService = new TransactionService();
-		
-		updateServicesAmount();
+		TransactionService service = new TransactionService();
+		service.setServiceName("Enter Service");
+		service.setEmployeeName("Enter Staff Name");
+		services.add(service);
 	}
 	public void deleteServiceRow( TransactionService deleteObj) {
 		services.remove(deleteObj);
-		updateServicesAmount();
+		//updateServicesAmount();
 	}
 	
-	public void updateServicesAmount() {
-		totalServiceAmount = 0;
-		for( TransactionService ser : services) {
-			totalServiceAmount += ser.getAmount();
-		}
-		
-		updateTipHint();
-		updateTransactionAmount();
-	}
+//	public void updateServicesAmount() {
+//		totalServiceAmount = 0;
+//		for( TransactionService ser : services) {
+//			totalServiceAmount += ser.getAmount();
+//		}
+//		
+//		updateTransactionAmount();
+//	}
 	
-	public void tipChange() {
-		tip = Integer.parseInt(tipSelected.substring(0,2)) * totalServiceAmount / 100;
-		total = totalServiceAmount + tip;
-		
-		RequestContext.getCurrentInstance().update("transactionForm");
-		
-		System.out.println( tip);
-	}
-	
-	public void updateTipHint() {
-		tipTypes.clear();
-		DecimalFormat f = new DecimalFormat("$###,###,##0.00");
-		tipTypes.add("15% - " + f.format(totalServiceAmount*15/100));
-		tipTypes.add("18% - " + f.format(totalServiceAmount*18/100));
-		tipTypes.add("20% - " + f.format(totalServiceAmount*20/100));
-	}
-	
-	public void updateTransactionAmount() {
-		total = totalServiceAmount;
-	}
+//	public void updateTransactionAmount() {
+//		total = totalServiceAmount;
+//	}
 
 	public Date getCurrDateTime() {
 		return currDateTime;
@@ -119,60 +93,20 @@ public class CheckoutBean implements Serializable{
 		this.services = services;
 	}
 
-	public TransactionService getNewTransactionService() {
-		return newTransactionService;
+	public double getDcAmount() {
+		return dcAmount;
 	}
 
-	public void setNewTransactionService(TransactionService newTransactionService) {
-		this.newTransactionService = newTransactionService;
+	public void setDcAmount(double dcAmount) {
+		this.dcAmount = dcAmount;
 	}
 
-	public TransactionService getEditTransactionService() {
-		return editTransactionService;
+	public double getDcPercent() {
+		return dcPercent;
 	}
 
-	public void setEditTransactionService(TransactionService editTransactionService) {
-		this.editTransactionService = editTransactionService;
-	}
-
-	public String getTotalServiceAmount() {
-		return new DecimalFormat("$###,###,##0.00").format(totalServiceAmount);
-	}
-
-	public void setTotalServiceAmount(double totalServiceAmount) {
-		this.totalServiceAmount = totalServiceAmount;
-	}
-
-	public String getGiftCardNo() {
-		return giftCardNo;
-	}
-
-	public void setGiftCardNo(String giftCardNo) {
-		this.giftCardNo = giftCardNo;
-	}
-
-	public double getGiftCard() {
-		return giftCard;
-	}
-
-	public void setGiftCard(double giftCard) {
-		this.giftCard = giftCard;
-	}
-
-	public double getCash() {
-		return cash;
-	}
-
-	public void setCash(double cash) {
-		this.cash = cash;
-	}
-
-	public double getCredit() {
-		return credit;
-	}
-
-	public void setCredit(double credit) {
-		this.credit = credit;
+	public void setDcPercent(double dcPercent) {
+		this.dcPercent = dcPercent;
 	}
 
 	public double getTip() {
@@ -183,12 +117,44 @@ public class CheckoutBean implements Serializable{
 		this.tip = tip;
 	}
 
-	public String getTipSelected() {
-		return tipSelected;
+	public double getCash() {
+		return cash;
 	}
 
-	public void setTipSelected(String tipSelected) {
-		this.tipSelected = tipSelected;
+	public void setCash(double cash) {
+		this.cash = cash;
+	}
+
+	public List<Double> getCredit() {
+		return credit;
+	}
+
+	public void setCredit(List<Double> credit) {
+		this.credit = credit;
+	}
+
+	public List<GiftCard> getGifts() {
+		return gifts;
+	}
+
+	public void setGifts(List<GiftCard> gifts) {
+		this.gifts = gifts;
+	}
+
+	public boolean isStaffDiscount() {
+		return isStaffDiscount;
+	}
+
+	public void setStaffDiscount(boolean isStaffDiscount) {
+		this.isStaffDiscount = isStaffDiscount;
+	}
+
+	public double getTotalServiceAmount() {
+		return totalServiceAmount;
+	}
+
+	public void setTotalServiceAmount(double totalServiceAmount) {
+		this.totalServiceAmount = totalServiceAmount;
 	}
 
 	public double getTotal() {
@@ -199,27 +165,4 @@ public class CheckoutBean implements Serializable{
 		this.total = total;
 	}
 
-	public List<String> getTipTypes() {
-		return tipTypes;
-	}
-
-	public void setTipTypes(List<String> tipTypes) {
-		this.tipTypes = tipTypes;
-	}
-
-	public List<String> getDiscountTypes() {
-		return discountTypes;
-	}
-
-	public void setDiscountTypes(List<String> discountTypes) {
-		this.discountTypes = discountTypes;
-	}
-
-	public String getDiscountSelected() {
-		return discountSelected;
-	}
-
-	public void setDiscountSelected(String discountSelected) {
-		this.discountSelected = discountSelected;
-	}
 }

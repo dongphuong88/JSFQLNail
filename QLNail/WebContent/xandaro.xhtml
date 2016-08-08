@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<h:outputStylesheet library="css" name="common.css" />
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+
+	<title>Insert title here</title>
+	<style>
+		#scheduler-container {
+		    -webkit-user-select: none;
+		    -moz-user-select: none;
+		    -ms-user-select: none;
+		    user-select: none;
+		}
+		
+		#scheduler-container {
+		    border: 1px solid #bbb;
+		    margin: 19px auto 0 auto;
+		    -webkit-touch-callout: none;
+		}
+		#scheduler-container>#scheduler_here {
+		    width: 100%;
+		    height: 541px;
+		    position: relative;
+		    z-index: 3;
+		}
+		.dhx_cal_container {
+		    background-color: #fff;
+		    font-family: "Segoe UI",Arial;
+		}
+		.dhx_cal_container {
+		    font-size: 8pt;
+		    position: relative;
+		    overflow: hidden;
+		}
+		
+		.dhx_cal_container div {
+		    -moz-user-select: none;
+		    -moz-user-select: -moz-none;
+		}
+		
+		.dhx_cal_navline {
+		    height: 20px;
+		    position: absolute;
+		    z-index: 3;
+		    width: 750px;
+		    color: #2f3a48;
+		}
+		
+		.dhx_cal_container div {
+		    -moz-user-select: none;
+		    -moz-user-select: -moz-none;
+		}
+		.dhx_cal_header {
+		    border: 1px solid #cecece;
+		    border-left: 0;
+		    border-bottom: 0;
+		}
+		.dhx_cal_header {
+		    position: absolute;
+		    left: 10px;
+		    top: 23px;
+		    width: 750px;
+		    z-index: 2;
+		    overflow: hidden;
+		    color: #2f3a48;
+		}
+		.dhx_cal_data, .dhx_cal_data div, .dhx_cal_data table *, .dhx_cal_header, .dhx_cal_header div, .dhx_cal_navline div, .dhx_cal_quick_info, .dhx_cal_quick_info div, .dhx_multi_day, .dhx_multi_day div, .dhx_tooltip_line div {
+		    -webkit-box-sizing: content-box;
+		    -moz-box-sizing: content-box;
+		    box-sizing: content-box;
+		}
+		.dhx_cal_header {
+		    border-top: 1px solid #bbb !important;
+		    border-right: 1px solid #bbb !important;
+		}
+		
+	</style>
+</h:head>
+<h:body>
+	<div id="calendar-page">
+		<div id="scheduler-container">
+
+			<div id="scheduler_here"
+				class="dhx_cal_container dhx_scheduler_Resource">
+				<div class="dhx_cal_navline"
+					style="width: 1022px; height: 59px; left: 0px; top: 0px;">
+					<div class="dhx_cal_date">Mon, 1 Aug 2016</div>
+					<div id="xnd-cal-header">
+						<div>
+							<div class="cal-btn-group right" id="cal-date-nav">
+								<span id="cal-btn-prev" title="Previous Period"></span> <span
+									id="cal-btn-today">Today</span> <span id="cal-btn-next"
+									title="Next Period"></span>
+							</div>
+							<div class="cal-btn-group space left" id="cal-left-buttons">
+								<span title="Date" id="xnd-minical-icon"
+									class="dhx_minical_icon"></span> <span title="Print"
+									id="xnd-print-cal-button"></span> <span title="Maximize"
+									id="xnd-scheduler-expand"></span> <select
+									id="cal-select-resource" class="mini"><option value="">All
+										staff</option>
+									<option value="danny">Danny</option>
+									<option value="sue123456">Sue</option>
+									<option value="tammy">Tammy</option>
+									<option value="cloe123">Chloe</option>
+									<option value="example905188">Kelly</option>
+									<option value="diva123456">Diva</option>
+									<option value="dzyn">Dzyn</option>
+									<option value="example480262">Jennifer</option>
+									<option value="12345">Kate</option>
+									<option value="amy123">Amy</option>
+									<option value="sesey">Sesey</option>
+									<option value="kim123">Kim</option>
+									<option value="deb">Deb</option></select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="dhx_cal_header"
+					style="width: 954px; height: 20px; left: 50px; top: 60px;">
+					<div class="dhx_scale_bar"
+						style="width: 189px; height: 18px; left: 0px; top: 0px;">
+						<span class="cal-header-with-clock" title="Adjust Working Hours"
+							data-scale-date="0" data-scale-resourceid="danny">Danny</span>
+					</div>
+					<div class="dhx_scale_bar"
+						style="width: 190px; height: 18px; left: 190px; top: 0px;">
+						<span class="cal-header-with-clock" title="Adjust Working Hours"
+							data-scale-date="0" data-scale-resourceid="sue123456">Sue</span>
+					</div>
+					<div class="dhx_scale_bar"
+						style="width: 190px; height: 18px; left: 381px; top: 0px;">
+						<span class="cal-header-with-clock" title="Adjust Working Hours"
+							data-scale-date="0" data-scale-resourceid="tammy">Tammy</span>
+					</div>
+					<div class="dhx_scale_bar"
+						style="width: 190px; height: 18px; left: 572px; top: 0px;">
+						<span class="cal-header-with-clock" title="Adjust Working Hours"
+							data-scale-date="0" data-scale-resourceid="cloe123">Chloe</span>
+					</div>
+					<div class="dhx_scale_bar"
+						style="width: 190px; height: 18px; left: 763px; top: 0px;">
+						<span class="cal-header-with-clock" title="Adjust Working Hours"
+							data-scale-date="0" data-scale-resourceid="example905188">Kelly</span>
+						<div class="dhx_cal_next_button"
+							style="left: auto; right: 0px; top: 2px; position: absolute;">&nbsp;</div>
+					</div>
+				</div>
+				<div class="dhx_cal_data"
+					style="width: 1022px; height: 460px; left: 0px; top: 81px;">
+					<div class="dhx_scale_holder_now "
+						style="width: 189px; height: 1008px; left: 51px; top: 0px;">
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 924px; height: 84px; line-height: 84px;"></div>
+						<div event_id="e6fcf97a-02ff-4523-ad0a-2447ee3f25bf"
+							class="dhx_cal_event"
+							style="position: absolute; top: 378px; left: 1px; width: 185px; height: 70px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 183px; background: rgb(219, 238, 149);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(219, 238, 149);">01:30 pm - 02:20
+								pm</div>
+							<div class="dhx_body"
+								style="width: 175px; height: 41px; background: rgb(219, 238, 149);">Lila
+								- Liquid Gel Refill</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 181px; background: rgb(219, 238, 149);"></div>
+						</div>
+						<div class="dhx_marked_timespan dhx_now_time"
+							style="top: 490px; height: 1px; line-height: 1px;"></div>
+					</div>
+					<div class="dhx_scale_holder_now "
+						style="width: 190px; height: 1008px; left: 241px; top: 0px;">
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 0px; height: 84px; line-height: 84px;"></div>
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 672px; height: 336px; line-height: 336px;"></div>
+						<div event_id="d363bba6-fbde-4b6b-b5a9-795e950c1e1a"
+							class="dhx_cal_event"
+							style="position: absolute; top: 84px; left: 1px; width: 186px; height: 77px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">10:00 am - 10:55
+								am</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 48px; background: rgb(255, 240, 245);">Kathirine
+								- Signature Organic Spa (P)</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="588bc674-b925-4b8b-bd9a-b7edaa61b42b"
+							class="dhx_cal_event"
+							style="position: absolute; top: 210px; left: 1px; width: 186px; height: 77px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">11:30 am - 12:25
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 48px; background: rgb(255, 240, 245);">Melenie
+								- Gel Mani</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="a07b1ad4-160d-4ff0-9b14-e33b646d66a1"
+							class="dhx_cal_event"
+							style="position: absolute; top: 462px; left: 1px; width: 186px; height: 133px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">02:30 pm - 04:05
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 104px; background: rgb(255, 240, 245);">Lindsey
+								- Gel Mani; Classic Pedicure</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="9340b38b-c62b-4ba6-9602-71ce38235450"
+							class="dhx_cal_event"
+							style="position: absolute; top: 756px; left: 1px; width: 186px; height: 56px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(239, 218, 255);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(239, 218, 255);">06:00 pm - 06:40
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 27px; background: rgb(239, 218, 255);">Lauren
+								- Classic Pedicure</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(239, 218, 255);"></div>
+						</div>
+						<div class="dhx_marked_timespan dhx_now_time"
+							style="top: 490px; height: 1px; line-height: 1px;"></div>
+					</div>
+					<div class="dhx_scale_holder_now "
+						style="width: 190px; height: 1008px; left: 432px; top: 0px;">
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 0px; height: 1008px; line-height: 1008px;"></div>
+						<div event_id="ea4800e8-3eb9-41f8-a7d7-dd9f80350550"
+							class="dhx_cal_event"
+							style="position: absolute; top: 105px; left: 1px; width: 186px; height: 147px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(241, 225, 204);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(241, 225, 204);">10:15 am - 12:00
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 118px; background: rgb(241, 225, 204);">Rachel
+								- Classic M+Spa P</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(241, 225, 204);"></div>
+						</div>
+						<div event_id="a417efab-ef8a-4631-ac2d-69dcc3aa315d"
+							class="dhx_cal_event"
+							style="position: absolute; top: 364px; left: 1px; width: 186px; height: 126px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">01:20 pm - 02:50
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 97px; background: rgb(255, 240, 245);">Susan
+								- Classic M+P</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="ea7ac378-2c91-4da6-8249-218215bbd106"
+							class="dhx_cal_event"
+							style="position: absolute; top: 756px; left: 1px; width: 186px; height: 56px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(239, 218, 255);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(239, 218, 255);">06:00 pm - 06:40
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 27px; background: rgb(239, 218, 255);">Lauren
+								- Classic Pedicure</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(239, 218, 255);"></div>
+						</div>
+						<div class="dhx_marked_timespan dhx_now_time"
+							style="top: 490px; height: 1px; line-height: 1px;"></div>
+					</div>
+					<div class="dhx_scale_holder_now "
+						style="width: 190px; height: 1008px; left: 623px; top: 0px;">
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 0px; height: 84px; line-height: 84px;"></div>
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 672px; height: 336px; line-height: 336px;"></div>
+						<div event_id="cea1850f-6397-4835-9ad9-7a2e112fe790"
+							class="dhx_cal_event"
+							style="position: absolute; top: 217px; left: 1px; width: 186px; height: 77px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">11:35 am - 12:30
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 48px; background: rgb(255, 240, 245);">Lucie
+								- Gel Mani</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="a91ee59e-cefa-48a9-ad0e-40ea27df0c24"
+							class="dhx_cal_event"
+							style="position: absolute; top: 336px; left: 1px; width: 186px; height: 56px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(239, 218, 255);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(239, 218, 255);">01:00 pm - 01:40
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 27px; background: rgb(239, 218, 255);">Trish
+								- Classic Pedicure</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(239, 218, 255);"></div>
+						</div>
+						<div event_id="249e87ac-c1f9-4897-9212-b283ab8b624d"
+							class="dhx_cal_event"
+							style="position: absolute; top: 462px; left: 1px; width: 186px; height: 77px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">02:30 pm - 03:25
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 48px; background: rgb(255, 240, 245);">Lindsey
+								- Gel Mani</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="9d5b42b3-38db-43ee-b7fb-7eebab1269e0"
+							class="dhx_cal_event"
+							style="position: absolute; top: 756px; left: 1px; width: 186px; height: 147px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(241, 225, 204);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(241, 225, 204);">06:00 pm - 07:45
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 118px; background: rgb(241, 225, 204);">Lia
+								- Gel M + Classic P</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(241, 225, 204);"></div>
+						</div>
+						<div class="dhx_marked_timespan dhx_now_time"
+							style="top: 490px; height: 1px; line-height: 1px;"></div>
+					</div>
+					<div class="dhx_scale_holder_now "
+						style="width: 190px; height: 1008px; left: 814px; top: 0px;">
+						<div class="dhx_marked_timespan unavailable-time"
+							style="top: 924px; height: 84px; line-height: 84px;"></div>
+						<div event_id="9efaff85-748e-403b-94cf-8b34fa85ef32"
+							class="dhx_cal_event"
+							style="position: absolute; top: 462px; left: 1px; width: 186px; height: 77px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(255, 240, 245);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(255, 240, 245);">02:30 pm - 03:25
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 48px; background: rgb(255, 240, 245);">Diana
+								- Gel Mani</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(255, 240, 245);"></div>
+						</div>
+						<div event_id="ad80ba36-cf82-4175-bb3f-292a336d77a0"
+							class="dhx_cal_event"
+							style="position: absolute; top: 756px; left: 1px; width: 186px; height: 40px;">
+							<div class="dhx_event_move dhx_header"
+								style="width: 184px; background: rgb(241, 225, 204);">&nbsp;</div>
+							<div class="dhx_event_move dhx_title"
+								style="background: rgb(241, 225, 204);">06:00 pm - 06:15
+								pm</div>
+							<div class="dhx_body"
+								style="width: 176px; height: 11px; background: rgb(241, 225, 204);">Kathy
+								- Regular Polish Change Hands</div>
+							<div class="dhx_event_resize dhx_footer"
+								style="width: 182px; background: rgb(241, 225, 204);"></div>
+						</div>
+						<div class="dhx_marked_timespan dhx_now_time"
+							style="top: 490px; height: 1px; line-height: 1px;"></div>
+					</div>
+					<div class="dhx_scale_holder_now">
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">9am</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">10am</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">11am</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">12pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">1pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">2pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">3pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">4pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">5pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">6pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">7pm</div>
+						<div class="dhx_scale_hour" style="height: 83px; width: 50px;">8pm</div>
+					</div>
+				</div>
+				<div class="dhx_expand_icon"></div>
+			</div>
+
+			<div id="calendar-bottom">
+				<div>
+					<div class="blocked">Non working Hours / Breaks</div>
+				</div>
+				<button type="button" id="calendar-preferences-button"
+					title="Calendar Preferences"></button>
+
+				<button type="button" id="calendar-download-button"
+					title="Export to Excel"></button>
+			</div>
+		</div>
+	</div>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+</h:body>
+</html>

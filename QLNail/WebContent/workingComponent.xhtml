@@ -3,38 +3,198 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
 	xmlns:p="http://primefaces.org/ui">
 <h:head>
 	<meta http-equiv="x-ua-compatible" content="ie=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript> 
-	<h:outputStylesheet library="css" name="common.css"></h:outputStylesheet>
+
+	<h:outputStylesheet library="css" name="common.css" />
 	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	
+	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
 	
 	<style>
 		.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
 			text-align:left;
 		}
 	</style>
+	
 	<title>Insert title here</title>
 </h:head>
-<h:body>
-<div class="ipadMiniScreenLandscape"></div>
-<h:form id="transactionForm">
-	<p:selectOneRadio id="tipAmount" onchange="updateTip()" value="#{testBean.val}" layout="grid" columns="1" style="margin-left:30px">
-         <f:selectItem escape="true" name="tip" itemLabel="15% - $0.00" itemValue="15" />
-         <f:selectItem escape="true" name="tip" itemLabel="18% - $0.00" itemValue="18" />
-         <f:selectItem escape="true" name="tip" itemLabel="20% - $0.00" itemValue="20" />
-     </p:selectOneRadio>
-     <p:remoteCommand name="myRemote" actionListener="#{testBean.getMessage()}" />
-</h:form>
+<h:body >
+	<div class="w3-container w3-xlarge">
+		<label class="w3-label">Date/Time: </label>
+		<h:outputText value="#{checkoutBean.currDateTime}">
+			<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a"/>
+		</h:outputText>
+	</div>
+	<h:form id="serviceForm" style="height:100%; padding:0px;" styleClass="w3-container">
+	
+		<p:dataTable id="services" var="service" value="#{checkoutBean.services}" editable="true" editMode="cell" widgetVar="cellServices">
+ 			
+ 			<p:ajax event="cellEdit" oncomplete="alert('test')" />
+       <p:column headerText="Id" style="display:none">
+              <p:cellEditor>
+                  <f:facet name="output"><h:outputText value="#{service.transactionServiceID}" /></f:facet>
+                  <f:facet name="input"><p:inputText id="modelInput" value="#{service.transactionServiceID}" style="width:96%"/></f:facet>
+              </p:cellEditor>
+          </p:column>
+          
+          <p:column style="width:60px">
+          	<p:commandButton update="serviceForm" actionListener="#{checkoutBean.deleteServiceRow(service)}" oncomplete="updateServicesAmount()" icon="fa fa-times"></p:commandButton>
+          </p:column>
+ 
+          <p:column>
+          	<f:facet name="header">
+          		<p:commandButton update="serviceForm" actionListener="#{checkoutBean.addServiceRow()}" value="Add" styleClass="w3-left"></p:commandButton>
+          		<h:outputText value="Service" styleClass="w3-center" />
+          	</f:facet>
+           <p:cellEditor>
+               <f:facet name="output"><h:outputText value="#{service.serviceName}" /></f:facet>
+               <f:facet name="input"><p:inputText value="#{service.serviceName}" style="width:96%" label="Service"/></f:facet>
+           </p:cellEditor>
+       </p:column>
+ 
+       <p:column headerText="Staff">
+           <p:cellEditor>
+               <f:facet name="output"><h:outputText value="#{service.employeeName}" /></f:facet>
+               <f:facet name="input">
+                   <p:inputText value="#{service.employeeName}" style="width:96%" label="Staff"/>
+               </f:facet>
+           </p:cellEditor>
+       </p:column>
+ 
+       <p:column headerText="Amount" style="width:200px">
+           <p:cellEditor>
+               <f:facet name="output">
+               		<h:outputText styleClass="serviceAmount" value="#{service.amount}" >
+               			<f:convertNumber type="currency"></f:convertNumber>
+               		</h:outputText>
+               	</f:facet>
+               <f:facet name="input">
+                   <p:inputText value="#{service.amount}" style="width:96%" label="Amount"/>
+               </f:facet>
+           </p:cellEditor>
+       </p:column>
+       <p:columnGroup type="footer">
+				<p:row>
+					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
+					<p:column id="serviceTotal" styleClass="serviceTotal" style="text-align:left"
+						footerText="#{checkoutBean.totalServiceAmount}" ></p:column>
+				</p:row>
+				<p:row>
+					<p:column style="text-align:left" colspan="2">
+						<f:facet name="footer">
+							<h:outputText value="Staff Discount: " />
+							<p:selectBooleanButton id="dcStaff" value="true" onLabel="Yes"
+offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+						</f:facet>
+					</p:column>
+					<p:column style="text-align:right">
+						<f:facet name="footer">
+							<h:outputText value="Discount :"></h:outputText>
+						</f:facet>
+					</p:column>
+					<p:column style="text-align:left">
+						<f:facet name="footer">
+							<p:selectBooleanButton styleClass="dcAmount" onchange="selectDCAmount()" value="false" onLabel="$" offLabel="$" />
+							<p:inputText styleClass="dcInpAmount" style="width:50px; display:none"></p:inputText>
+							<p:selectBooleanButton styleClass="dcPercent" onchange="selectDCPercent()" value="false" onLabel="%" offLabel="%" />
+							<p:inputText styleClass="dcInpPercent" style="width:50px; display:none"></p:inputText>
+						</f:facet>
+					</p:column>
+				</p:row>
+			</p:columnGroup>
+			
+   </p:dataTable>
+   
+	</h:form>
+	
+	<h:form id="transactionForm" styleClass="w3-container" style="padding:0px;">
+		<div class="w3-container w3-half w3-xlarge">
+			
+		</div>
+		<div class="w3-container w3-half">
+			<p:panelGrid style="margin-top:10px; margin-bottom:10px">
+				<p:row>
+			        <p:column width="50%">Tip:</p:column>
+			        <p:column width="50%">
+						<p:selectOneButton>
+				            <f:selectItem itemLabel="15%" itemValue="15%" />
+				            <f:selectItem itemLabel="18%" itemValue="18%" />
+				            <f:selectItem itemLabel="20%" itemValue="20%" />
+				            <f:selectItem itemLabel="Other" itemValue="Other" />
+				        </p:selectOneButton>
+					</p:column>
+		        </p:row>
+		        <p:row>
+		        	<p:column>Total:</p:column>
+		        	<p:column>$100</p:column>
+		        </p:row>
+		        <p:row>
+		        	<p:column>Pay by:</p:column>
+		        	<p:column>
+		        		<p:selectOneButton>
+				            <f:selectItem itemLabel="Cash" itemValue="Cash" />
+				            <f:selectItem itemLabel="Credit" itemValue="Credit" />
+				            <f:selectItem itemLabel="Gift" itemValue="Gift" />
+				        </p:selectOneButton>
+		        	</p:column>
+		        </p:row>
+			</p:panelGrid>
+		</div>
+	</h:form>
+	
+	<div class="w3-center w3-container">
+		<p:commandButton style="width:180px;height:50px;" value="Print"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
+	</div>
 
-	<h:outputScript library="js" name="common.js"></h:outputScript> 
+	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
-		function updateTip() {
-			alert("test");
-			myRemote();
+		$(function() {
+			updateServicesAmount();
+		});
+		
+		function updateServicesAmount() {
+			var total = 0;
+			$('.serviceAmount').each(function(index) {
+				total += parseFloat( $(this).text().replace(/\\$|,/g,''));
+			});
+			$('.serviceTotal').text(total);
+			$('.serviceTotal').formatCurrency();
+		}
+		
+		function selectDCAmount() {
+			if( $('.dcAmount').hasClass('ui-state-active')) {
+				$('.dcPercent').removeClass('ui-state-active');
+				$('.dcPercent input').prop("checked", false);
+				$('.dcPercent').hide();
+				$('.dcInpAmount').show();
+				
+				$('.dcInpAmount').focus();
+			}
+			else {
+				$('.dcPercent').show();
+				$('.dcInpAmount').hide();
+			}
+			
+			//$(root).find('.dcInpAmount').show();
+			//if( $(object).parent())
+			//$(this).parent().find('dcInpAmount').show();$(this).is(':checked') ? $(this).parent().parent().siblings().hide() : $(this).parent().parent().siblings().show()
+		}
+		function selectDCPercent() {
+			if( $('.dcPercent').hasClass('ui-state-active')) {
+				$('.dcAmount').removeClass('ui-state-active');
+				$('.dcAmount input').prop("checked", false);
+				$('.dcAmount').hide();
+				$('.dcInpPercent').show();
+			}
+			else {
+				$('.dcAmount').show();
+				$('.dcInpPercent').hide();
+			}
 		}
 	</script>
 </h:body>
