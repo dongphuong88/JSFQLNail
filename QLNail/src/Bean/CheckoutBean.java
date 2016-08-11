@@ -26,16 +26,20 @@ public class CheckoutBean implements Serializable{
 	private Date currDateTime = new Date();
 	
 	private ArrayList<TransactionService> services = new ArrayList<>();
+	private double totalServiceAmount;
 	
+	private boolean dcAmountShow = true;
+	private boolean dcAmountBtnStatus;
 	private double dcAmount;
+	private boolean dcPercentShow = true;
+	private boolean dcPercentBtnStatus;
 	private double dcPercent;
 	private double tip;
 	private double cash;
 	private List<Double> credit;
 	private List<GiftCard> gifts;
 	
-	private boolean isStaffDiscount;
-	private double totalServiceAmount;
+	private boolean staffDiscount;
 	private double total;
 
 	public CheckoutBean() {
@@ -50,7 +54,7 @@ public class CheckoutBean implements Serializable{
 			services.add(ser);
 		}
 		
-		//updateServicesAmount();
+		updateServicesAmount();
 	}
 	
 	public void addServiceRow() {
@@ -61,21 +65,36 @@ public class CheckoutBean implements Serializable{
 	}
 	public void deleteServiceRow( TransactionService deleteObj) {
 		services.remove(deleteObj);
-		//updateServicesAmount();
+		updateServicesAmount();
 	}
 	
-//	public void updateServicesAmount() {
-//		totalServiceAmount = 0;
-//		for( TransactionService ser : services) {
-//			totalServiceAmount += ser.getAmount();
-//		}
-//		
-//		updateTransactionAmount();
-//	}
+	public void updateServicesAmount() {
+		totalServiceAmount = 0;
+		for( TransactionService ser : services) {
+			totalServiceAmount += ser.getAmount();
+		}
+		
+		//updateTransactionAmount();
+	}
 	
 //	public void updateTransactionAmount() {
 //		total = totalServiceAmount;
 //	}
+	
+	public void changeDCShow() {
+		if( dcAmountBtnStatus ) {
+			dcAmountShow = true;
+			dcPercentShow = false;
+		}
+		else if( dcPercentBtnStatus) {
+			dcPercentShow = true;
+			dcAmountShow = false;
+		}
+		else {
+			dcPercentShow = true;
+			dcAmountShow = true;
+		}
+	}
 
 	public Date getCurrDateTime() {
 		return currDateTime;
@@ -141,14 +160,6 @@ public class CheckoutBean implements Serializable{
 		this.gifts = gifts;
 	}
 
-	public boolean isStaffDiscount() {
-		return isStaffDiscount;
-	}
-
-	public void setStaffDiscount(boolean isStaffDiscount) {
-		this.isStaffDiscount = isStaffDiscount;
-	}
-
 	public double getTotalServiceAmount() {
 		return totalServiceAmount;
 	}
@@ -163,6 +174,46 @@ public class CheckoutBean implements Serializable{
 
 	public void setTotal(double total) {
 		this.total = total;
+	}
+
+	public boolean isDcAmountShow() {
+		return dcAmountShow;
+	}
+
+	public void setDcAmountShow(boolean dcAmountShow) {
+		this.dcAmountShow = dcAmountShow;
+	}
+
+	public boolean isDcPercentShow() {
+		return dcPercentShow;
+	}
+
+	public void setDcPercentShow(boolean dcPercentShow) {
+		this.dcPercentShow = dcPercentShow;
+	}
+
+	public boolean isStaffDiscount() {
+		return staffDiscount;
+	}
+
+	public void setStaffDiscount(boolean staffDiscount) {
+		this.staffDiscount = staffDiscount;
+	}
+
+	public boolean isDcAmountBtnStatus() {
+		return dcAmountBtnStatus;
+	}
+
+	public void setDcAmountBtnStatus(boolean dcAmountBtnStatus) {
+		this.dcAmountBtnStatus = dcAmountBtnStatus;
+	}
+
+	public boolean isDcPercentBtnStatus() {
+		return dcPercentBtnStatus;
+	}
+
+	public void setDcPercentBtnStatus(boolean dcPercentBtnStatus) {
+		this.dcPercentBtnStatus = dcPercentBtnStatus;
 	}
 
 }
