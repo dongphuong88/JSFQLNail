@@ -32,10 +32,9 @@
 	</div>
 	<!-- Date/Time END -->
 	
-	<!-- Services -->
-	<h:form id="serviceForm" style="height:100%; padding:0px;"
-		styleClass="w3-container">
-
+	<!-- MainForm -->
+	<h:form id="serviceForm" >
+		<!-- Services -->
 		<p:dataTable id="services" var="service"
 			value="#{checkoutBean.services}" editable="true" editMode="cell"
 			widgetVar="cellServices">
@@ -114,43 +113,38 @@
 			</p:columnGroup>
 
 		</p:dataTable>
-	</h:form>
-	<!-- Services End -->
-	
-	<!-- Discount -->
-	<h:form id="dcForm">
+		<!-- Services End -->
+		
+		<!-- Discount -->
 		<p:panelGrid>
-				<f:facet name="footer">
-					<p:row>
-						<p:column style="text-align:left">
-							<h:outputText value="Staff Discount: " />
-							<p:selectBooleanButton id="dcStaff" value="#{checkoutBean.staffDiscount}" onLabel="Yes"
-								offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-							<h:outputText styleClass="w3-right" value="Discount :"></h:outputText>
-						</p:column>
-						<p:column style="text-align:left; width:200px">
-							<p:selectBooleanButton styleClass="dcAmount" rendered="#{checkoutBean.dcAmountShow}" value="#{checkoutBean.dcAmountBtnStatus}" onLabel="$"
-								offLabel="$" >
-								<p:ajax update="@form" listener="#{checkoutBean.changeDCShow}" />
-							</p:selectBooleanButton>
-							<p:inputText styleClass="dcInpAmount" onfocus="this.select()" value="#{checkoutBean.dcAmount}" rendered="#{checkoutBean.dcAmountBtnStatus}" type="number" onchange="updateTotal()"
-								style="width:100px"></p:inputText>
-							<p:selectBooleanButton styleClass="dcPercent"  rendered="#{checkoutBean.dcPercentShow}" value="#{checkoutBean.dcPercentBtnStatus}" onLabel="%"
-								offLabel="%" >
-								<p:ajax update="@form" listener="#{checkoutBean.changeDCShow}" />
-							</p:selectBooleanButton>
-							<p:inputText styleClass="dcInpPercent" valueChangeListener="#{checkoutBean.changeDCShow}" value="#{checkoutBean.dcPercent}" rendered="#{checkoutBean.dcPercentBtnStatus}" type="number" onchange="updateTotal()"
-								style="width:100px"></p:inputText>
-						</p:column>
-					</p:row>
-				</f:facet>
+			<f:facet name="footer">
+				<p:row>
+					<p:column style="text-align:left">
+						<h:outputText value="Staff Discount: " />
+						<p:selectBooleanButton id="dcStaff" value="#{checkoutBean.staffDiscount}" onLabel="Yes"
+							offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" />
+						<h:outputText styleClass="w3-right" value="Discount :"></h:outputText>
+					</p:column>
+					<p:column style="text-align:left; width:200px">
+						<p:selectBooleanButton styleClass="dcAmount" rendered="#{checkoutBean.dcAmountShow}" value="#{checkoutBean.dcAmountBtnStatus}" onLabel="$"
+							offLabel="$" >
+							<p:ajax update="@form" listener="#{checkoutBean.changeDCShow}" />
+						</p:selectBooleanButton>
+						<p:inputText styleClass="dcInpAmount" onfocus="this.select()" value="#{checkoutBean.dcAmount}" rendered="#{checkoutBean.dcAmountBtnStatus}" type="number" onchange="updateTotal()"
+							style="width:100px"></p:inputText>
+						<p:selectBooleanButton styleClass="dcPercent"  rendered="#{checkoutBean.dcPercentShow}" value="#{checkoutBean.dcPercentBtnStatus}" onLabel="%"
+							offLabel="%" >
+							<p:ajax update="@form" listener="#{checkoutBean.changeDCShow}" />
+						</p:selectBooleanButton>
+						<p:inputText styleClass="dcInpPercent" valueChangeListener="#{checkoutBean.changeDCShow}" value="#{checkoutBean.dcPercent}" rendered="#{checkoutBean.dcPercentBtnStatus}" type="number" onchange="updateTotal()"
+							style="width:100px"></p:inputText>
+					</p:column>
+				</p:row>
+			</f:facet>
 		</p:panelGrid>
-	</h:form>
-	<!-- Discount End -->
-
-	<!-- Transaction -->
-	<h:form id="transactionForm" styleClass="w3-container"
-		style="padding:0px;">
+		<!-- Discount End -->
+		
+		<!-- Transaction -->
 		<div class="w3-container w3-half w3-xlarge"></div>
 		<div class="w3-container w3-half">
 			<p:panelGrid style="margin-top:10px; margin-bottom:10px">
@@ -158,14 +152,12 @@
 					<p:column style="width:100px">Tip:</p:column>
 					<p:column>
 						<p:inputText styleClass="tip" type="number" value="#{checkoutBean.tip}" onchange="updateTotal()"></p:inputText>
-						<p:commandButton style="width:180px;height:50px;" value="Print" actionListener="#{checkoutBean.print}"></p:commandButton>
 					</p:column>
 				</p:row>
 				<p:row>
 					<p:column>Total:</p:column>
 					<p:column>
 						<h:outputText styleClass="total" value="$0.00"></h:outputText>
-						<input value="test" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"></input>
 					</p:column>
 				</p:row>
 				<p:row>
@@ -201,19 +193,19 @@
 				</p:row>
 			</p:panelGrid>
 		</div>
-		<p:button type="submit"></p:button>
-	</h:form>
-	<!-- Transaction END -->
-
-	<!-- Action -->
-	<h:form id="action">
+		<!-- Transaction END -->
+		
+		<!-- Action -->
 		<div class="w3-center w3-container">
 			
 			<p:commandButton style="width:180px;height:50px;" value="Print" actionListener="#{checkoutBean.print}"></p:commandButton>
 			<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
 		</div>
+		<!-- Action END-->
+		
 	</h:form>
-	<!-- Action END-->
+	<!-- MainForm END -->
+	
 	
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
