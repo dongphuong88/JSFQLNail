@@ -148,6 +148,7 @@
 	</h:form>
 	<!-- Discount End -->
 
+	<!-- Transaction -->
 	<h:form id="transactionForm" styleClass="w3-container"
 		style="padding:0px;">
 		<div class="w3-container w3-half w3-xlarge"></div>
@@ -157,6 +158,7 @@
 					<p:column style="width:100px">Tip:</p:column>
 					<p:column>
 						<p:inputText styleClass="tip" type="number" value="#{checkoutBean.tip}" onchange="updateTotal()"></p:inputText>
+						<p:commandButton style="width:180px;height:50px;" value="Print" actionListener="#{checkoutBean.print}"></p:commandButton>
 					</p:column>
 				</p:row>
 				<p:row>
@@ -201,13 +203,18 @@
 		</div>
 		<p:button type="submit"></p:button>
 	</h:form>
+	<!-- Transaction END -->
 
-	<div class="w3-center w3-container">
-		
-		<p:commandButton style="width:180px;height:50px;" value="Print"></p:commandButton>
-		<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
-	</div>
-
+	<!-- Action -->
+	<h:form id="action">
+		<div class="w3-center w3-container">
+			
+			<p:commandButton style="width:180px;height:50px;" value="Print" actionListener="#{checkoutBean.print}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
+		</div>
+	</h:form>
+	<!-- Action END-->
+	
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
 		$(function() {

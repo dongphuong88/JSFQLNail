@@ -95,6 +95,10 @@ public class CheckoutBean implements Serializable{
 			dcAmountShow = true;
 		}
 	}
+	
+	public void print() {
+		System.out.println("dcAmount " + dcAmount + ", dcPercent " + dcPercent + ", tip " + tip);
+	}
 
 	public Date getCurrDateTime() {
 		return currDateTime;
