@@ -1,0 +1,23 @@
+<html>
+<head>
+    <script src="js/jquery-2.2.4.min.js"></script>
+</head>
+<body>
+    <div class="editable" >
+        <label>&nbsp;</label>
+    </div>
+    <script>
+        $('.editable').click( function() {
+            if( $(this).find('input').length == 0) { // revent onclicked
+                var val = "<input value=\"" + $(this).find('label').text() + "\" />";
+                $(this).html(val);
+                $(this).find('input').select();
+                $(this).find('input').blur( function() {
+                    var val = "<label>"+ $(this).val() +"</label>";
+                    $(this).parent().html(val);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
