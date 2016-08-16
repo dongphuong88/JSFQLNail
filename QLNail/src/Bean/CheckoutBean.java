@@ -28,9 +28,18 @@ public class CheckoutBean implements Serializable{
 	private static final long serialVersionUID = -95083139120347266L;
 	
 	private String employeeNames;
+	private String data = "test";
 
 	public CheckoutBean() {
 		employeeNames = EmployeeDAO.getStaffNames();
+	}
+	
+	public void print() {
+		System.out.println(data);
+	}
+	
+	public void email() {
+		System.out.println(data);
 	}
 
 	public String getEmployeeNames() {
@@ -39,6 +48,14 @@ public class CheckoutBean implements Serializable{
 
 	public void setEmployeeNames(String employeeNames) {
 		this.employeeNames = employeeNames;
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
 	}
 
 

@@ -50,7 +50,7 @@
 		        </p:row>
 			</f:facet>
 			<script>
-				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell"></td><td class="ui-panelgrid-cell"></td></tr>';
+				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceAmount"><label>0.00</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceDiscout"><label>0.00</label></td></tr>';
 				var employeeNames = #{checkoutBean.employeeNames};
 				
 				function addService() {
@@ -82,6 +82,7 @@
 						$(obj).find('input').select();
 						$(obj).find('input').on( "blur", function() {
 							$(obj).html( '<label>'+ $(this).val() +'</label>');
+							updateServicesAmount();
 						});
 					}
 				}
@@ -89,15 +90,16 @@
 			<f:facet name="footer">
 				<p:row>
 		            <p:column colspan="3" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Total: "></h:outputText></p:column>
-		            <p:column colspan="2" styleClass="ui-state-default">0.00</p:column>
+		            <p:column styleClass="ui-state-default serviceTotal">0.00</p:column>
+		            <p:column styleClass="ui-state-default serviceDiscoutTotal">0.00</p:column>
 		        </p:row>
 		        <p:row>
 		            <p:column colspan="4" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Discount: "></h:outputText></p:column>
 		            <p:column styleClass="ui-state-default">
 		            	<p:selectBooleanButton styleClass="totalDCAmount" onLabel="$" offLabel="$" onchange="selectTotalDCAmount()"></p:selectBooleanButton>
-						<p:inputText styleClass="totalDCInpAmount" onfocus="this.select()" type="number" style="width:100px; display:none"></p:inputText>
+						<p:inputText styleClass="totalDCInpAmount" onfocus="this.select()" onchange="updateServicesAmount()" type="number" style="width:100px; display:none"></p:inputText>
 						<p:selectBooleanButton styleClass="totalDCPercent" onLabel="%" offLabel="%" onchange="selectTotalDCPercent()"></p:selectBooleanButton>
-						<p:inputText styleClass="totalDCInpPercent" type="number" style="width:100px; display:none"></p:inputText>
+						<p:inputText styleClass="totalDCInpPercent" onfocust="this.select()"  onchange="updateServicesAmount()" type="number" style="width:100px; display:none"></p:inputText>
 		            </p:column>
 		        </p:row>
 			</f:facet>
@@ -126,6 +128,7 @@
             			$('.totalDCInpAmount').hide();
             		}
             	}
+            
             </script>
 		</p:panelGrid>
 		<!-- Services End -->
@@ -134,6 +137,11 @@
 		<div class="w3-container w3-half w3-xlarge"></div>
 		<div class="w3-container w3-half">
 			<p:panelGrid style="margin-top:10px; margin-bottom:10px">
+				<f:facet name="header">
+					<p:row>
+						<p:column colspan="2">Pay</p:column>
+					</p:row>
+				</f:facet>
 				<p:row>
 					<p:column style="width:100px">Tip:</p:column>
 					<p:column>
@@ -149,7 +157,7 @@
 				<p:row>
 					<p:column>Pay by:</p:column>
 					<p:column id="payType" styleClass="payType">
-						<div><!-- 
+						<div> 
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="cash payTypeHide" value="cash" onLabel="Cash" offLabel="Cash"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCash payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="credit payTypeHide" value="cash" onLabel="Credit" offLabel="Credit"></p:selectBooleanButton>
@@ -179,7 +187,7 @@
 						        	}
 						        </script>
 						    </p:commandButton>
-						     -->
+						     
 						</div>
 						<script>
 							function clickPayType( obj) {
@@ -219,18 +227,14 @@
 		
 		<!-- Action -->
 		<div class="w3-center w3-container">
-			
-			<p:commandButton style="width:180px;height:50px;" value="Print" actionListener="#{checkoutBean.print}"></p:commandButton>
-			<p:commandButton style="width:180px;height:50px;" value="Email"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="alert('test')" actionListener="#{checkoutBean.print}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
 		</div>
 		<!-- Action END-->
+		<!-- HIDDEN -->
+		<h:outputText id="data" value="#{checkoutBean.data}"></h:outputText>
+		<!-- HIDDEN END -->
 		
-		<!-- HIDEN -->
-		<p:selectOneMenu id="employeeName" style="width:150px">
-            <f:selectItem itemLabel="Select Staff" itemValue="" noSelectionOption="true" />
-            <f:selectItems value="#{checkoutBean.employeeNames}" />
-        </p:selectOneMenu>
-		<!-- HIDEN END -->
 	</h:form>
 	<!-- MainForm END -->
 	
@@ -238,78 +242,49 @@
 	
 	<script>
 		$(function() {
-			
-			// clear table
-			//updateServicesAmount();
+			updateServicesAmount();
 		});
 
 		function updateServicesAmount() {
-			var total = 0;
+			var totalService = 0;
+			var totalDiscount = 0;
+			
 			$('.serviceAmount').each(function(index) {
-				total += parseFloat($(this).text().replace(/\\$|,/g, ''));
+				totalService += parseFloat($(this).text().replace(/\\$|,/g, ''));
 			});
-			$('.serviceTotal').text(total);
+			$('.serviceDiscout').each(function(index) {
+				totalDiscount += parseFloat($(this).text().replace(/\\$|,/g, ''));
+			});
+			
+			$('.serviceTotal').text( isNaN(totalService) ? 0 : totalService);
 			$('.serviceTotal').formatCurrency();
+			
+			$('.serviceDiscoutTotal').text( isNaN(totalDiscount) ? 0 : totalDiscount);
+			$('.serviceDiscoutTotal').formatCurrency();
 
 			updateTotal();
 		}
 
 		function updateTotal() {
 			// services
-			var serviceAmount = parseFloat($('.serviceTotal').text().replace(
-					/\\$|,/g, ''));
-			// Discount
-			var dcAmount;
-			if ($('.dcPercent').hasClass('ui-state-active')) {
-				dcAmount = +$('.dcInpPercent').val() * serviceAmount / 100;
-			} else {
-				dcAmount = +$('.dcInpAmount').val();
+			var serviceAmount = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
+			var serviceDC = parseFloat($('.serviceDiscoutTotal').text().replace(/\\$|,/g, ''));
+
+			// total Discount
+			var dcAmount = 0;
+			if($('.totalDCAmount').find('input').prop('checked')) {
+				dcAmount = +$('.totalDCInpAmount').val();
+			} else if($('.totalDCPercent').find('input').prop('checked')) {
+				dcAmount = +$('.totalDCInpPercent').val() * serviceAmount / 100;
 			}
-			if( isNaN(dcAmount))
-				dcAmount = 0;
+			dcAmount = ( isNaN(dcAmount) ? +0 : dcAmount ) + serviceDC; 
+			
 			// tip
 			var tip = +$('.tip').val();
+			tip = isNaN( tip ) ? 0 : tip;
 			
-			$('.total').text( serviceAmount + dcAmount + tip);
+			$('.total').text( serviceAmount - dcAmount + tip);
 			$('.total').formatCurrency();
-		}
-
-		function selectDCAmount() {
-			if ($('.dcAmount').hasClass('ui-state-active')) {
-				$('.dcPercent').removeClass('ui-state-active');
-				$('.dcPercent input').prop("checked", false);
-				$('.dcPercent').hide();
-				$('.dcInpAmount').show();
-
-				$('.dcInpAmount').focus();
-			} else {
-				$('.dcPercent').show();
-				$('.dcInpAmount').hide();
-			}
-		}
-		function selectDCPercent() {
-			if ($('.dcPercent').hasClass('ui-state-active')) {
-				$('.dcAmount').removeClass('ui-state-active');
-				$('.dcAmount input').prop("checked", false);
-				$('.dcAmount').hide();
-				$('.dcInpPercent').show();
-			} else {
-				$('.dcAmount').show();
-				$('.dcInpPercent').hide();
-			}
-		}
-		
-		function selectCash( row) {
-			if ($('.cash').hasClass('ui-state-active')) {
-				$('.credit, .gift').removeClass('ui-state-active');
-				$('.credit input, .gift input').prop("checked", false);
-				$('.credit, .gift').hide();
-				$('.cashInp').show();
-
-			} else {
-				$('.credit, .gift').show();
-				$('.cashInp').hide();
-			}
 		}
 	</script>
 	 

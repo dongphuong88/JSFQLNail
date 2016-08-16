@@ -13,7 +13,6 @@ public class TransactionService implements Serializable{
 	private int transactionID;
 	private String serviceName = "";
 	private String employeeName = "";
-	private Date date;
 	private Time start;
 	private Time finish;
 	private double amount;
@@ -42,12 +41,6 @@ public class TransactionService implements Serializable{
 	}
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
-	}
-	public Date getDate() {
-		return date;
-	}
-	public void setDate(Date date) {
-		this.date = date;
 	}
 	public Time getStart() {
 		return start;
