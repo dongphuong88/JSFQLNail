@@ -9,8 +9,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -46,7 +48,7 @@ public class EmployeeDAO {
 //			e.printStackTrace();
 //		}
 		
-		List<String> empNames = new ArrayList<>();
+		JSONArray empNames = new JSONArray();
 		JSONParser parser = new JSONParser();
 		 
         try {
@@ -61,10 +63,9 @@ public class EmployeeDAO {
         System.out.println(empNames);
 	}
 	
-	public List<String> getStaffNames(String directory) {
-		List<String> empNames = new ArrayList<>();
+	public static String getStaffNames() {
 		JSONParser parser = new JSONParser();
-		 
+		JSONArray empNames = new JSONArray();
         try {
             JSONObject jsonObject = (JSONObject)parser.parse(new FileReader(HelperDAO.DIRECTORY + "employees.dat"));
             JSONArray emps = (JSONArray) jsonObject.get("employees");
@@ -74,7 +75,7 @@ public class EmployeeDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(empNames);
-		return empNames;
+
+		return empNames.toString();
 	}
 }

@@ -7,10 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import DAO.EmployeeDAO;
 import POJO.GiftCard;
 import POJO.TransactionService;
 
@@ -22,18 +27,20 @@ public class CheckoutBean implements Serializable{
 	 */
 	private static final long serialVersionUID = -95083139120347266L;
 	
-	private ArrayList<String> empNames;
+	private String employeeNames;
 
 	public CheckoutBean() {
-		
+		employeeNames = EmployeeDAO.getStaffNames();
 	}
 
-	public ArrayList<String> getEmpNames() {
-		return empNames;
+	public String getEmployeeNames() {
+		return employeeNames;
 	}
 
-	public void setEmpNames(ArrayList<String> empNames) {
-		this.empNames = empNames;
+	public void setEmployeeNames(String employeeNames) {
+		this.employeeNames = employeeNames;
 	}
+
+
 
 }

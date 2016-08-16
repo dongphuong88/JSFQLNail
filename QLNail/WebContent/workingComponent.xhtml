@@ -13,7 +13,7 @@
 	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
 
 	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
-
+	
 	<style>
 	.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
 		text-align: left;
@@ -35,93 +35,100 @@
 	<!-- MainForm -->
 	<h:form id="serviceForm" >
 		<!-- Services -->
-		<p:dataTable id="services">
-
-			<p:ajax event="cellEdit" oncomplete="updateServicesAmount()" />
-
-			<p:column style="width:60px">
-				<p:commandButton 
-					oncomplete="updateServicesAmount()" icon="fa fa-times"></p:commandButton>
-			</p:column>
-
-			<p:column>
-				<f:facet name="header">
-					<p:commandButton onclick="addService()" value="Add"
-						styleClass="w3-left"></p:commandButton>
-					<script>
-					var rowHtml = '<tr class="ui-widget-content ui-datatable-even"><td style="width:60px"><button class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only"><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)"></td><td onclick="staffEdit(this)"></td><td style="width:200px"></td><td style="width:200px"></td></tr>';
-					
-					function addService() {
-						$("#serviceForm\\:services_data").append(rowHtml);
-						
-					}
-					function serviceEdit( obj) {
-						if( 0 == $(obj).find('input').length) {
-							$(obj).html( '<input class="w3-input" value="'+ $(obj).find('label').text() +'"/>');
-							$(obj).find('input').select();
-							$(obj).find('input').on( "blur", function() {
-								$(obj).html( '<label>'+ $(obj).find('input').val() +'</label>');
-							});
-						}
-					}
-					function staffEdit( obj) {
-						if( 0 == $(obj).find('input').length) {
-							$(obj).html( '<input class="w3-input" value="'+ $(obj).find('label').text() +'"/>');
-							$(obj).find('input').select();
-							$(obj).find('input').on( "blur", function() {
-								$(obj).html( '<label>'+ $(obj).find('input').val() +'</label>');
-							});
-						}
-					}
-					</script>
-					<h:outputText value="Service" styleClass="w3-center" />
-				</f:facet>
-			</p:column>
-
-			<p:column headerText="Staff"/>
-			<p:column headerText="Amount" style="width:200px"/>
-			<p:column headerText="Discount" style="width:200px"/>
-			
-			<p:columnGroup type="footer">
+		<p:panelGrid id="services">
+			<f:facet name="header">
 				<p:row>
-					<p:column colspan="3" style="text-align:right" footerText="Totals:" />
-					<p:column id="serviceTotal" styleClass="serviceTotal"
-						style="text-align:left"></p:column>
-				</p:row>
-
-			</p:columnGroup>
-
-		</p:dataTable>
-		<!-- Services End -->
-		
-		<!-- Discount -->
-		<p:panelGrid id="discount">
+		            <p:column style="width:60px"></p:column>
+		            <p:column style="width:300px">
+		            	<p:commandButton onclick="addService()" value="Add"
+						styleClass="w3-left"></p:commandButton>
+		            	<h:outputText value="Service"></h:outputText>
+		            </p:column>
+		            <p:column width="50%">Staff</p:column>
+		            <p:column style="width:200px">Amount</p:column>
+		            <p:column style="width:200px">Discount</p:column>
+		        </p:row>
+			</f:facet>
+			<script>
+				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell"></td><td class="ui-panelgrid-cell"></td></tr>';
+				var employeeNames = #{checkoutBean.employeeNames};
+				
+				function addService() {
+					$("#serviceForm\\:services").append(rowHtml);
+				}
+				function serviceEdit( obj) {
+					if( 0 == $(obj).find('input').length) {
+						$(obj).html( '<input class="w3-input" value="'+ $(obj).find('label').text() +'"/>');
+						$(obj).find('input').select();
+						$(obj).find('input').on( "blur", function() {
+							$(obj).html( '<label>'+ $(this).val() +'</label>');
+						});
+					}
+				}
+				function staffEdit( obj) {
+					if( 0 == $(obj).find('select').length) {
+						var staff = $(obj).find('label').text();
+						$(obj).html( '<select class="w3-select" id="staffEdit"/>');
+						$(obj).find('select').append('<option value=""> Select Staff </option>');
+						$(employeeNames).each( function(index, value) {
+							$(obj).find('select').append('<option>' + value + '</option>');
+						});
+						$(obj).find('select').val( staff);
+					}
+				}
+				function amountEdit( obj) {
+					if( 0 == $(obj).find('input').length) {
+						$(obj).html( '<input class="w3-input" type="number" value="'+ $(obj).find('label').text() +'"/>');
+						$(obj).find('input').select();
+						$(obj).find('input').on( "blur", function() {
+							$(obj).html( '<label>'+ $(this).val() +'</label>');
+						});
+					}
+				}
+			</script>
 			<f:facet name="footer">
 				<p:row>
-					<p:column style="text-align:left">
-						<h:outputText value="Staff Discount: " />
-						<p:selectBooleanButton id="dcStaff" onLabel="Yes"
-							offLabel="No" onIcon="ui-icon-check" offIcon="ui-icon-close" />
-						<h:outputText styleClass="w3-right" value="Discount :"></h:outputText>
-					</p:column>
-					<p:column style="text-align:left; width:200px">
-						<p:selectBooleanButton styleClass="dcAmount" onLabel="$"
-							offLabel="$" >
-							<p:ajax update=":serviceForm:discount" />
-						</p:selectBooleanButton>
-						<p:inputText styleClass="dcInpAmount" onfocus="this.select()" type="number" onchange="updateTotal()"
-							style="width:100px"></p:inputText>
-						<p:selectBooleanButton styleClass="dcPercent" onLabel="%"
-							offLabel="%" >
-							<p:ajax update=":serviceForm:discount" />
-						</p:selectBooleanButton>
-						<p:inputText styleClass="dcInpPercent" type="number" onchange="updateTotal()"
-							style="width:100px"></p:inputText>
-					</p:column>
-				</p:row>
+		            <p:column colspan="3" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Total: "></h:outputText></p:column>
+		            <p:column colspan="2" styleClass="ui-state-default">0.00</p:column>
+		        </p:row>
+		        <p:row>
+		            <p:column colspan="4" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Discount: "></h:outputText></p:column>
+		            <p:column styleClass="ui-state-default">
+		            	<p:selectBooleanButton styleClass="totalDCAmount" onLabel="$" offLabel="$" onchange="selectTotalDCAmount()"></p:selectBooleanButton>
+						<p:inputText styleClass="totalDCInpAmount" onfocus="this.select()" type="number" style="width:100px; display:none"></p:inputText>
+						<p:selectBooleanButton styleClass="totalDCPercent" onLabel="%" offLabel="%" onchange="selectTotalDCPercent()"></p:selectBooleanButton>
+						<p:inputText styleClass="totalDCInpPercent" type="number" style="width:100px; display:none"></p:inputText>
+		            </p:column>
+		        </p:row>
 			</f:facet>
+			<script>
+            	function selectTotalDCAmount() {
+            		if($('.totalDCAmount').find('input').prop('checked')) {
+            			$('.totalDCInpAmount').show();
+            			$('.totalDCPercent').hide();
+            			$('.totalDCInpPercent').hide();
+            		}
+            		else {
+            			$('.totalDCInpAmount').hide();
+            			$('.totalDCPercent').show();
+            			$('.totalDCInpPercent').hide();
+            		}
+            	}
+            	function selectTotalDCPercent() {
+            		if($('.totalDCPercent').find('input').prop('checked')) {
+            			$('.totalDCInpPercent').show();
+            			$('.totalDCAmount').hide();
+            			$('.totalDCAmount').hide();
+            		}
+            		else {
+            			$('.totalDCInpPercent').hide();
+            			$('.totalDCAmount').show();
+            			$('.totalDCInpAmount').hide();
+            		}
+            	}
+            </script>
 		</p:panelGrid>
-		<!-- Discount End -->
+		<!-- Services End -->
 		
 		<!-- Transaction -->
 		<div class="w3-container w3-half w3-xlarge"></div>
@@ -142,7 +149,7 @@
 				<p:row>
 					<p:column>Pay by:</p:column>
 					<p:column id="payType" styleClass="payType">
-						<div>
+						<div><!-- 
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="cash payTypeHide" value="cash" onLabel="Cash" offLabel="Cash"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCash payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="credit payTypeHide" value="cash" onLabel="Credit" offLabel="Credit"></p:selectBooleanButton>
@@ -172,6 +179,7 @@
 						        	}
 						        </script>
 						    </p:commandButton>
+						     -->
 						</div>
 						<script>
 							function clickPayType( obj) {
@@ -217,15 +225,22 @@
 		</div>
 		<!-- Action END-->
 		
+		<!-- HIDEN -->
+		<p:selectOneMenu id="employeeName" style="width:150px">
+            <f:selectItem itemLabel="Select Staff" itemValue="" noSelectionOption="true" />
+            <f:selectItems value="#{checkoutBean.employeeNames}" />
+        </p:selectOneMenu>
+		<!-- HIDEN END -->
 	</h:form>
 	<!-- MainForm END -->
 	
 	<h:outputScript library="js" name="common.js"></h:outputScript>
+	
 	<script>
 		$(function() {
+			
 			// clear table
-			$("#serviceForm\\:services_data").html("");
-			updateServicesAmount();
+			//updateServicesAmount();
 		});
 
 		function updateServicesAmount() {
@@ -297,5 +312,6 @@
 			}
 		}
 	</script>
+	 
 </h:body>
 </html>
