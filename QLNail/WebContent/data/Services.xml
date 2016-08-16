@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<services>
+	<service>
+		<name>Menicure</name>
+		<price>21</price>
+	</service>
+</services>
