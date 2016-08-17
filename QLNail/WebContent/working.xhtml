@@ -16,9 +16,15 @@
 	<button onclick="$('.output').val($('.input').val())"></button>
 	
 	<h:form id="form">
-		
+		<script>
+		function test() {
+			
+		}
+		</script>
 		<p:inputText style="display:none" styleClass="output" value="#{testBean.val}"></p:inputText>
+		<div>
 		<p:commandButton actionListener="#{testBean.getMessage}" update="@form"></p:commandButton>
+		</div>
 	</h:form>
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 </h:body>

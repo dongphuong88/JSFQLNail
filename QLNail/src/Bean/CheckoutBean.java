@@ -1,6 +1,7 @@
 package Bean;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -14,8 +15,11 @@ import javax.faces.bean.ViewScoped;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import DAO.EmployeeDAO;
+import DAO.HelperDAO;
 import POJO.GiftCard;
 import POJO.TransactionService;
 
@@ -28,14 +32,22 @@ public class CheckoutBean implements Serializable{
 	private static final long serialVersionUID = -95083139120347266L;
 	
 	private String employeeNames;
-	private String data = "test";
+	private String data;
 
 	public CheckoutBean() {
 		employeeNames = EmployeeDAO.getStaffNames();
 	}
 	
 	public void print() {
-		System.out.println(data);
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject jsonObject = (JSONObject)parser.parse(data);
+			System.out.println(jsonObject);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void email() {

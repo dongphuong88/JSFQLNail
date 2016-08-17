@@ -50,7 +50,7 @@
 		        </p:row>
 			</f:facet>
 			<script>
-				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceAmount"><label>0.00</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceDiscout"><label>0.00</label></td></tr>';
+				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even serviceRow"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceAmount"><label>0.00</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceDiscout"><label>0.00</label></td></tr>';
 				var employeeNames = #{checkoutBean.employeeNames};
 				
 				function addService() {
@@ -225,18 +225,23 @@
 		</div>
 		<!-- Transaction END -->
 		
-		<!-- Action -->
-		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="alert('test')" actionListener="#{checkoutBean.print}"></p:commandButton>
-			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
-		</div>
-		<!-- Action END-->
 		<!-- HIDDEN -->
-		<h:outputText id="data" value="#{checkoutBean.data}"></h:outputText>
+		
 		<!-- HIDDEN END -->
 		
 	</h:form>
 	<!-- MainForm END -->
+	
+	
+	<h:form id="dataF">
+		<p:inputText id="data" value="#{checkoutBean.data}" style="display:none"></p:inputText>
+		<!-- Action -->
+		<div class="w3-center w3-container">
+			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" actionListener="#{checkoutBean.print}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
+		</div>
+		<!-- Action END-->
+	</h:form>
 	
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	
@@ -285,6 +290,42 @@
 			
 			$('.total').text( serviceAmount - dcAmount + tip);
 			$('.total').formatCurrency();
+		}
+		function fillData() {
+			var data = '{';
+			data += '"TransactionServices":[';
+			$('.serviceRow').each( function(index) {
+				data += '{';
+				data += '"serviceName":"' + $(this).find('td').eq(1).find('label').text() + '"';
+				data += ',';
+				data += '"employeeName":"' + $(this).find('td').eq(2).find('select').val() + '"';
+				data += ',';
+				data += '"amount":' + $(this).find('td').eq(3).find('label').text();
+				data += ',';
+				data += '"discount":' + $(this).find('td').eq(4).find('label').text();
+				data += '},';
+			});
+			data += '],';
+			var dcAmount;
+			if($('.totalDCAmount').find('input').prop('checked')) {
+				dcAmount = +$('.totalDCInpAmount').val();
+			} else if($('.totalDCPercent').find('input').prop('checked')) {
+				dcAmount = +$('.totalDCInpPercent').val() * serviceAmount / 100;
+			}
+			data += '"totalDiscount":' + dcAmount + ',';
+			var serviceTotal = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
+			data += '"serviceTotal":' + serviceTotal + ',';
+			//data += '"tip":' + (isNaN($('.tip').val()) ? 0 : $('.tip').val());
+			//var total = parseFloat($('.total').text().replace(/\\$|,/g, ''));
+			//data += '"total":' + total + ',';
+			// TODO
+			//data += '"cash":' + total + ',';
+			data += '}';
+			
+			$('#dataF\\:data').val( data);
+		}
+		function validation() {
+			
 		}
 	</script>
 	 
