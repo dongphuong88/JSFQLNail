@@ -247,7 +247,6 @@
 							function calRemaining(row) {
 								var serviceAmount = parseFloat($('.total').text().replace(/\\$|,/g, ''));
 								serviceAmount = isNaN(serviceAmount) ? 0 : serviceAmount;
-								alert(serviceAmount);
 								$(row).parent().children().each( function(index, value) {
 									if( $(this).is(row))
 										return false;
