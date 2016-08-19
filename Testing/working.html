@@ -1,0 +1,91 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="resources/js/jquery-1.8.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="resources/css/w3.css">
+    <title>Calendar</title>
+    <style>
+        div {
+            border:solid 1px blue;
+        }
+        div:
+    </style>
+</head>
+<body>
+    <div id="scheduler_here" style='width:100%; height:100%;'>
+		<div class="cal_navline">
+		</div>
+		<div class="cal_header" >
+            <div style="width:100px; height:50px; float:left"></div>
+            <div style="width:100px; height:50px; float:left">day1</div>
+            <div style="width:100px; height:50px; float:left">day2</div>
+            <div style="width:100px; height:50px; float:left">day3</div>
+            <div style="width:100px; height:50px; float:left">day4</div>
+            <div style="width:100px; height:50px; float:left">day5</div>
+		</div>
+		<div class="cal_data" style="width:100%; display:inline-block; border:solid 1px red;">
+            
+		</div>
+        
+	</div>
+    <script>
+        var hours = ['8AM','9AM','10AM','11AM','12PM', '1PM','2PM','3PM','4PM','5PM','6PM', '7PM','8PM','9PM'];
+        var persons = ['Kelly','Nancy','Phuong'];
+        $(function () {
+            fillCalendar();
+        });
+        // function be called at the end of resize
+        var resizeTimer;
+		$(window).on('resize', function(e) {
+		  clearTimeout(resizeTimer);
+		  resizeTimer = setTimeout(function() {
+			  fillCalendar();
+		  }, 250);
+		});
+        function fillCalendar(){
+            var w = $(window).width();
+            $('.cal_data').css("width", w); 
+            $('.cal_data').html("");
+            addTime();
+            addPerson();
+            addPersonEvent();
+        }
+        function addTime() {
+            var timeDiv = document.createElement('div');
+            var timeWidth = 50;
+            var timeHeight = 44;
+            $(timeDiv).css({"width":timeWidth, "height":timeHeight*hours.length, "float":"left"});
+            $(hours).each( function(index,value) {
+                var timeBlockDiv = document.createElement('div');
+                $(timeBlockDiv).css("height",timeHeight);
+                $(timeBlockDiv).text(value);
+                $(timeDiv).append(timeBlockDiv);
+            });
+            $('.cal_data').append(timeDiv);
+        }
+        function addPerson() {
+            $(persons).each( function(index, value) {
+                var personWidth = ($(window).width() - 50)/persons.length-1;
+                var personHeight = 44;
+                var personDiv = document.createElement('div');
+                $(personDiv).attr("id","cal_person_"+index);
+                $(personDiv).css({"width":personWidth, "height":personHeight*hours.length,"position":"relative", "float":"left"});
+                $(hours).each( function(index,value) {
+                    var timeBlockDiv = document.createElement('div');
+                    var timeBlockDiv1 = document.createElement('div');
+                    $(timeBlockDiv).css("height",personHeight/2);
+                    $(timeBlockDiv1).css("height",personHeight/2);
+                    $(personDiv).append(timeBlockDiv);
+                    $(personDiv).append(timeBlockDiv1);
+                });
+                $('.cal_data').append(personDiv);
+            });
+        }
+        function addPersonEvent() {
+            var event = document.createElement('div');
+            $(event).css({"border":"solid 1px red","position":"absolute","width":"100%","height":"100px","top":"0px"});
+            $('#cal_person_'+1).append(event);
+        }
+    </script>
+</body>
+</html>
