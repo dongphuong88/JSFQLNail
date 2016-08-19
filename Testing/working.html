@@ -6,31 +6,44 @@
     <title>Calendar</title>
     <style>
         div {
-            border:solid 1px blue;
+            border: solid 1px blue;
         }
-        div:
+        .cal_data_col {
+            border: solid 1px yellow;
+            position: relative;
+            float: left;
+        }
+        .cal_event {
+            border: solid 1px red;
+            position: absolute;
+        }
+        .cal_header_col {
+            float: left;
+            text-align: center;
+            display: inline-block;
+        }
+        .cal_data {
+            display: inline-block;
+            border:solid 1px red;
+        }
     </style>
 </head>
 <body>
-    <div id="scheduler_here" style='width:100%; height:100%;'>
+    <div id="scheduler_here" style='width:100%'>
 		<div class="cal_navline">
 		</div>
-		<div class="cal_header" >
-            <div style="width:100px; height:50px; float:left"></div>
-            <div style="width:100px; height:50px; float:left">day1</div>
-            <div style="width:100px; height:50px; float:left">day2</div>
-            <div style="width:100px; height:50px; float:left">day3</div>
-            <div style="width:100px; height:50px; float:left">day4</div>
-            <div style="width:100px; height:50px; float:left">day5</div>
-		</div>
-		<div class="cal_data" style="width:100%; display:inline-block; border:solid 1px red;">
-            
-		</div>
+		<div class="cal_header" ></div>
+		<div class="cal_data" ></div>
         
 	</div>
     <script>
-        var hours = ['8AM','9AM','10AM','11AM','12PM', '1PM','2PM','3PM','4PM','5PM','6PM', '7PM','8PM','9PM'];
-        var persons = ['Kelly','Nancy','Phuong'];
+        var cal_hours = ['8AM','9AM','10AM','11AM','12PM', '1PM','2PM','3PM','4PM','5PM','6PM', '7PM','8PM','9PM'];
+        var cal_data_cols = ['Kelly','Nancy','Phuong'];
+        var cal_timeWidth = 50;
+        var cal_timeHeight = 44;
+        var cal_headerHeight = 22;
+        var cal_dataWidth = 0;
+        
         $(function () {
             fillCalendar();
         });
@@ -44,48 +57,71 @@
 		});
         function fillCalendar(){
             var w = $(window).width();
-            $('.cal_data').css("width", w); 
-            $('.cal_data').html("");
+            cal_dataWidth = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_cols.length )-2;
+            $('.cal_data, .cal_header').css("width", w); 
+            $('.cal_data, .cal_header').html("");
+            addHeader();
             addTime();
-            addPerson();
-            addPersonEvent();
+            
+            addColumn();
+            addEvent();
+        }
+        function addHeader() {
+            var header = document.createElement('div');
+            $(header).addClass('cal_header');
+            var timeDiv = document.createElement('div');
+            $(timeDiv).addClass('cal_header_col');
+            $(timeDiv).css({"width":cal_timeWidth, "height":cal_headerHeight});
+            $(timeDiv).html("&nbsp;");
+            $(header).append(timeDiv);
+            $(cal_data_cols).each( function(index, value) {
+                var colDiv = document.createElement('div');
+                $(colDiv).attr("id","cal_header_col_"+index);
+                $(colDiv).addClass('cal_header_col');
+                $(colDiv).css({"width":cal_dataWidth, "height":cal_headerHeight});
+                $(colDiv).text(value);
+                $(header).append(colDiv);
+            });
+            $('#scheduler_here .cal_header').append(header);
         }
         function addTime() {
             var timeDiv = document.createElement('div');
-            var timeWidth = 50;
-            var timeHeight = 44;
-            $(timeDiv).css({"width":timeWidth, "height":timeHeight*hours.length, "float":"left"});
-            $(hours).each( function(index,value) {
+            $(timeDiv).addClass('cal_time cal_data_col');
+            $(timeDiv).css({"width":cal_timeWidth, "height":cal_timeHeight*cal_hours.length});
+            $(cal_hours).each( function(index,value) {
                 var timeBlockDiv = document.createElement('div');
-                $(timeBlockDiv).css("height",timeHeight);
+                $(timeBlockDiv).css("height",cal_timeHeight);
                 $(timeBlockDiv).text(value);
                 $(timeDiv).append(timeBlockDiv);
             });
             $('.cal_data').append(timeDiv);
         }
-        function addPerson() {
-            $(persons).each( function(index, value) {
-                var personWidth = ($(window).width() - 50)/persons.length-1;
-                var personHeight = 44;
-                var personDiv = document.createElement('div');
-                $(personDiv).attr("id","cal_person_"+index);
-                $(personDiv).css({"width":personWidth, "height":personHeight*hours.length,"position":"relative", "float":"left"});
-                $(hours).each( function(index,value) {
+        function addColumn() {
+            var separateHeight = cal_timeHeight/2;
+            $(cal_data_cols).each( function(index, value) {
+                var colDiv = document.createElement('div');
+                $(colDiv).attr("id","cal_data_col_"+index);
+                $(colDiv).addClass('cal_data_col');
+                $(colDiv).css({"width":cal_dataWidth, "height":cal_timeHeight*cal_hours.length});
+                $(cal_hours).each( function(index,value) {
                     var timeBlockDiv = document.createElement('div');
                     var timeBlockDiv1 = document.createElement('div');
-                    $(timeBlockDiv).css("height",personHeight/2);
-                    $(timeBlockDiv1).css("height",personHeight/2);
-                    $(personDiv).append(timeBlockDiv);
-                    $(personDiv).append(timeBlockDiv1);
+                    $(timeBlockDiv).css("height",separateHeight);
+                    $(timeBlockDiv1).css("height",separateHeight);
+                    $(colDiv).append(timeBlockDiv);
+                    $(colDiv).append(timeBlockDiv1);
                 });
-                $('.cal_data').append(personDiv);
+                $('.cal_data').append(colDiv);
             });
         }
-        function addPersonEvent() {
+        function addEvent() {
             var event = document.createElement('div');
-            $(event).css({"border":"solid 1px red","position":"absolute","width":"100%","height":"100px","top":"0px"});
-            $('#cal_person_'+1).append(event);
+            $(event).addClass('cal_event');
+            $(event).css({"width":"100%","height":"100px","top":"0px"});
+            $('#cal_data_col_'+1).append(event);
         }
+        /* Helper functions */
+        
     </script>
 </body>
 </html>
