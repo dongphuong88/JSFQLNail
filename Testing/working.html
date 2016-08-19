@@ -8,23 +8,30 @@
         div {
             border: solid 1px blue;
         }
-        .cal_data_col {
-            border: solid 1px yellow;
-            position: relative;
-            float: left;
-        }
         .cal_event {
             border: solid 1px red;
             position: absolute;
         }
+        .cal_header {
+            display: inline-block;
+        }
         .cal_header_col {
             float: left;
             text-align: center;
-            display: inline-block;
+            
+        }
+        .cal_header_left_nav, .cal_header_right_nav {
+            background: cyan;
+            position:absolute;
         }
         .cal_data {
             display: inline-block;
             border:solid 1px red;
+        }
+        .cal_data_col {
+            border: solid 1px yellow;
+            position: relative;
+            float: left;
         }
     </style>
 </head>
@@ -43,6 +50,7 @@
         var cal_timeHeight = 44;
         var cal_headerHeight = 22;
         var cal_dataWidth = 0;
+        var cal_header_nav_width = 30;
         
         $(function () {
             fillCalendar();
@@ -82,7 +90,14 @@
                 $(colDiv).text(value);
                 $(header).append(colDiv);
             });
-            $('#scheduler_here .cal_header').append(header);
+            var cal_header_left_nav = document.createElement('div');
+            $(cal_header_left_nav).addClass('cal_header_left_nav'); $(cal_header_left_nav).css({"width":cal_header_nav_width,"height":cal_headerHeight,"left":cal_timeWidth});
+            $(header).append(cal_header_left_nav);
+            var cal_header_right_nav = document.createElement('div');
+            $(cal_header_right_nav).addClass('cal_header_right_nav'); $(cal_header_right_nav).css({"width":cal_header_nav_width,"height":cal_headerHeight,"right":"0px"});
+            $(header).append(cal_header_right_nav);
+            
+            $('.cal_header').append(header);
         }
         function addTime() {
             var timeDiv = document.createElement('div');
