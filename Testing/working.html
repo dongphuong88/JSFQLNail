@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="resources/js/jquery-1.8.1.min.js"></script>
@@ -34,6 +34,7 @@
         .cal_data {
             display: inline-block;
             border:solid 1px red;
+            width:100%;
         }
         .cal_data_col {
             border: solid 1px yellow;
@@ -59,20 +60,27 @@
         var cal_timeHeight = 44;
         var cal_headerHeight = 22;
         var cal_dataWidth = 0;
+        var cal_dataRemainingWidth = 0;
         var cal_header_nav_width = 30;
         var cal_start_hour = 8;
         var cal_data_col_min_width = 300;
         var cal_data_col_display = 0;   // store number data col display
         var cal_data_col_start_ind = 0;
         
-        //TODO: Add event auto
+        //TODO: Add current time Line and move Calendar to current time
         $(function () {
             // testing data
             cal_data_cols_JSON = '['
-                    +'{"Kelly": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"Kelly": [{"eventName":"Kelly1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event2", "startHour": 13, "startMinute":30, "endHour": 15, "endMinute": 15},'
+                    +'{"eventName": "event3", "startHour": 8, "startMinute":30, "endHour": 9, "endMinute": 15}]},'
+            +'{"David": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
                     +'{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
                     +'{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
-                    +'{"Nancy": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+            +'{"Lynx": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
+            +'{"Nancy": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
                     +'{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
                     +'{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]}'
                 +']';
@@ -90,10 +98,13 @@
 		});
         function fillCalendar(){
             var w = $(window).width();
-            // cal number of data column display 
-            cal_data_col_display = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_col_min_width );
+            // cal number of data column display
+            var dataWidth = w - cal_timeWidth;
+            cal_data_col_display = Math.floor( dataWidth / cal_data_col_min_width );
             cal_data_col_display = Math.min( cal_data_cols.length, cal_data_col_display);
-            cal_dataWidth = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_col_display )-2;
+            cal_dataWidth = Math.floor( dataWidth / cal_data_col_display )-2;
+            // cal remaining width to fix data col gap
+            cal_dataRemainingWidth = dataWidth - cal_dataWidth * ( cal_data_col_display - 1);
             // get all display info
             cal_data_display = [];
             $(cal_data_cols).each( function(index, value) {
@@ -191,18 +202,26 @@
                     $(colDiv).append(timeBlockDiv1);
                 });
                 $('.cal_data').append(colDiv);
+                
             });
+            // fix data col gap
+            $('.cal_data_col').last().css("width",cal_dataRemainingWidth-2);
         }
         // Limitation: cut off all out range event
         function addEvent( ) {
+            $(cal_data_display).each( function(personIndex, personEvents) {
+                $(personEvents[Object.keys(personEvents)]).each( function( eventIndex, eventValue) {
+                    console.log(personIndex + '' + eventIndex); 
+                    var startTime = new Date(0,0,0,eventValue['startHour'],eventValue['startMinute'],0);
+                    var endTime = new Date(0,0,0,eventValue['endHour'],eventValue['endMinute'],0);
+                    var event = document.createElement('div');
+                    $(event).addClass('cal_event'); $(event).css({"width":"100%","height":getEventHeight(startTime,endTime),"top":getEventTop(startTime)});
+                    $(event).html(eventValue['eventName']);
+
+                    $('#cal_data_col_'+personIndex).append(event);
+                });
+            });
             
-            var startTime = new Date(0,0,0,8,30,0);
-            var endTime = new Date(0,0,0,13,15,0);
-            var event = document.createElement('div');
-            $(event).addClass('cal_event'); $(event).css({"width":"100%","height":getEventHeight(startTime,endTime),"top":getEventTop(startTime)});
-            $(event).html('test fdaf af af adf af adf daf adf dasdf af daf adf af asa ');
-            
-            $('#cal_data_col_'+1).append(event);
         }
         /* Helper functions */
         function getEventTop(startTime) {
