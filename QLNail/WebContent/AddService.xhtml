@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="common.css" />
+
+	<title>Add Service</title>
+</h:head>
+<h:body>
+	<p:panelGrid columns="2" style="width:300px">
+		<f:facet name="header">
+	        <h:outputText value="Add Service"></h:outputText>
+	    </f:facet>
+	    
+	    <p:outputLabel value="Name: " for="serviceName" />
+        <p:inputText id="serviceName" value=""/>
+ 
+ 		<p:outputLabel value="Price: " for="servicePrice" />
+        <p:inputText id="servicePrice" value="" type="number"/>
+        
+        <p:outputLabel value="Duration: " for="serviceDuration" />
+        <p:inputText id="serviceDuration" value="" type="number"/>
+        
+        <p:outputLabel value="Turn: " for="serviceTurn" />
+        <p:inputText id="serviceTurn" value="" type="number"/>
+        
+        <p:outputLabel value="Description: " for="serviceDescription" />
+        <p:inputText id="serviceDescription" value=""/>
+        
+        <p:outputLabel value="Group: " for="serviceGroup" />
+        <p:inputText id="serviceGroup" value=""/>
+        
+        <p:outputLabel value="Additional Info: " for="serviceAdditionalInfo" />
+        <p:inputText id="serviceAdditionalInfo" value=""/>
+        
+        <p:outputLabel value="Color: " for="serviceColor" />
+        <p:inputText id="serviceColor" value=""/>
+        
+        <p:outputLabel value="Providers: " for="serviceProviders" />
+        <p:inputText id="serviceProviders" value=""/>
+        
+        <f:facet name="footer">
+        	<div class="w3-center">
+	        <p:commandButton value="Add" style="width:100px"/>
+        	<p:commandButton value="Cancel" style="width:100px"/>
+        	</div>
+	    </f:facet>
+        
+ 
+	</p:panelGrid>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+</h:body>
+</html>
