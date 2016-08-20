@@ -24,7 +24,9 @@
 	<!-- Calendar -->
 	<div id="scheduler_here" style='width:100%;'>
 		<div class="cal_navline">
-            <p:commandButton value="submit"></p:commandButton>
+			<p:calendar id="calDatePick" mode="inline" style="display:none; z-index:0" />
+            <p:commandButton value="submit" onclick="$('#calDatePick').toggle()"></p:commandButton>
+            <p:commandButton value="New Appoinment" onclick="$('#calDatePick').toggle()"></p:commandButton>
         </div>
 		<div class="cal_header" ></div>
 		<div class="cal_data" ></div>
