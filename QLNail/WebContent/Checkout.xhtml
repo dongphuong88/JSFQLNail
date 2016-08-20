@@ -161,12 +161,6 @@
 					</p:row>
 				</f:facet>
 				<p:row>
-					<p:column style="width:100px">Tip:</p:column>
-					<p:column>
-						<p:inputText styleClass="w3-input tip" type="number" onchange="updateTotal()" onfocus="$(this).select()"></p:inputText>
-					</p:column>
-				</p:row>
-				<p:row>
 					<p:column>Total:</p:column>
 					<p:column>
 						<h:outputText styleClass="total" value="$0.00"></h:outputText>
@@ -178,6 +172,8 @@
 						<div> 
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="cash payTypeHide" value="cash" onLabel="Cash" offLabel="Cash"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCash payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
+							<p:inputText styleClass="inpCashReceive payTypeHide" onchange="$('.inpCashChange').val($(this).val() - $('.inpCash').val())" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0"></p:inputText>
+							<p:inputText styleClass="inpCashChange payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="credit payTypeHide" value="cash" onLabel="Credit" offLabel="Credit"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCredit payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="gift payTypeHide" value="cash" onLabel="Gift" offLabel="Gift"></p:selectBooleanButton>
@@ -216,6 +212,8 @@
 								if( $(obj).parent().parent().hasClass('cash')) {
 									if( $(obj).prop('checked')) {
 										$(row).find('.cash, .inpCash').show();
+										$(row).find('.cash, .inpCashReceive').show();
+										$(row).find('.cash, .inpCashChange').show();
 										
 										$(row).find('.inpCash').val(remainingAmount);
 									}
@@ -265,6 +263,12 @@
 								return amount;
 							}
 						</script>
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column style="width:100px">Tip:</p:column>
+					<p:column>
+						<p:inputText styleClass="w3-input tip" type="number" onfocus="$(this).select()"></p:inputText>
 					</p:column>
 				</p:row>
 			</p:panelGrid>
@@ -332,11 +336,7 @@
 			var serviceAmount = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
 			var serviceDC = parseFloat($('.serviceDiscoutTotal').text().replace(/\\$|,/g, ''));
 			
-			// tip
-			var tip = +$('.tip').val();
-			tip = isNaN( tip ) ? 0 : tip;
-			
-			$('.total').text( serviceAmount - serviceDC + tip);
+			$('.total').text( serviceAmount - serviceDC);
 			$('.total').formatCurrency();
 		}
 		function fillData() {
