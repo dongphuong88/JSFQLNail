@@ -3,6 +3,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="resources/js/jquery-1.8.1.min.js"></script>
     <link rel="stylesheet" type="text/css" href="resources/css/w3.css">
+    <link rel="stylesheet" type="text/css" href="resources/css/font-awesome.min.css">
     <title>Calendar</title>
     <style>
         div {
@@ -45,14 +46,21 @@
 	</div>
     <script>
         var cal_hours = ['8AM','9AM','10AM','11AM','12PM', '1PM','2PM','3PM','4PM','5PM','6PM', '7PM','8PM','9PM'];
-        var cal_data_cols = ['Kelly','Nancy','Phuong'];
+        var cal_data_cols = ['Kelly','Nancy','Phuong','Syndra','Lynx'];
+        var cal_data_display; // contains only show data_cols
         var cal_timeWidth = 50;
         var cal_timeHeight = 44;
         var cal_headerHeight = 22;
         var cal_dataWidth = 0;
         var cal_header_nav_width = 30;
+        var cal_start_hour = 8;
+        var cal_data_col_min_width = 300;
+        var cal_data_col_display = 0;
+        var cal_data_col_start_ind = 0;
         
         $(function () {
+            // testing data
+            
             fillCalendar();
         });
         // function be called at the end of resize
@@ -65,7 +73,18 @@
 		});
         function fillCalendar(){
             var w = $(window).width();
-            cal_dataWidth = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_cols.length )-2;
+            // cal number of data column display 
+            cal_data_col_display = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_col_min_width );
+            cal_data_col_display = Math.min( cal_data_cols.length, cal_data_col_display);
+            cal_dataWidth = Math.floor( ($(window).width() - cal_timeWidth)/cal_data_col_display )-2;
+            // get all display info
+            cal_data_display = [];
+            $(cal_data_cols).each( function(index, value) {
+                if( index >= cal_data_col_start_ind && index < cal_data_col_start_ind + cal_data_col_display) {
+                    cal_data_display.push(value);
+                }
+            });
+            
             $('.cal_data, .cal_header').css("width", w); 
             $('.cal_data, .cal_header').html("");
             addHeader();
@@ -82,7 +101,7 @@
             $(timeDiv).css({"width":cal_timeWidth, "height":cal_headerHeight});
             $(timeDiv).html("&nbsp;");
             $(header).append(timeDiv);
-            $(cal_data_cols).each( function(index, value) {
+            $(cal_data_display).each( function(index, value) {
                 var colDiv = document.createElement('div');
                 $(colDiv).attr("id","cal_header_col_"+index);
                 $(colDiv).addClass('cal_header_col');
@@ -113,7 +132,7 @@
         }
         function addColumn() {
             var separateHeight = cal_timeHeight/2;
-            $(cal_data_cols).each( function(index, value) {
+            $(cal_data_display).each( function(index, value) {
                 var colDiv = document.createElement('div');
                 $(colDiv).attr("id","cal_data_col_"+index);
                 $(colDiv).addClass('cal_data_col');
@@ -129,13 +148,24 @@
                 $('.cal_data').append(colDiv);
             });
         }
+        // Limitation: cut off all out range event
         function addEvent() {
+            var startTime = new Date(0,0,0,8,30,0);
+            var endTime = new Date(0,0,0,13,15,0);
             var event = document.createElement('div');
-            $(event).addClass('cal_event');
-            $(event).css({"width":"100%","height":"100px","top":"0px"});
+            $(event).addClass('cal_event'); $(event).css({"width":"100%","height":getEventHeight(startTime,endTime),"top":getEventTop(startTime)});
+            $(event).html('test fdaf af af adf af adf daf adf dasdf af daf adf af asa ');
             $('#cal_data_col_'+1).append(event);
         }
         /* Helper functions */
+        function getEventTop(startTime) {
+            var px = (startTime.getHours() - cal_start_hour) + startTime.getMinutes()/60;
+            return px*cal_timeHeight;
+        }
+        function getEventHeight( startTime, endTime) {
+            var px = (endTime.getHours() - startTime.getHours()) + (endTime.getMinutes() - startTime.getMinutes())/60;
+            return px*cal_timeHeight;
+        }
         
     </script>
 </body>
