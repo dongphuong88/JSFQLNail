@@ -22,8 +22,14 @@
             
         }
         .cal_header_left_nav, .cal_header_right_nav {
-            background: cyan;
+            
             position:absolute;
+        }
+        .cal_header_nav_disable {
+            border: solid 1px cyan;
+        }
+        .cal_header_nav_enable{
+            background: cyan;
         }
         .cal_data {
             display: inline-block;
@@ -55,9 +61,10 @@
         var cal_header_nav_width = 30;
         var cal_start_hour = 8;
         var cal_data_col_min_width = 300;
-        var cal_data_col_display = 0;
+        var cal_data_col_display = 0;   // store number data col display
         var cal_data_col_start_ind = 0;
         
+        //TODO: Disable/Enable Nav btn
         $(function () {
             // testing data
             
@@ -109,11 +116,39 @@
                 $(colDiv).text(value);
                 $(header).append(colDiv);
             });
+            // Left Nav Btn
             var cal_header_left_nav = document.createElement('div');
             $(cal_header_left_nav).addClass('cal_header_left_nav'); $(cal_header_left_nav).css({"width":cal_header_nav_width,"height":cal_headerHeight,"left":cal_timeWidth});
+            if( cal_data_col_start_ind > 0) {
+                // Enable btn
+                $(cal_header_left_nav).addClass("cal_header_nav_enable");
+                $(cal_header_left_nav).on("click", function() {
+                    cal_data_col_start_ind -= 1;
+                    fillCalendar();
+                });
+            }
+            else {
+                // Disable btn
+                $(cal_header_left_nav).addClass("cal_header_nav_disable");
+            }
             $(header).append(cal_header_left_nav);
+            
+            // Right Nav Btn
             var cal_header_right_nav = document.createElement('div');
             $(cal_header_right_nav).addClass('cal_header_right_nav'); $(cal_header_right_nav).css({"width":cal_header_nav_width,"height":cal_headerHeight,"right":"0px"});
+            if( cal_data_col_start_ind + cal_data_col_display < cal_data_cols.length) {
+                // Enable btn
+                $(cal_header_right_nav).addClass("cal_header_nav_enable");
+                $(cal_header_right_nav).on("click", function() {
+                    cal_data_col_start_ind += 1;
+                    fillCalendar();
+                });
+            }
+            else {
+                // Disable btn
+                $(cal_header_right_nav).addClass("cal_header_nav_disable");
+            }
+                
             $(header).append(cal_header_right_nav);
             
             $('.cal_header').append(header);
@@ -149,7 +184,7 @@
             });
         }
         // Limitation: cut off all out range event
-        function addEvent() {
+        function addEvent( ) {
             var startTime = new Date(0,0,0,8,30,0);
             var endTime = new Date(0,0,0,13,15,0);
             var event = document.createElement('div');
