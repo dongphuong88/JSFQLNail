@@ -52,7 +52,8 @@
 	</div>
     <script>
         var cal_hours = ['8AM','9AM','10AM','11AM','12PM', '1PM','2PM','3PM','4PM','5PM','6PM', '7PM','8PM','9PM'];
-        var cal_data_cols = ['Kelly','Nancy','Phuong','Syndra','Lynx'];
+        var cal_data_cols_JSON;
+        var cal_data_cols;
         var cal_data_display; // contains only show data_cols
         var cal_timeWidth = 50;
         var cal_timeHeight = 44;
@@ -64,9 +65,18 @@
         var cal_data_col_display = 0;   // store number data col display
         var cal_data_col_start_ind = 0;
         
-        //TODO: Disable/Enable Nav btn
+        //TODO: Add event auto
         $(function () {
             // testing data
+            cal_data_cols_JSON = '['
+                    +'{"Kelly": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
+                    +'{"Nancy": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+                    +'{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]}'
+                +']';
+            cal_data_cols = JSON.parse(cal_data_cols_JSON);
             
             fillCalendar();
         });
@@ -113,7 +123,7 @@
                 $(colDiv).attr("id","cal_header_col_"+index);
                 $(colDiv).addClass('cal_header_col');
                 $(colDiv).css({"width":cal_dataWidth, "height":cal_headerHeight});
-                $(colDiv).text(value);
+                $(colDiv).text(Object.keys(value));
                 $(header).append(colDiv);
             });
             // Left Nav Btn
@@ -185,11 +195,13 @@
         }
         // Limitation: cut off all out range event
         function addEvent( ) {
+            
             var startTime = new Date(0,0,0,8,30,0);
             var endTime = new Date(0,0,0,13,15,0);
             var event = document.createElement('div');
             $(event).addClass('cal_event'); $(event).css({"width":"100%","height":getEventHeight(startTime,endTime),"top":getEventTop(startTime)});
             $(event).html('test fdaf af af adf af adf daf adf dasdf af daf adf af asa ');
+            
             $('#cal_data_col_'+1).append(event);
         }
         /* Helper functions */

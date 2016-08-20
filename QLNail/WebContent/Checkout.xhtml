@@ -340,6 +340,7 @@
 			$('.total').formatCurrency();
 		}
 		function fillData() {
+			// TODO: uses JSON.stringify instead
 			var data = '{';
 			data += '"TransactionServices":[';
 			$('.serviceRow').each( function(index) {
