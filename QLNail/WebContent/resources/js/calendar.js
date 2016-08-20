@@ -1,80 +1,250 @@
-$(function () {
-    var html = '<div class="calendarMonth"><ul><li class="calendarPrev" onclick="prevMonth()"><i class="fa fa-chevron-left" aria-hidden="true"></i></li><li class="calendarNext" onclick="nextMonth()"><i class="fa fa-chevron-right" aria-hidden="true"></i></li><li class="calendarTitle"><span style="font-size:18px">August</span> <span style="font-size:18px">2016</span></li></ul></div><ul class="calendarWeekdays"><li>Su</li><li>Mo</li><li>Tu</li><li>We</li><li>Th</li><li>Fr</li><li>Sa</li></ul><ul class="calendarDays"></ul>'
-    $('#calendar').html(html);
-    calendarFillDays();
-});
 
-function calendarFillDays() {
+var cal_hours;
+	var cal_hour_start = 9;
+	var cal_hour_end = 20;
+	var cal_data_cols_JSON;
+	var cal_data_cols;
+	var cal_data_display; // contains only show data_cols
+	var cal_timeWidth = 50;
+	var cal_timeHeight = 44;
+	var cal_headerHeight = 22;
+	var cal_navHeight;
+	var cal_dataWidth = 0;
+	var cal_dataRemainingWidth = 0;
+	var cal_data_col_min_width = 300;
+	var cal_data_col_display = 0; // store number data col display
+	var cal_data_col_start_ind = 0;
 
-    var month = getMonthFromName($('#calendar .calendarTitle span:first').text());
-    var year = +$('#calendar .calendarTitle span:nth-child(2)').text();
+	$(function() {
+		// testing data
+		cal_data_cols_JSON = '['
+				+ '{"Kelly": [{"eventName":"Kelly1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event2", "startHour": 13, "startMinute":30, "endHour": 15, "endMinute": 15},'
+				+ '{"eventName": "event3", "startHour": 9, "startMinute":0, "endHour": 9, "endMinute": 15}]},'
+				+ '{"David": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
+				+ '{"Lynx": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
+				+ '{"Nancy": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
+				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]}'
+				+ ']';
+		cal_data_cols = JSON.parse(cal_data_cols_JSON);
+		// get all display hours
+		cal_hours = [];
+		for ( var i = cal_hour_start; i <= cal_hour_end; i++) {
+			cal_hours.push(i >= 12 ? (i > 12 ? (i - 12) : i) + "PM" : i + "AM");
+		}
+		// Set nav height
+		cal_navHeight = parseFloat($('.cal_navline').css("height"));
 
-    var firstDayOfMonth = (new Date(year, month, 1)).getDay();
-    var htmlDayFill = "";
+		fillCalendar();
+	});
+	// function be called at the end of resize
+	var resizeTimer;
+	$(window).on('resize', function(e) {
+		clearTimeout(resizeTimer);
+		resizeTimer = setTimeout(function() {
+			fillCalendar();
+		}, 250);
+	});
+	// Update calendar after every 1 minute
+	setInterval(function() {
+		updateCurrentTimeLine();
+	}, 60000);
+	function fillCalendar() {
+		var w = $(window).width();
+		// cal number of data column display
+		var dataWidth = w - cal_timeWidth;
+		cal_data_col_display = Math.floor(dataWidth / cal_data_col_min_width);
+		cal_data_col_display = Math.min(cal_data_cols.length, cal_data_col_display);
+		cal_dataWidth = Math.floor(dataWidth / cal_data_col_display) - 2;
+		// cal remaining width to fix data col gap
+		cal_dataRemainingWidth = dataWidth - cal_dataWidth
+				* (cal_data_col_display - 1);
+		// get all display info
+		cal_data_display = [];
+		$(cal_data_cols).each(
+				function(index, value) {
+					if (index >= cal_data_col_start_ind
+					&& index < cal_data_col_start_ind
+									+ cal_data_col_display) {
+						cal_data_display.push(value);
+					}
+				});
 
-    // fill old
-    var maxDayPrevMonth = getPrevMonthDays(month, year);
-    for (var i = firstDayOfMonth - 1; i >= 0; i--)
-        htmlDayFill += '<li class="calendarInactive">' + (maxDayPrevMonth - i) + '</li>';
+		$('.cal_data, .cal_header').css("width", w);
+		$('.cal_data, .cal_header').html("");
+		addHeader();
+		addTime();
+		addColumn();
+		addEvent();
+		calendarApplyTheme();
+	}
+	function addHeader() {
+		var header = $('.cal_header');
+		var timeDiv = document.createElement('div');
+		$(timeDiv).addClass('cal_header_col');
+		$(timeDiv).css({
+			"width" : cal_timeWidth,
+			"height" : cal_headerHeight
+		});
+		$(timeDiv).html("&nbsp;");
+		$(header).append(timeDiv);
+		$(cal_data_display).each(function(index, value) {
+			var colDiv = document.createElement('div');
+			$(colDiv).attr("id", "cal_header_col_" + index);
+			$(colDiv).addClass('cal_header_col');
+			$(colDiv).css({
+				"width" : cal_dataWidth,
+				"height" : cal_headerHeight
+			});
+			$(colDiv).text(Object.keys(value));
+			$(header).append(colDiv);
+		});
+		// Left Nav Btn
+		var cal_header_left_nav = document.createElement('div');
+		$(cal_header_left_nav).addClass('cal_header_left_nav');
+		$(cal_header_left_nav).css({
+			"height" : cal_headerHeight,
+			"left" : cal_timeWidth
+		});
+		if (cal_data_col_start_ind > 0) {
+			// Enable btn
+			$(cal_header_left_nav).addClass("cal_header_nav_enable");
+			$(cal_header_left_nav).on("click", function() {
+				cal_data_col_start_ind -= 1;
+				fillCalendar();
+			});
+		} else {
+			// Disable btn
+			$(cal_header_left_nav).addClass("cal_header_nav_disable");
+		}
+		$(header).append(cal_header_left_nav);
 
-    // Fild current
-    var maxDaysMonth;
-    if (month == 11)
-        maxDaysMonth = getPrevMonthDays(0, year + 1);
-    else
-        maxDaysMonth = getPrevMonthDays(month + 1, year);
+		// Right Nav Btn
+		var cal_header_right_nav = document.createElement('div');
+		$(cal_header_right_nav).addClass('cal_header_right_nav');
+		$(cal_header_right_nav).css({
+			"height" : cal_headerHeight,
+			"right" : "0px"
+		});
+		if (cal_data_col_start_ind + cal_data_col_display < cal_data_cols.length) {
+			// Enable btn
+			$(cal_header_right_nav).addClass("cal_header_nav_enable");
+			$(cal_header_right_nav).on("click", function() {
+				cal_data_col_start_ind += 1;
+				fillCalendar();
+			});
+		} else {
+			// Disable btn
+			$(cal_header_right_nav).addClass("cal_header_nav_disable");
+		}
 
-    for (var i = 1; i <= maxDaysMonth; ++i)
-        htmlDayFill += '<li class="calendarActive">' + (i < 10 ? '0' + i : i) + '</li>';
+		$(header).append(cal_header_right_nav);
+	}
+	function addTime() {
+		var timeDiv = document.createElement('div');
+		$(timeDiv).addClass('cal_time cal_data_col');
+		$(timeDiv).css({
+			"width" : cal_timeWidth,
+			"height" : cal_timeHeight * cal_hours.length,
+			"top" : cal_headerHeight + cal_navHeight
+		});
+		$(cal_hours).each(function(index, value) {
+			var timeBlockDiv = document.createElement('div');
+			$(timeBlockDiv).css("height", cal_timeHeight);
+			$(timeBlockDiv).addClass('cal_data_cell');
+			$(timeBlockDiv).text(value);
+			$(timeDiv).append(timeBlockDiv);
+		});
+		$('.cal_data').append(timeDiv);
+	}
+	function addColumn() {
+		var separateHeight = cal_timeHeight / 2;
+		$(cal_data_display).each(function(index, value) {
+			var colDiv = document.createElement('div');
+			$(colDiv).attr("id", "cal_data_col_" + index);
+			$(colDiv).addClass('cal_data_col');
+			$(colDiv).css({
+				"width" : cal_dataWidth,
+				"height" : cal_timeHeight * cal_hours.length,
+				"top" : cal_headerHeight + cal_navHeight
+			});
+			$(cal_hours).each(function(index, value) {
+				var timeBlockDiv = document.createElement('div');
+				var timeBlockDiv1 = document.createElement('div');
+				$(timeBlockDiv).addClass('cal_data_cell');
+				$(timeBlockDiv1).addClass('cal_data_cell');
+				$(timeBlockDiv).css("height", separateHeight);
+				$(timeBlockDiv1).css("height", separateHeight);
+				$(colDiv).append(timeBlockDiv);
+				$(colDiv).append(timeBlockDiv1);
+			});
+			$('.cal_data').append(colDiv);
 
-    // Fill next
-    var startDayNextMonth = (new Date(year, month, maxDaysMonth)).getDay() + 1;
-    for (var i = startDayNextMonth; i <= 6; ++i)
-        htmlDayFill += '<li class="calendarInactive">' + '0' + (i - startDayNextMonth + 1) + '</li>';
+		});
+		// fix data col gap
+		$('.cal_data_col').last().css("width", cal_dataRemainingWidth - 2);
+		// Add current time line
+		var lineHr = document.createElement('div');
+		$(lineHr).addClass('cal_time_line');
+		$(lineHr).css({
+			"border" : "solid 1px red",
+			"width" : "100%"
+		});
+		$('.cal_data').append(lineHr);
+		updateCurrentTimeLine();
+	}
+	// Limitation: cut off all out range event
+	function addEvent() {
+		$(cal_data_display).each(
+				function(personIndex, personEvents) {
+					$(personEvents[Object.keys(personEvents)]).each(
+							function(eventIndex, eventValue) {
+								var startTime = new Date(0, 0, 0,
+										eventValue['startHour'],
+										eventValue['startMinute'], 0);
+								var endTime = new Date(0, 0, 0,
+										eventValue['endHour'],
+										eventValue['endMinute'], 0);
+								var event = document.createElement('div');
+								$(event).addClass('cal_event');
+								$(event).css({
+									"width" : "100%",
+									"height" : getEventHeight(startTime, endTime),
+									"top" : getEventTop(startTime)
+								});
+								$(event).html(eventValue['eventName']);
 
-    $('#calendar .calendarDays').html(htmlDayFill);
-}
-
-function getMonthFromName(monthName) {
-    var months = ["January", "February", "March", "April", "May", "June",
-               "July", "August", "September", "October", "November", "December"];
-    for (var i = 0; i < months.length; i++)
-        if (months[i] == monthName)
-            return i;
-}
-
-function getMonthName(month) {
-    var months = ["January", "February", "March", "April", "May", "June",
-               "July", "August", "September", "October", "November", "December"];
-    return months[month];
-}
-
-function getPrevMonthDays(month, year) {
-    return new Date(year, month, 0).getDate();
-}
-
-function nextMonth() {
-    var month = getMonthFromName($('#calendar .calendarTitle span:first').text());
-    var year = +$('#calendar .calendarTitle span:nth-child(2)').text();
-    if (month == 11) {
-        $('#calendar .calendarTitle span:first').text(getMonthName(0));
-        $('#calendar .calendarTitle span:nth-child(2)').text(year + 1);
-    } else {
-        $('#calendar .calendarTitle span:first').text(getMonthName(month + 1));
-        $('#calendar .calendarTitle span:nth-child(2)').text(year);
-    }
-    calendarFillDays();
-}
-
-function prevMonth() {
-    var month = getMonthFromName($('#calendar .calendarTitle span:first').text());
-    var year = +$('#calendar .calendarTitle span:nth-child(2)').text();
-    if (month == 0) {
-        $('#calendar .calendarTitle span:first').text(getMonthName(11));
-        $('#calendar .calendarTitle span:nth-child(2)').text(year - 1);
-    } else {
-        $('#calendar .calendarTitle span:first').text(getMonthName(month - 1));
-        $('#calendar .calendarTitle span:nth-child(2)').text(year);
-    }
-    calendarFillDays();
-}
+								$('#cal_data_col_' + personIndex).append(event);
+							});
+				});
+	}
+	function updateCurrentTimeLine() {
+		var simulateTime = new Date();
+		if (simulateTime.getHours() >= cal_hour_start
+		&& simulateTime.getHours() <= cal_hour_end) {
+			var currTimeTopPos = getEventTop(simulateTime) + cal_headerHeight
+					+ cal_navHeight;
+			var windowHeightHalf = $(window).height() / 2;
+			if (currTimeTopPos > windowHeightHalf)
+				$(window).scrollTop(currTimeTopPos);
+			else
+				$(window).scrollTop(0);
+			$('.cal_time_line').css("top", currTimeTopPos);
+		}
+	}
+	/* Helper functions */
+	function getEventTop(startTime) {
+		var px = (startTime.getHours() - cal_hour_start) + startTime.getMinutes()
+				/ 60;
+		return px * cal_timeHeight;
+	}
+	function getEventHeight(startTime, endTime) {
+		var px = (endTime.getHours() - startTime.getHours())
+				+ (endTime.getMinutes() - startTime.getMinutes()) / 60;
+		return px * cal_timeHeight;
+	}

@@ -1,95 +1,67 @@
-/* Month header */
-
-.calendar {
-    width: 251px;
-    height: 218px;
-    box-sizing: border-box;
+#scheduler_here {
+	position: relative;
+	z-index:1000;
 }
 
-.calendarMonth {
-    width: 100%;
-    background: #1abc9c;
+.cal_navline {
+	width:100%;
+	position:fixed;
+	top:0px;
+	height:50px;
 }
 
-
-/* Month list */
-
-.calendarMonth ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.cal_event {
+	border: solid 1px red;
+	position: absolute;
+	background: green;
+	z-index: 0;
 }
 
-.calendarMonth ul li {
-    color: white;
-    font-size: 20px;
-    text-align: center;
+.cal_header {
+	display: inline-block;
+	position: fixed;
+	top:50px;
 }
 
-
-/* Previous button inside month header */
-
-.calendarMonth .calendarPrev {
-    float: left;
-    padding-left: 10px;
+.cal_header_col {
+	float: left;
+	text-align: center;
 }
 
-
-/* Next button */
-
-.calendarMonth .calendarNext {
-    float: right;
-    padding-right: 10px;
+.cal_header_left_nav{
+	width:20px;
+	position: inherit;
+}
+.cal_header_right_nav {
+	text-align:right;
+	width:20px;
+	position: inherit;
 }
 
-
-/* Weekdays (Mon-Sun) */
-
-.calendarWeekdays {
-    margin: 0;
-    padding: 5px 0;
-    background-color: #ddd;
+.cal_header_nav_disable {
+	color:silver;
 }
 
-.calendarWeekdays li {
-    display: inline-block;
-    width: 11.6%;
-    color: #666;
-    text-align: center;
+.cal_header_nav_enable {
 }
 
-
-/* Days (1-31) */
-
-.calendarDays {
-    padding: 10px 0;
-    background: #eee;
-    margin: 0;
+.cal_data {
+	display: inline-block;
+	border: solid 1px red;
+	width: 100%;
+	position: relative;
+	z-index: -1;
 }
 
-.calendarDays li {
-    list-style-type: none;
-    display: inline-block;
-    width: 13.6%;
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 12px;
-    color: #777;
+.cal_data_cell {
 }
 
-
-/* Highlight the "current" day */
-.calendarDays .calendarDayActive {
-    padding: 5px;
-    background: #1abc9c;
-    color: white !important;
+.cal_data_col {
+	border: solid 1px yellow;
+	position: relative;
+	float: left;
 }
 
-.calendarDays .calendarInactive {
-    color : white;
-}
-        
-
-.calendarDays .calendarActive:hover {
-    cursor: pointer;
+.cal_time_line {
+	position: absolute;
 }
