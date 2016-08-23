@@ -12,6 +12,7 @@ public class Transaction implements Serializable{
 	private int transactionID;
 	private Date date;
 	private double total;
+	private double totalDiscount;
 	private double cash;
 	private double tip;
 	public int getTransactionID() {
@@ -43,5 +44,11 @@ public class Transaction implements Serializable{
 	}
 	public void setTip(double tip) {
 		this.tip = tip;
+	}
+	public double getTotalDiscount() {
+		return totalDiscount;
+	}
+	public void setTotalDiscount(double totalDiscount) {
+		this.totalDiscount = totalDiscount;
 	}
 }

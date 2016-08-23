@@ -1,5 +1,15 @@
 @CHARSET "UTF-8";
 
+/* Fixing Primefaces dropdown theme */
+.ui-selectonemenu {
+	display: block !important;
+	padding-right: 0px !important;
+}
+.ui-selectonemenu .ui-selectonemenu-trigger {
+	width: inherit !important;
+}
+/* End fixing theme */
+
 .ipadMiniScreen {
 	border: solid 1px red;
 	width: 768px;
