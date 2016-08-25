@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="common.css" />
+
+	<title>Add Service</title>
+</h:head>
+<h:body>
+<!-- 
+<h:form id="nav" styleClass="w3-container w3-quarter">
+</h:form>
+
+<h:form id="main" styleClass="w3-half" style="display:none">
+<p:dataTable var="group" value="#{serviceBean.serviceGroups}">
+    <p:column>
+        <p:carousel value="#{group}" headerText="#{group[0].group}" var="service" effect="slide" itemStyle="text-align:center" responsive="true">
+	        <p:panelGrid columns="2" style="width:100%;margin:10px 0px" columnClasses="label,value" layout="grid" styleClass="ui-panelgrid-blank">
+	            <h:outputText value="Id:" />
+	            <h:outputText value="#{service.name}" />
+	        </p:panelGrid>
+	    </p:carousel>
+    </p:column>
+</p:dataTable>
+</h:form>
+ -->
+<h:form id="add_service" styleClass="w3-quarter">
+	<p:panelGrid columns="2" style="width:100px">
+		<f:facet name="header">
+	        <h:outputText value="Add Service"></h:outputText>
+	    </f:facet>
+	    
+	    <p:outputLabel value="Name: " for="serviceName" />
+        <p:inputText id="serviceName" value="#{serviceBean.addService.name}"/>
+ 
+ 		<p:outputLabel value="Price: " for="servicePrice" />
+        <p:inputText id="servicePrice" value="#{serviceBean.addService.price}" type="number"/>
+        
+        <p:outputLabel value="Time: " for="serviceHour"/>
+        <p:panelGrid columns="2" layout="grid">
+	        <p:selectOneMenu id="serviceHour" value="#{serviceBean.addServiceHour}" onchange="changeColor()" style="margin:0px">
+	            <f:selectItem itemLabel="" itemValue="" />
+	            <f:selectItem itemLabel="1H" itemValue="1H" />
+	            <f:selectItem itemLabel="2H" itemValue="2H" />
+	            <f:selectItem itemLabel="3H" itemValue="3H" />
+	        </p:selectOneMenu>
+	        <p:selectOneMenu id="serviceMinute" value="#{serviceBean.addServiceMinute}" onchange="changeColor()">
+	            <f:selectItem itemLabel="0M" itemValue="0M" />
+	            <f:selectItem itemLabel="5M" itemValue="5M" />
+	            <f:selectItem itemLabel="10M" itemValue="10M" />
+	            <f:selectItem itemLabel="15M" itemValue="15M" />
+	            <f:selectItem itemLabel="20M" itemValue="20M" />
+	            <f:selectItem itemLabel="25M" itemValue="25M" />
+	            <f:selectItem itemLabel="30M" itemValue="30M" />
+	            <f:selectItem itemLabel="35M" itemValue="35M" />
+	            <f:selectItem itemLabel="40M" itemValue="40M" />
+	            <f:selectItem itemLabel="45M" itemValue="45M" />
+	            <f:selectItem itemLabel="50M" itemValue="50M" />
+	            <f:selectItem itemLabel="55M" itemValue="55M" />
+	        </p:selectOneMenu>		
+        </p:panelGrid>
+        
+        
+        <p:outputLabel value="Turn: " for="serviceTurn" />
+        <p:inputText id="serviceTurn" value="#{serviceBean.addService.turn}" type="number"/>
+        
+        <p:outputLabel value="Group: " for="serviceGroup" />
+        <p:selectOneMenu id="serviceGroup" value="#{serviceBean.addService.group}" editable="true">
+        	<f:selectItem itemLabel="Select Group" itemValue="" />
+            <f:selectItems value="#{serviceBean.groups}" />
+        </p:selectOneMenu>
+        
+        <p:outputLabel value="Color: " for="serviceColor" />
+        <p:selectOneMenu id="serviceColor" value="#{serviceBean.addService.color}" editable="true" onchange="changeColor()">
+            <f:selectItems value="#{serviceBean.colors}" />
+        </p:selectOneMenu>
+
+        <p:outputLabel value="Additional Info: " for="serviceAdditionalInfo" />
+        <p:inputText id="serviceAdditionalInfo" value="#{serviceBean.addService.additionalInfo}"/>
+        
+        <p:outputLabel value="Description: " for="serviceDescription" />
+        <p:inputText id="serviceDescription" value="#{serviceBean.addService.description}"/>
+        
+        <f:facet name="footer">
+        	<div class="w3-center">
+	        <p:commandButton value="Add" style="width:100px" actionListener="#{serviceBean.addService()}"/>
+        	<p:commandButton value="Cancel" style="width:100px"/>
+        	</div>
+	    </f:facet>
+	</p:panelGrid>
+</h:form>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+	<script>
+		$(function fillColorDropdown(){
+			$('#add_service\\:serviceColor_items').find('li').each(function(index, value){
+				$(this).css("background",$(this).text());
+			});
+			changeColor();
+		});
+		alert(wColor.html());
+		function changeColor(obj){
+			var color = $('#add_service\\:serviceColor input:last').val();
+			$('#add_service\\:serviceColor input:last').css('background', color);
+			$('#add_service\\:serviceGroup input:last').css('background', color);
+		}
+	</script>
+</h:body>
+</html>

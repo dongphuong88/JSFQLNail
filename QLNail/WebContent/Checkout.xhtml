@@ -13,6 +13,7 @@
 	<h:outputStylesheet library="css" name="common.css" />
 	
 	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
+	<h:outputScript library="js" name="jquery-dateFormat.min.js"></h:outputScript>
 	
 	<style>
 	.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
@@ -26,7 +27,7 @@
 	<!-- Date/Time -->
 	<div class="w3-container w3-xlarge">
 		<label class="w3-label">Date/Time: </label>
-		<h:outputText value="#{checkoutBean.currDate}">
+		<h:outputText id="dateTime" value="#{checkoutBean.currDate}">
 			<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a" />
 		</h:outputText>
 	</div>
@@ -171,8 +172,8 @@
 						<div> 
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="cash payTypeHide" value="cash" onLabel="Cash" offLabel="Cash"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCash payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
-							<p:inputText styleClass="inpCashReceive payTypeHide" onchange="$('.inpCashChange').val($(this).val() - $('.inpCash').val())" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0"></p:inputText>
-							<p:inputText styleClass="inpCashChange payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0"></p:inputText>
+							<p:inputText styleClass="inpCashReceive payTypeHide" onchange="$('.inpCashChange').val($(this).val() - $('.inpCash').val())" placeholder="Receive" onfocus="$(this).select()" style="width:100px; display:none" type="number"></p:inputText>
+							<p:inputText styleClass="inpCashChange payTypeHide" onfocus="$(this).select()" placeholder="Change" style="width:100px; display:none" type="number"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="credit payTypeHide" value="cash" onLabel="Credit" offLabel="Credit"></p:selectBooleanButton>
 							<p:inputText styleClass="inpCredit payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
 							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="gift payTypeHide" value="cash" onLabel="Gift" offLabel="Gift"></p:selectBooleanButton>
@@ -284,6 +285,7 @@
 	
 	
 	<h:form id="dataF">
+		<p:growl widgetVar="growlWV" />
 		<p:inputText id="transactionService_data" value="#{checkoutBean.transactionServiceData}" style="display:none"></p:inputText>
 		<p:inputText id="transaction_data" value="#{checkoutBean.transactionData}" style="display:none"></p:inputText>
 		<!-- Action -->
@@ -299,6 +301,7 @@
 	<script>
 		$(function() {
 			updateServicesAmount();
+			
 		});
 
 		function updateServicesAmount() {
@@ -341,17 +344,14 @@
 			$('.total').formatCurrency();
 		}
 		function fillData() {
-			var transactionServiceData = '{"TransactionServices":[';
-			$('.serviceRow').each( function(index) {
-				transactionServiceData += '{';
-				transactionServiceData += '"serviceName":"' + $(this).find('td').eq(1).find('.serviceType').val() + '",';
-				transactionServiceData += '"employeeName":"' + $(this).find('td').eq(2).find('select').val() + '",';
-				transactionServiceData += '"amount":' + $(this).find('td').eq(3).find('label').text() + ',';
-				transactionServiceData += '"discount":' + $(this).find('td').eq(4).find('label').text() + '},';
-			});
-			transactionServiceData += ']}';
-			
-			var transactionData = '{';
+			// Validation
+			if( 0 == $('.serviceRow').length ) {
+				PF('growlWV').renderMessage({"summary":"Services empty",
+	                "detail":"Please add one Service",
+	                "severity":"error"});
+				return;
+			}
+			// Convert all invalid number
 			var dcAmount;
 			if($('.totalDCAmount').find('input').prop('checked')) {
 				dcAmount = +$('.totalDCInpAmount').val();
@@ -360,23 +360,35 @@
 			}
 			else
 				dcAmount = 0;
-			transactionData += '"totalDiscount":' + dcAmount + ',';
 			var total = parseFloat($('.total').text().replace(/\\$|,/g, ''));
-			transactionData += '"total":' + total + ',';
-			transactionData += '"tip":' + (isNaN($('tip').val()) ? 0 : $('tip').val()) + ',';
-			var cash;
+			var tip = (isNaN($('tip').val()) ? 0 : $('tip').val());
+			var cash = 0;
 			if($('.cash').find('input').prop('checked')) {
 				cash = +$('.inpCash').val();
 			}
-			transactionData += '"cash":' + cash;
-
+			
+			// Collect
+			var transactionServiceData = '{"TransactionServices":[';
+			$('.serviceRow').each( function(index) {
+				transactionServiceData += '{';
+				transactionServiceData += '"serviceGroup":"' + $(this).find('td').eq(1).find('.serviceCate').val() + '",';
+				transactionServiceData += '"serviceName":"' + $(this).find('td').eq(1).find('.serviceType').val() + '",';
+				transactionServiceData += '"staffName":"' + $(this).find('td').eq(2).find('select').val() + '",';
+				transactionServiceData += '"amount":' + $(this).find('td').eq(3).find('label').text() + ',';
+				transactionServiceData += '"discount":' + $(this).find('td').eq(4).find('label').text() + '},';
+			});
+			transactionServiceData += ']}';
+			
+			var transactionData = '{';
+			transactionData += '"totalDiscount":' + dcAmount + ',';
+			transactionData += '"total":' + total + ',';
+			transactionData += '"tip":' + tip + ',';
+			transactionData += '"cash":' + cash + ',';
+			transactionData += '"datetime":' + $.format.date("#{checkoutBean.currDate}", "yyyy-MM-dd HH:mm");
 			transactionData += '}';
 			
 			$('#dataF\\:transactionService_data').val( transactionServiceData);
 			$('#dataF\\:transaction_data').val( transactionData);
-		}
-		function validation() {
-			
 		}
 	</script>
 	 

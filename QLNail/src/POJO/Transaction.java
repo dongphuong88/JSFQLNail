@@ -9,24 +9,13 @@ public class Transaction implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -8231308936851192669L;
-	private int transactionID;
-	private Date date;
+	private int id;
+	private Date datetime;
 	private double total;
-	private double totalDiscount;
+	private double total_discount;
 	private double cash;
 	private double tip;
-	public int getTransactionID() {
-		return transactionID;
-	}
-	public void setTransactionID(int transactionID) {
-		this.transactionID = transactionID;
-	}
-	public Date getDate() {
-		return date;
-	}
-	public void setDate(Date date) {
-		this.date = date;
-	}
+
 	public double getTotal() {
 		return total;
 	}
@@ -45,10 +34,22 @@ public class Transaction implements Serializable{
 	public void setTip(double tip) {
 		this.tip = tip;
 	}
-	public double getTotalDiscount() {
-		return totalDiscount;
+	public int getId() {
+		return id;
 	}
-	public void setTotalDiscount(double totalDiscount) {
-		this.totalDiscount = totalDiscount;
+	public void setId(int id) {
+		this.id = id;
+	}
+	public Date getDatetime() {
+		return datetime;
+	}
+	public void setDatetime(Date datetime) {
+		this.datetime = datetime;
+	}
+	public double getTotal_discount() {
+		return total_discount;
+	}
+	public void setTotal_discount(double total_discount) {
+		this.total_discount = total_discount;
 	}
 }
