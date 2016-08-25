@@ -9,7 +9,7 @@ public class Transaction implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -8231308936851192669L;
-	private int id;
+	private long id;
 	private Date datetime;
 	private double total;
 	private double total_discount;
@@ -34,10 +34,10 @@ public class Transaction implements Serializable{
 	public void setTip(double tip) {
 		this.tip = tip;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public Date getDatetime() {

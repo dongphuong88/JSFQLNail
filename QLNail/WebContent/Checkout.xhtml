@@ -285,12 +285,12 @@
 	
 	
 	<h:form id="dataF">
-		<p:growl widgetVar="growlWV" />
+		<p:growl id="growlWV" />
 		<p:inputText id="transactionService_data" value="#{checkoutBean.transactionServiceData}" style="display:none"></p:inputText>
 		<p:inputText id="transaction_data" value="#{checkoutBean.transactionData}" style="display:none"></p:inputText>
 		<!-- Action -->
 		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" actionListener="#{checkoutBean.print}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" actionListener="#{checkoutBean.print}" update="growlWV"></p:commandButton>
 			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
 		</div>
 		<!-- Action END-->
@@ -344,13 +344,6 @@
 			$('.total').formatCurrency();
 		}
 		function fillData() {
-			// Validation
-			if( 0 == $('.serviceRow').length ) {
-				PF('growlWV').renderMessage({"summary":"Services empty",
-	                "detail":"Please add one Service",
-	                "severity":"error"});
-				return;
-			}
 			// Convert all invalid number
 			var dcAmount;
 			if($('.totalDCAmount').find('input').prop('checked')) {
@@ -384,7 +377,7 @@
 			transactionData += '"total":' + total + ',';
 			transactionData += '"tip":' + tip + ',';
 			transactionData += '"cash":' + cash + ',';
-			transactionData += '"datetime":' + $.format.date("#{checkoutBean.currDate}", "yyyy-MM-dd HH:mm");
+			transactionData += '"datetime":"' + $.format.date("#{checkoutBean.currDate}", "yyyy-MM-dd HH:mm") +'"';
 			transactionData += '}';
 			
 			$('#dataF\\:transactionService_data').val( transactionServiceData);

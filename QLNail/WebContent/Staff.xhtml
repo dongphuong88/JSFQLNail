@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="x-ua-compatible" content="ie=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
+	<h:outputStylesheet library="css" name="common.css" />
+
+	<title>Staff</title>
+</h:head>
+<h:body>
+	
+<h:form id="add_staff" styleClass="w3-quarter">
+	<p:panelGrid columns="2" style="width:250px">
+		<f:facet name="header">
+	        <h:outputText value="Add Staff"></h:outputText>
+	    </f:facet>
+	    
+	    <p:outputLabel value="Name: " for="staffName" />
+        <p:inputText id="staffName" value="#{staffBean.addStaff.name}"/>
+ 
+ 		<p:outputLabel value="Phone: " for="staffPhone" />
+        <p:inputText id="staffPhone" value="#{staffBean.addStaff.phone}"/>
+        
+        <p:outputLabel value="Title: " for="staffTitle"/>
+        <p:inputText id="staffTitle" value="#{staffBean.addStaff.title}"/>
+        
+        <p:outputLabel value="Abilities: " for="staffAbilities" />
+        <p:panel>
+	        <p:selectManyCheckbox id="staffAbilities" value="#{staffBean.selectedCates}" layout="grid" columns="3">
+		        <f:selectItems value="#{staffBean.serviceCates}" var="group" itemLabel="#{group.name}" itemValue="#{group.name}" />
+		    </p:selectManyCheckbox>
+		    <p:selectManyCheckbox layout="grid" columns="2">
+		        <f:selectItem itemLabel="Check all" itemValue="Check all"></f:selectItem>
+		        <f:selectItem itemLabel="Uncheck all" itemValue="Uncheck all"></f:selectItem>
+		    </p:selectManyCheckbox>
+        </p:panel>
+        
+        <p:outputLabel value="Schedule: " for="staffSchedule" />
+        <p:panel>
+	        <p:selectManyCheckbox id="staffSchedule" value="#{staffBean.selectedSchedules}" layout="grid" columns="3">
+		        <f:selectItem itemLabel="Monday" itemValue="Monday" />
+		        <f:selectItem itemLabel="Tuesday" itemValue="Tuesday" />
+		        <f:selectItem itemLabel="Wednesday" itemValue="Wednesday" />
+		        <f:selectItem itemLabel="Thursday" itemValue="Thursday" />
+		        <f:selectItem itemLabel="Friday" itemValue="Friday" />
+		        <f:selectItem itemLabel="Saterday" itemValue="Saterday" />
+		        <f:selectItem itemLabel="Sunday" itemValue="Sunday" />
+		        <f:selectItem itemLabel="All day" itemValue="All day" />
+		    </p:selectManyCheckbox>
+        </p:panel>
+        
+        <p:outputLabel value="Work hour: " for="staffWorkHour" />
+        <p:panelGrid columns="2" layout="grid">
+	        <p:selectOneMenu id="staffWorkHour" value="#{staffBean.startWorkHour}">
+	            <f:selectItem itemLabel="1AM" itemValue="1AM" />
+	            <f:selectItem itemLabel="2AM" itemValue="2AM" />
+	            <f:selectItem itemLabel="3AM" itemValue="3AM" />
+	            <f:selectItem itemLabel="4AM" itemValue="4AM" />
+	            <f:selectItem itemLabel="5AM" itemValue="5AM" />
+	            <f:selectItem itemLabel="6AM" itemValue="6AM" />
+	            <f:selectItem itemLabel="7AM" itemValue="7AM" />
+	            <f:selectItem itemLabel="8AM" itemValue="8AM" />
+	            <f:selectItem itemLabel="9AM" itemValue="9AM" />
+	            <f:selectItem itemLabel="10AM" itemValue="10AM" />
+	            <f:selectItem itemLabel="11AM" itemValue="11AM" />
+	            <f:selectItem itemLabel="12PM" itemValue="12PM" />
+	            <f:selectItem itemLabel="1PM" itemValue="1PM" />
+	            <f:selectItem itemLabel="2PM" itemValue="2PM" />
+	            <f:selectItem itemLabel="3PM" itemValue="3PM" />
+	            <f:selectItem itemLabel="4PM" itemValue="4PM" />
+	            <f:selectItem itemLabel="5PM" itemValue="5PM" />
+	            <f:selectItem itemLabel="6PM" itemValue="6PM" />
+	            <f:selectItem itemLabel="7PM" itemValue="7PM" />
+	            <f:selectItem itemLabel="8PM" itemValue="8PM" />
+	            <f:selectItem itemLabel="9PM" itemValue="9PM" />
+	            <f:selectItem itemLabel="10PM" itemValue="10PM" />
+	            <f:selectItem itemLabel="11PM" itemValue="11PM" />
+	            <f:selectItem itemLabel="12AM" itemValue="12AM" />
+	            
+	        </p:selectOneMenu>
+	        <p:selectOneMenu id="serviceMinute" value="#{staffBean.endWorkHour}">
+	           <f:selectItem itemLabel="1AM" itemValue="1AM" />
+	            <f:selectItem itemLabel="2AM" itemValue="2AM" />
+	            <f:selectItem itemLabel="3AM" itemValue="3AM" />
+	            <f:selectItem itemLabel="4AM" itemValue="4AM" />
+	            <f:selectItem itemLabel="5AM" itemValue="5AM" />
+	            <f:selectItem itemLabel="6AM" itemValue="6AM" />
+	            <f:selectItem itemLabel="7AM" itemValue="7AM" />
+	            <f:selectItem itemLabel="8AM" itemValue="8AM" />
+	            <f:selectItem itemLabel="9AM" itemValue="9AM" />
+	            <f:selectItem itemLabel="10AM" itemValue="10AM" />
+	            <f:selectItem itemLabel="11AM" itemValue="11AM" />
+	            <f:selectItem itemLabel="12PM" itemValue="12PM" />
+	            <f:selectItem itemLabel="1PM" itemValue="1PM" />
+	            <f:selectItem itemLabel="2PM" itemValue="2PM" />
+	            <f:selectItem itemLabel="3PM" itemValue="3PM" />
+	            <f:selectItem itemLabel="4PM" itemValue="4PM" />
+	            <f:selectItem itemLabel="5PM" itemValue="5PM" />
+	            <f:selectItem itemLabel="6PM" itemValue="6PM" />
+	            <f:selectItem itemLabel="7PM" itemValue="7PM" />
+	            <f:selectItem itemLabel="8PM" itemValue="8PM" />
+	            <f:selectItem itemLabel="9PM" itemValue="9PM" />
+	            <f:selectItem itemLabel="10PM" itemValue="10PM" />
+	            <f:selectItem itemLabel="11PM" itemValue="11PM" />
+	            <f:selectItem itemLabel="12AM" itemValue="12AM" />
+	        </p:selectOneMenu>	
+        </p:panelGrid>
+        
+        <f:facet name="footer">
+        	<div class="w3-center">
+	        <p:commandButton value="Add" style="width:100px" actionListener="#{serviceBean.addService()}"/>
+        	<p:commandButton value="Cancel" style="width:100px"/>
+        	</div>
+	    </f:facet>
+	</p:panelGrid>
+</h:form>
+
+	<h:outputScript library="js" name="common.js"></h:outputScript>
+</h:body>
+</html>

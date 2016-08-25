@@ -8,20 +8,15 @@ public class Service implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -9156872095927167409L;
+	private long id;
 	private String name;
 	private double price;
 	private int duration;
 	private float turn;
 	private String description;
-	private String group;
 	private String additionalInfo;
-	private String color;
-	private String providers;
-	
-	@Override
-	public String toString() {
-		return name + ":" + price + ":" + turn + ":" + group + ":" + color;
-	}
+	private long service_category_id;
+	private double service_deduction;
 	
 	public String getName() {
 		return name;
@@ -53,28 +48,30 @@ public class Service implements Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getGroup() {
-		return group;
-	}
-	public void setGroup(String group) {
-		this.group = group;
-	}
 	public String getAdditionalInfo() {
 		return additionalInfo;
 	}
 	public void setAdditionalInfo(String additionalInfo) {
 		this.additionalInfo = additionalInfo;
 	}
-	public String getColor() {
-		return color;
+
+	public long getId() {
+		return id;
 	}
-	public void setColor(String color) {
-		this.color = color;
+
+	public void setId(long id) {
+		this.id = id;
 	}
-	public String getProviders() {
-		return providers;
+	public long getService_category_id() {
+		return service_category_id;
 	}
-	public void setProviders(String providers) {
-		this.providers = providers;
+	public void setService_category_id(long service_category_id) {
+		this.service_category_id = service_category_id;
+	}
+	public double getService_deduction() {
+		return service_deduction;
+	}
+	public void setService_deduction(double service_deduction) {
+		this.service_deduction = service_deduction;
 	}
 }

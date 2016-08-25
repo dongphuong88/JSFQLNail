@@ -7,8 +7,8 @@ public class TransactionService implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -1005108082893154569L;
-	private int id;
-	private int transaction_id;
+	private long id;
+	private long transaction_id;
 	private String service_group = "";
 	private String service_name = "";
 	private String staff_name = "";
@@ -27,16 +27,16 @@ public class TransactionService implements Serializable{
 	public void setDiscount(double discount) {
 		this.discount = discount;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
-	public int getTransaction_id() {
+	public long getTransaction_id() {
 		return transaction_id;
 	}
-	public void setTransaction_id(int transaction_id) {
+	public void setTransaction_id(long transaction_id) {
 		this.transaction_id = transaction_id;
 	}
 	public String getService_group() {

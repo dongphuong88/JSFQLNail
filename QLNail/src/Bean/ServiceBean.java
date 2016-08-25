@@ -3,14 +3,15 @@ package Bean;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import DAO.ServicesDAO;
 import POJO.Service;
+import POJO.ServiceCategory;
 
 @ManagedBean
 @ViewScoped
@@ -20,17 +21,17 @@ public class ServiceBean implements Serializable{
 	 */
 	private static final long serialVersionUID = -4764379651377654313L;
 	private Service addService = new Service();
+	private ServiceCategory addServiceCate = new ServiceCategory();
 	private String addServiceHour;
 	private String addServiceMinute;
-	private Map<String, String> groups;
+	private Map<String,String> groups;
+	
 	private List<Object> serviceGroups;
 	private List<String> colors = new ArrayList<>(Arrays.asList("Red", "Green", "Blue", "Orange", "Yellow", "Cyan"));
 	
 	public ServiceBean() {
 		// Load groups
-		groups = new HashMap<String,String>();
-		groups.put("Pedicure", "Pedicure");
-		groups.put("Manicure", "Manicure");
+		groups = ServicesDAO.getServiceCategories();
 		
 		// Testing
 		serviceGroups = new ArrayList<>();
@@ -38,7 +39,6 @@ public class ServiceBean implements Serializable{
 		for(int i = 0; i < 5; ++i) {
 			Service s = new Service();
 			s.setName("pedi"+i);
-			s.setGroup("Pedi");
 			pedi.add(s);
 		}
 		List<Service> mani = new ArrayList<>();
@@ -49,6 +49,10 @@ public class ServiceBean implements Serializable{
 		}
 		serviceGroups.add(pedi);
 		serviceGroups.add(mani);
+	}
+	
+	public void changeServiceCate() {
+		addServiceCate.setColor(groups.get(addServiceCate.getName()));
 	}
 	
 	public void addService() {
@@ -101,5 +105,13 @@ public class ServiceBean implements Serializable{
 
 	public void setColors(List<String> colors) {
 		this.colors = colors;
+	}
+
+	public ServiceCategory getAddServiceCate() {
+		return addServiceCate;
+	}
+
+	public void setAddServiceCate(ServiceCategory addServiceCate) {
+		this.addServiceCate = addServiceCate;
 	}
 }

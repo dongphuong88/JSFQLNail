@@ -12,8 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 
 public class TransactionsDAO implements Serializable {
 	
@@ -22,6 +20,7 @@ public class TransactionsDAO implements Serializable {
 	 */
 	private static final long serialVersionUID = 8892117335504826904L;
 	private static Logger logger = LogManager.getLogger(TransactionsDAO.class.getName());
+	public enum ERROR_CODE { SERVICE_EMPTY, INVALID_SQL, SUCCEED};
 	
 	public static void main(String[] args) {
 		JSONArray resultSet = new JSONArray();
@@ -46,55 +45,55 @@ public class TransactionsDAO implements Serializable {
 		System.out.println(resultSet);
 	}
 	
-	public static boolean setTransactionFromServices( String servicesJSON, String transactionJSON) {
-//		Services: {"TransactionServices":[{"serviceName":"Pedi Classic","employeeName":"Kelly","amount":321,"discount":321},{"serviceName":"Pedi Deluxe","employeeName":"Nancy","amount":321,"discount":121},]}
-//		TransactionJSON: {"totalDiscount":32,"total":168,"tip":0,"cash":100}
+	public static ERROR_CODE setTransactionFromServices( String servicesJSON, String transactionJSON) {
 		JSONParser jsonParser = new JSONParser();
-		
-		System.out.println("Services: " + servicesJSON);
-		System.out.println("TransactionJSON: " + transactionJSON);
 		
 		try {
 			JSONObject transactionServices = (JSONObject)jsonParser.parse(servicesJSON);
 			JSONObject transaction = (JSONObject)jsonParser.parse(transactionJSON);
+			JSONArray services = (JSONArray)transactionServices.get("TransactionServices");
+			
+			if( 0 == services.size()) {
+				return ERROR_CODE.SERVICE_EMPTY;
+			}
 			
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/qlnail?useSSL=false", "pduong", "2H@aclong");
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("insert into transactions (transactions.cash, transactions.total, transactions.tip, transactions.total_discount, transactions.datetime) values "
-					+ "(" + transactionServices.get("cash")
-					+ "," + transactionServices.get("total")
-					+ "," + transactionServices.get("tip")
-					+ "," + transactionServices.get("totalDiscount")
-					+ "," + transactionServices.get("datetime") + ");SELECT LAST_INSERT_ID();");
-			int transactionServiceID = -1;
-			while (rs.next()) {
-				transactionServiceID = rs.getInt(0);
+			String sql = "insert into transactions (cash, total, tip, total_discount, datetime) values ("
+					+Double.parseDouble(transaction.get("cash").toString())
+					+"," + Double.parseDouble(transaction.get("total").toString())
+					+"," + Double.parseDouble(transaction.get("tip").toString())
+					+"," + Double.parseDouble(transaction.get("totalDiscount").toString())
+					+",'" + transaction.get("datetime").toString()
+					+"')";
+			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = stmt.getGeneratedKeys();
+			long transactionServiceID = -1;
+			while (rs != null && rs.next()) {
+				transactionServiceID = rs.getLong(1);
 			}
 			
 			PreparedStatement ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount) values (?,?,?,?,?,?)");
-			ptmt.setInt(1, transactionServiceID);
-			JSONArray arr = (JSONArray)transaction.get("TransactionsServices");
-			for( int i = 0; i < arr.size(); ++i) {
-				JSONObject obj = (JSONObject)arr.get(i);
+			ptmt.setLong(1, transactionServiceID);
+			for( int i = 0; i < services.size(); ++i) {
+				JSONObject obj = (JSONObject)services.get(i);
 				ptmt.setString(2, obj.get("serviceGroup").toString());
 				ptmt.setString(3, obj.get("serviceName").toString());
 				ptmt.setString(4, obj.get("staffName").toString());
-				ptmt.setDouble(5, (double)obj.get("amount"));
-				ptmt.setDouble(6, (double)obj.get("discount"));
-				ptmt.executeQuery();
+				ptmt.setDouble(5, Double.parseDouble(obj.get("amount").toString()));
+				ptmt.setDouble(6, Double.parseDouble(obj.get("discount").toString()));
+				ptmt.executeUpdate();
 			}
 			// STEP 6: Clean-up environment
 			rs.close();
 			stmt.close();
 			ptmt.close();
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Exception", e.toString());
-			return false;
+			return ERROR_CODE.INVALID_SQL;
 		}
 		
-		
-		return true;
+		return ERROR_CODE.SUCCEED;
 	}
 }

@@ -12,9 +12,31 @@
 	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
 	<h:outputStylesheet library="css" name="common.css" />
 
+	<style>
+		.ui-stack {
+			bottom: 10px;
+			right: 40px;
+		}
+		.ui-stack>img {
+			width:79px;
+			bottom : 20px;
+		}
+		.ui-stack li img {
+			width:60px;
+		}
+	</style>
+	
 	<title>Add Service</title>
 </h:head>
 <h:body>
+<p:stack icon="/resources/images/calendar.png" expanded="false">
+    <p:menuitem value="Home" icon="/resources/images/calendar.png" url="#"/>
+    <p:menuitem value="Music" icon="/resources/images/calendar.png" url="#"/>
+    <p:menuitem value="Video" icon="/resources/images/calendar.png" url="#"/>
+    <p:menuitem value="Email" icon="/resources/images/calendar.png" url="#"/>
+    <p:menuitem value="Portfolio" icon="/resources/images/calendar.png" url="#"/>
+</p:stack>
+
 <!-- 
 <h:form id="nav" styleClass="w3-container w3-quarter">
 </h:form>
@@ -72,14 +94,18 @@
         <p:outputLabel value="Turn: " for="serviceTurn" />
         <p:inputText id="serviceTurn" value="#{serviceBean.addService.turn}" type="number"/>
         
+        <p:outputLabel value="Deduction: " for="serviceDeduction" />
+        <p:inputText id="serviceDeduction" value="#{serviceBean.addService.service_deduction}" type="number"/>
+        
         <p:outputLabel value="Group: " for="serviceGroup" />
-        <p:selectOneMenu id="serviceGroup" value="#{serviceBean.addService.group}" editable="true">
+        <p:selectOneMenu id="serviceGroup" value="#{serviceBean.addServiceCate.name}" editable="true" var="sel">
+        	<p:ajax listener="#{serviceBean.changeServiceCate}" event="change" oncomplete="changeColor()" update="@form"></p:ajax>
         	<f:selectItem itemLabel="Select Group" itemValue="" />
             <f:selectItems value="#{serviceBean.groups}" />
         </p:selectOneMenu>
         
         <p:outputLabel value="Color: " for="serviceColor" />
-        <p:selectOneMenu id="serviceColor" value="#{serviceBean.addService.color}" editable="true" onchange="changeColor()">
+        <p:selectOneMenu id="serviceColor" value="#{serviceBean.addServiceCate.color}" editable="true" onchange="changeColor()">
             <f:selectItems value="#{serviceBean.colors}" />
         </p:selectOneMenu>
 
@@ -87,8 +113,7 @@
         <p:inputText id="serviceAdditionalInfo" value="#{serviceBean.addService.additionalInfo}"/>
         
         <p:outputLabel value="Description: " for="serviceDescription" />
-        <p:inputText id="serviceDescription" value="#{serviceBean.addService.description}"/>
-        
+        <p:inputTextarea id="serviceDescription" value="#{serviceBean.addService.description}" rows="5" cols="18" maxlength="1000" autoResize="false" />
         <f:facet name="footer">
         	<div class="w3-center">
 	        <p:commandButton value="Add" style="width:100px" actionListener="#{serviceBean.addService()}"/>
@@ -106,8 +131,7 @@
 			});
 			changeColor();
 		});
-		alert(wColor.html());
-		function changeColor(obj){
+		function changeColor(){
 			var color = $('#add_service\\:serviceColor input:last').val();
 			$('#add_service\\:serviceColor input:last').css('background', color);
 			$('#add_service\\:serviceGroup input:last').css('background', color);

@@ -2,8 +2,14 @@ package Bean;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -31,14 +37,22 @@ public class CheckoutBean implements Serializable{
 		serviceGroups = ServicesDAO.getServiceGroupsJSONObject();
 	}
 	
-	public void print() {
-		if( TransactionsDAO.setTransactionFromServices(transactionServiceData, transactionData) ) {
-			// succeed
-			System.out.println("succeed");
+	public void print() throws Exception{
+		// Validation
+		JSONParser parser = new JSONParser();
+		JSONObject services = (JSONObject)parser.parse(transactionServiceData);
+		FacesContext context = FacesContext.getCurrentInstance();
+        
+		switch ( TransactionsDAO.setTransactionFromServices(transactionServiceData, transactionData) ) {
+		case INVALID_SQL :
+			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, "Could not save!", "Please contact your administrator." ));
+			break;
+		case SERVICE_EMPTY:
+			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, "Services are empty!", "Please add one Service." ));
+			break;
+		default:
+			break;
 		}
-		// failed	
-		System.out.println("failed");
-		return;
 	}
 	
 	public void email() {
