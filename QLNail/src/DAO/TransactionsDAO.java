@@ -74,15 +74,26 @@ public class TransactionsDAO implements Serializable {
 				transactionServiceID = rs.getLong(1);
 			}
 			
-			PreparedStatement ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount) values (?,?,?,?,?,?)");
+			PreparedStatement ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount, service_deduction) values (?,?,?,?,?,?,?)");
 			ptmt.setLong(1, transactionServiceID);
 			for( int i = 0; i < services.size(); ++i) {
 				JSONObject obj = (JSONObject)services.get(i);
-				ptmt.setString(2, obj.get("serviceGroup").toString());
-				ptmt.setString(3, obj.get("serviceName").toString());
+				
+				String serviceGroup = obj.get("serviceGroup").toString();
+				String serviceName = obj.get("serviceName").toString();
+				double serviceDeduction = 0;
+				
+				stmt.executeQuery("SELECT supply_deduction from services where name='"+ serviceName +"' AND service_group_id = (SELECT id from service_categorieswhere name='"+ serviceGroup +"');");
+				if (rs != null && rs.next()) {
+					serviceDeduction = rs.getDouble(1);
+				}
+				
+				ptmt.setString(2, serviceGroup);
+				ptmt.setString(3, serviceName);
 				ptmt.setString(4, obj.get("staffName").toString());
 				ptmt.setDouble(5, Double.parseDouble(obj.get("amount").toString()));
 				ptmt.setDouble(6, Double.parseDouble(obj.get("discount").toString()));
+				ptmt.setDouble(7, serviceDeduction);
 				ptmt.executeUpdate();
 			}
 			// STEP 6: Clean-up environment
