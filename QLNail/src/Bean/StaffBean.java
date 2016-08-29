@@ -1,6 +1,9 @@
 package Bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +11,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
 import DAO.ServicesDAO;
+import DAO.ShopInfoDAO;
 import POJO.ServiceCategory;
 import POJO.Staff;
+import POJO.StaffAvailable;
 
 @ManagedBean
 @RequestScoped
@@ -20,14 +25,38 @@ public class StaffBean implements Serializable{
 	private static final long serialVersionUID = -7036839071853606019L;
 	private Staff addStaff = new Staff();
 	private List<ServiceCategory> serviceCates;
-	private String[] selectedCates;
-	private String[] selectedSchedules;
-	private String startWorkHour;
-	private String endWorkHour;
+	private List<String> selectedCates = new ArrayList<>();
+	private List<StaffAvailable> addStaffAvailables = new ArrayList<>();
+	private List<String> workHours = Arrays.asList("8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM","7PM","8PM","9PM");
+	private float addStaffCommission;
+	
+	private int number6 = 30;  
+    private int number7 = 80;
 	
 	public StaffBean() {
 		serviceCates = ServicesDAO.getServiceCategoriesList();
-		System.out.println(serviceCates);
+		
+		StaffAvailable sA = new StaffAvailable();
+		sA.setDay("Monday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Tuesday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Wednesday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Thursday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Friday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Saterday");
+		addStaffAvailables.add(sA);
+		sA = new StaffAvailable();
+		sA.setDay("Sunday");
+		addStaffAvailables.add(sA);
 	}
 	
 	public Staff getAddStaff() {
@@ -45,36 +74,52 @@ public class StaffBean implements Serializable{
 		this.serviceCates = serviceCates;
 	}
 
-	public String[] getSelectedCates() {
+	public List<StaffAvailable> getAddStaffAvailables() {
+		return addStaffAvailables;
+	}
+
+	public void setAddStaffAvailables(List<StaffAvailable> addStaffAvailables) {
+		this.addStaffAvailables = addStaffAvailables;
+	}
+
+	public List<String> getWorkHours() {
+		return workHours;
+	}
+
+	public void setWorkHours(List<String> workHours) {
+		this.workHours = workHours;
+	}
+
+	public List<String> getSelectedCates() {
 		return selectedCates;
 	}
 
-	public void setSelectedCates(String[] selectedCates) {
+	public void setSelectedCates(List<String> selectedCates) {
 		this.selectedCates = selectedCates;
 	}
 
-	public String[] getSelectedSchedules() {
-		return selectedSchedules;
+	public float getAddStaffCommission() {
+		return addStaffCommission;
 	}
 
-	public void setSelectedSchedules(String[] selectedSchedules) {
-		this.selectedSchedules = selectedSchedules;
+	public void setAddStaffCommission(float addStaffCommission) {
+		this.addStaffCommission = addStaffCommission;
 	}
 
-	public String getStartWorkHour() {
-		return startWorkHour;
+	public int getNumber6() {
+		return number6;
 	}
 
-	public void setStartWorkHour(String startWorkHour) {
-		this.startWorkHour = startWorkHour;
+	public void setNumber6(int number6) {
+		this.number6 = number6;
 	}
 
-	public String getEndWorkHour() {
-		return endWorkHour;
+	public int getNumber7() {
+		return number7;
 	}
 
-	public void setEndWorkHour(String endWorkHour) {
-		this.endWorkHour = endWorkHour;
+	public void setNumber7(int number7) {
+		this.number7 = number7;
 	}
 	
 	

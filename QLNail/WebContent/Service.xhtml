@@ -24,13 +24,6 @@
 		.ui-stack li img {
 			width:60px;
 		}
-		.ui-selectonemenu {
-			display: -webkit-box;
-			padding-right:0px;
-		}
-		.ui-selectonemenu-trigger {
-			width: inherit !important;
-		}
 	</style>
 	
 	<title>Add Service</title>
@@ -112,12 +105,12 @@
         </p:selectOneMenu>
         
         <p:outputLabel value="Color: " for="serviceColor" />
-        <p:selectOneMenu id="serviceColor" value="#{serviceBean.addServiceCate.color}" editable="true" onchange="changeColor()">
-            <f:selectItems value="#{serviceBean.colors}" />
-        </p:selectOneMenu>
+        <p:selectOneRadio id="serviceColor" value="#{serviceBean.addServiceCate.color}"  layout="grid" columns="3" onchange="changeColor()">
+            <f:selectItems value="#{serviceBean.colors}" var="c" itemLabel=" " itemValue="#{c}"/>
+        </p:selectOneRadio>
 
         <p:outputLabel value="Additional Info: " for="serviceAdditionalInfo" />
-        <p:inputText id="serviceAdditionalInfo" value="#{serviceBean.addService.additionalInfo}"/>
+        <p:inputTextarea id="serviceAdditionalInfo" value="#{serviceBean.addService.additionalInfo}" rows="3" cols="18" />
         
         <p:outputLabel value="Description: " for="serviceDescription" />
         <p:inputTextarea id="serviceDescription" value="#{serviceBean.addService.description}" rows="5" cols="18" maxlength="1000" autoResize="false" />
@@ -132,16 +125,15 @@
 
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
-		$(function fillColorDropdown(){
-			$('#add_service\\:serviceColor_items').find('li').each(function(index, value){
-				$(this).css("background",$(this).text());
+		$(function fillColorRadio(){
+			$('#add_service\\:serviceColor label').each(function(index, value){
+				$(this).css({"width":25,"height":25});
+				$(this).css("background",$(this).parent().prev().find('input').val());
 			});
 			changeColor();
 		});
 		function changeColor(){
-			var color = $('#add_service\\:serviceColor input:last').val();
-			$('#add_service\\:serviceColor input:last').css('background', color);
-			$('#add_service\\:serviceGroup input:last').css('background', color);
+			$('#add_service\\:serviceGroup input:last').css('background', $('#add_service\\:serviceColor :checked').val());
 		}
 	</script>
 </h:body>

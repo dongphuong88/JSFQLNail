@@ -42,7 +42,7 @@ public class ServicesDAO implements Serializable {
 				JSONArray arr = (JSONArray) resultSet.get(rs.getString("group"));
 				arr.add(rs.getString("name"));
 			}
-			// STEP 6: Clean-up environment
+			// Clean-up environment
 			rs.close();
 			stmt.close();
 		} catch (Exception e) {

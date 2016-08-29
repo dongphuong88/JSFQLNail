@@ -13,10 +13,22 @@
 	<h:outputStylesheet library="css" name="common.css" />
 	
 	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
-
+	<style>
+		.ui-selectonemenu{
+			width:200px;
+		}
+		.date {
+			padding:0px;
+			border:0px;
+		}
+		.date>div {
+			padding:0px !important;
+		}
+	</style>
 	<title>Insert title here</title>
 </h:head>
 <h:body>
+<h:form id="salaryReport">
 	<!-- Title -->
 	<div class="w3-container w3-xlarge">
 		<label class="w3-label">Salaries Report: </label>
@@ -24,20 +36,84 @@
 	<!-- Title END -->
 	
 	<!-- Menu -->
-	<div class="w3-container w3-xlarge">
+	<div class="w3-container">
+		<p:panelGrid columns="3" layout="grid">
 		<p:selectOneMenu value="#{salaryReportBean.selectedStaff}">
 			<f:selectItem itemLabel="All staffs" itemValue="All staffs"></f:selectItem>
 			<f:selectItems value="#{salaryReportBean.staffNames}"></f:selectItems>
-			
 		</p:selectOneMenu>
+		<p:panel styleClass="date">
+			<p:outputLabel for="fromDate" value="From:" />
+			<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" />
+		</p:panel>
+		<p:panel styleClass="date">
+			<p:outputLabel for="toDate" value="To:" />
+			<p:calendar id="toDate" value="#{salaryReportBean.toDate}" showOn="button" />
+		</p:panel>
+		
+		</p:panelGrid>
 	</div>
 	<!-- Menu END -->
 	
-	<!-- Report -->
-	<div class="w3-container w3-xlarge">
-		
+	<!-- Individual Report -->
+		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}" styleClass="w3-container">
+			<p:column headerText="Date" sortBy="#{transactionService.date}">
+				<h:outputText value="#{transactionService.date}">
+					<f:convertDateTime pattern="MM/dd/yyyy hh:mm a"></f:convertDateTime>
+				</h:outputText>
+			</p:column>
+			<p:column headerText="Service" sortBy="#{transactionService.service_group} #{transactionService.service_name}">
+				<h:outputText value="#{transactionService.service_group} #{transactionService.service_name}"></h:outputText>
+			</p:column>
+			<p:column headerText="Amount" sortBy="#{transactionService.amount}">
+				<h:outputText value="#{transactionService.amount}"></h:outputText>
+			</p:column>
+			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
+				<h:outputText value="#{transactionService.commission}"></h:outputText>
+			</p:column>
+			<p:column headerText="Service Deduction" sortBy="#{transactionService.service_deduction}">
+				<h:outputText value="#{transactionService.service_deduction}"></h:outputText>
+			</p:column>
+			<p:column headerText="Tip" sortBy="#{transactionService.tip}">
+				<h:outputText value="#{transactionService.tip}"></h:outputText>
+			</p:column>
+			<p:column headerText="Discount" sortBy="#{transactionService.discount}">
+				<h:outputText value="#{transactionService.discount}"></h:outputText>
+			</p:column>
+			
+			<p:columnGroup type="footer">
+				<p:row>
+					<p:column colspan="2" style="text-align:right" footerText="Total:"></p:column>
+				</p:row>
+			</p:columnGroup>
+		</p:dataTable>
+	<!-- Individual Report END -->
+	
+	<!-- Shop Report -->
+	<div class="w3-container">
+		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}">
+			<p:column headerText="Staff" sortBy="#{transactionService.staff_name}">
+				<h:outputText value="#{transactionService.staff_name}"></h:outputText>
+			</p:column>
+			<p:column headerText="Amount" sortBy="#{transactionService.amount}">
+				<h:outputText value="#{transactionService.amount}"></h:outputText>
+			</p:column>
+			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
+				<h:outputText value="#{transactionService.commission}"></h:outputText>
+			</p:column>
+			<p:column headerText="Service Deduction" sortBy="#{transactionService.service_deduction}">
+				<h:outputText value="#{transactionService.service_deduction}"></h:outputText>
+			</p:column>
+			<p:column headerText="Tip" sortBy="#{transactionService.tip}">
+				<h:outputText value="#{transactionService.tip}"></h:outputText>
+			</p:column>
+			<p:column headerText="Discount" sortBy="#{transactionService.discount}">
+				<h:outputText value="#{transactionService.discount}"></h:outputText>
+			</p:column>
+		</p:dataTable>
 	</div>
-	<!-- Report END -->
+	<!-- Shop Report END -->
+</h:form>
 
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>

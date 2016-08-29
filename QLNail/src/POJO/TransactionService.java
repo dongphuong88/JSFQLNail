@@ -1,6 +1,7 @@
 package POJO;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class TransactionService implements Serializable{
 	/**
@@ -14,6 +15,10 @@ public class TransactionService implements Serializable{
 	private String staff_name = "";
 	private double amount;
 	private double discount;
+	private double tip;
+	private double commission;
+	private double service_deduction;
+	private Date date;
 	
 	public double getAmount() {
 		return amount;
@@ -56,6 +61,30 @@ public class TransactionService implements Serializable{
 	}
 	public void setStaff_name(String staff_name) {
 		this.staff_name = staff_name;
+	}
+	public double getTip() {
+		return tip;
+	}
+	public void setTip(double tip) {
+		this.tip = tip;
+	}
+	public double getCommission() {
+		return commission;
+	}
+	public void setCommission(double commission) {
+		this.commission = commission;
+	}
+	public double getService_deduction() {
+		return service_deduction;
+	}
+	public void setService_deduction(double service_deduction) {
+		this.service_deduction = service_deduction;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
 	}
 	
 	
