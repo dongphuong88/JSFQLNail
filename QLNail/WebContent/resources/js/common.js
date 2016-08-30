@@ -1,6 +1,9 @@
-//Testing functions
-function t(text){
-    alert(text);
+// 
+function time24To12( tx24) {
+	var t = parseInt( tx24);
+	if( t == 12) return "12 PM";
+	if (t == 24) return "0 AM"
+	return (t < 12) ? t + " AM" : (t-12) + " PM";
 }
 
 
@@ -16,8 +19,6 @@ $(function () {
 $.fn.getCurrencyNumber = function() {
 	return Number(this.text().replace(/[^0-9\.-]+/g,""));
 }
-
-
 
 // Retrieve GET parameter
 function getParam(name){

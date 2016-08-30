@@ -12,8 +12,8 @@ public class StaffAvailable implements Serializable{
 	private long id;
 	private long staff_id;
 	private String day; 	// Monday, Tuesday,... or day string
-	private Date startHour;
-	private Date endHour;
+	private int startHour = 9;
+	private int endHour = 20;
 	private boolean allday;
 	public long getId() {
 		return id;
@@ -33,23 +33,23 @@ public class StaffAvailable implements Serializable{
 	public void setDay(String day) {
 		this.day = day;
 	}
-	public Date getStartHour() {
-		return startHour;
-	}
-	public void setStartHour(Date startHour) {
-		this.startHour = startHour;
-	}
-	public Date getEndHour() {
-		return endHour;
-	}
-	public void setEndHour(Date endHour) {
-		this.endHour = endHour;
-	}
 	public boolean isAllday() {
 		return allday;
 	}
 	public void setAllday(boolean allday) {
 		this.allday = allday;
+	}
+	public int getStartHour() {
+		return startHour;
+	}
+	public void setStartHour(int startHour) {
+		this.startHour = startHour;
+	}
+	public int getEndHour() {
+		return endHour;
+	}
+	public void setEndHour(int endHour) {
+		this.endHour = endHour;
 	}
 	
 }

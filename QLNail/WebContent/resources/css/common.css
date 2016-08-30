@@ -8,7 +8,22 @@
 .ui-selectonemenu .ui-selectonemenu-trigger {
 	width: 20px !important;
 }
+.ui-selectmanycheckbox td:nth-child(odd){
+	width:20px !important;
+}
+.ui-chkbox-label {
+	display:inline !important;
+}
 /* End fixing theme */
+
+/* Iphone */
+@media screen and (max-width: 480px) {
+    body {
+        background-color: lightgreen;
+        font-size:0.75em;
+    }
+}
+/* Iphone End */
 
 .ipadMiniScreen {
 	border: solid 1px red;

@@ -32,6 +32,7 @@ public class StaffBean implements Serializable{
 	
 	private int number6 = 30;  
     private int number7 = 80;
+    private String number8 ="test";
 	
 	public StaffBean() {
 		serviceCates = ServicesDAO.getServiceCategoriesList();
@@ -120,6 +121,14 @@ public class StaffBean implements Serializable{
 
 	public void setNumber7(int number7) {
 		this.number7 = number7;
+	}
+
+	public String getNumber8() {
+		return number8;
+	}
+
+	public void setNumber8(String number8) {
+		this.number8 = number8;
 	}
 	
 	
