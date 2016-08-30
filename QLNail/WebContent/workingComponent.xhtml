@@ -23,77 +23,38 @@
 	<title>Calendar</title>
 </h:head>
 <h:body>
-	<div class="w3-container">
-	<div id="scroll1" class="w3-red w3-left" style="width:100px; height:100px; overflow-y:hidden">rrts fshjkhfda kdha hkdha khah dah dda fd afa dfda fda fda fda fdas fdas afd a  adsa</div>
-	<div id="scroll2" class="w3-blue w3-left" style="width:120px; height:100px; overflow-y:auto" onscroll="$('#scroll1').scrollTop($('#scroll2').scrollTop())">rrts fshjkhfda kdha hkdha khah dah dda fd afa dfda fda fda fda fdas fdas afd a  adsa</div>
+
+	<div id="menu" style="position:relative;right:20px;top:20px">
+		<h:graphicImage library="images" name="calendar.png" style="width:50px;height:50px;position:absolute;top:0px;right:0px;z-index:1" />
+		<h:graphicImage library="images" name="calendar.png" style="width:50px;height:50px;position:absolute;right:0px;top:0px"/>
+		<h:graphicImage library="images" name="calendar.png" style="width:50px;height:50px;position:absolute;right:0px;top:0px"/>
 	</div>
-	<h:form id="schedular">
-    <p:growl id="messages" showDetail="true" />
-    <p:schedule id="schedule" value="#{scheduleView.eventModel}" timeZone="GMT+2" view="agendaDay" showHeader="true" slotMinutes="15"
-			leftHeaderTemplate="" rightHeaderTemplate="prev,current,next" centerTemplate="month, agendaWeek, agendaDay">
-            <p:ajax event="dateSelect" listener="#{scheduleView.onDateSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-            <p:ajax event="eventSelect" listener="#{scheduleView.onEventSelect}" update="eventDetails" oncomplete="PF('eventDialog').show();" />
-            <p:ajax event="eventMove" listener="#{scheduleView.onEventMove}" update="messages" />
-            <p:ajax event="eventResize" listener="#{scheduleView.onEventResize}" update="messages" />
-        </p:schedule>
-    <p:dialog widgetVar="eventDialog" header="Event Details" showEffect="clip" hideEffect="clip">
-        <h:panelGrid id="eventDetails" columns="2">
-            <p:outputLabel for="title" value="Titles:" />
-            <p:inputText id="title" value="#{scheduleView.event.title}" required="true" />
- 
-            <p:outputLabel for="from" value="From:" />
-            <p:calendar id="from" value="#{scheduleView.event.startDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
- 
-            <p:outputLabel for="to" value="To:" />
-            <p:calendar id="to" value="#{scheduleView.event.endDate}" timeZone="GMT+2" pattern="dd/MM/yyyy HH:mm"/>
- 
-            <p:outputLabel for="allDay" value="All Day:" />
-            <h:selectBooleanCheckbox id="allDay" value="#{scheduleView.event.allDay}" />
- 
-            <p:commandButton type="reset" value="Reset" />
-            <p:commandButton id="addButton" value="Save" actionListener="#{scheduleView.addEvent}" oncomplete="PF('myschedule').update();PF('eventDialog').hide();" />
-        </h:panelGrid>
-    </p:dialog>  
-    <p:remoteCommand name="onload" oncomplete="fixSchedular()"/>   
-</h:form>
- 
-	
-	<h:form id="dataF">
-		<!-- Action -->
-		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" actionListener="#{checkoutBean.print}"></p:commandButton>
-			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
-		</div>
-		<!-- Action END-->
-	</h:form>
-	
+	<p:commandButton value="submit"></p:commandButton>
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	
 	<script>
-		// Forced schedular resize
-		var resizeTimer;
-		$(window).on('resize', function(e) {
-		  clearTimeout(resizeTimer);
-		  resizeTimer = setTimeout(function() {
-			  fixSchedular();
-		  }, 250);
-		});
-		function fixSchedular() {
-			var sch1 = $('#schedular\\:schedule').find('.fc-scroller');
-			var sch2 = $('#schedular\\:scheduleLocale').find('.fc-scroller');
-			var sch3 = $('#schedular\\:lazyLoad').find('.fc-scroller');
+	$('#menu').on("click", test);
+	function test() {
+		$('#menu').off();
+		menuMoving($('#menu img:nth-child(2)'),60,60,2000);
+		menuMoving($('#menu img:nth-child(3)'),120,120,2000);
+	}
+	function menuMoving(obj, tarX, tarY, time) {
+		var curTime = 0;
+		var oriX = parseFloat($(obj).css("right"));
+		var oriY = parseFloat($(obj).css("top"));
+		var i = setInterval(function() {
+			curTime += 20;
+			if( curTime > time)
+				clearInterval(i);
+			// update animation
+			$(obj).css("right", oriX + Math.sin(curTime*Math.PI*0.75/time)*100);
+			$(obj).css("top", oriY + 100 - Math.cos(curTime*Math.PI/time)*100);
+			//$(obj).css("top", tarY + tarY - Math.cos(curTime*Math.PI/(2*time))*tarY);
 			
-			$(sch1).css({"overflow-y":"hidden", "height":"500px"});
-			$(sch2).css({"overflow-y":"hidden", "height":"500px"});
-			$(sch3).css({"height":"500px"});
-			$(sch3).on( "scroll", function() {
-				$(sch1).scrollTop($(sch3).scrollTop());
-				$(sch1).scrollTop($(sch3).scrollTop());
-			});
-			
-			$('#schedular\\:scheduleLocale').find('.fc-axis').hide();
-			$('#schedular\\:lazyLoad').find('.fc-axis').hide();
-		}
+		}, 20);
+	}
+		
 	</script>
 	 
 </h:body>
