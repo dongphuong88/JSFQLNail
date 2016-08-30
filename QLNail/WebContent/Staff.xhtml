@@ -28,8 +28,8 @@
 		#add_staff\:schedule {
 			border-right: 1px solid #a6c9e2;
 		}
-		#add_staff\:schedule .slider tr {
-			border: 0px !important;
+		.ui-datatable-tablewrapper {
+			overflow-x:hidden !important;
 		}
 	</style>
 	<title>Staff</title>
@@ -39,7 +39,7 @@
 <h:form id="add_staff">
 	<p:panelGrid>
 		<f:facet name="header">
-			<p:row><p:column colspan="2">
+			<p:row><p:column colspan="4">
 	        	<h:outputText value="Add Staff"></h:outputText>
 	        </p:column></p:row>
 	    </f:facet>
@@ -47,182 +47,80 @@
 	    <p:row>
 	    	<p:column style="width:50px"><p:outputLabel value="Name: " for="staffName" /></p:column>
 	    	<p:column><p:inputText id="staffName" styleClass="w3-input" value="#{staffBean.addStaff.name}"/></p:column>
-	    </p:row>
-	    
-        <p:row>
-        	<p:column><p:outputLabel value="Phone: " for="staffPhone" /></p:column>
+	    	<p:column style="width:50px"><p:outputLabel value="Phone: " for="staffPhone" /></p:column>
         	<p:column><p:inputText id="staffPhone" styleClass="w3-input" value="#{staffBean.addStaff.phone}"/></p:column>
-        </p:row>
+	    </p:row>
  
  		<p:row>
         	<p:column><p:outputLabel value="Title: " for="staffTitle"/></p:column>
         	<p:column><p:inputText id="staffTitle" styleClass="w3-input" value="#{staffBean.addStaff.title}"/></p:column>
-        </p:row>
-        
-        <p:row>
         	<p:column><p:outputLabel value="Commission(%): " /></p:column>
         	<p:column><p:inputText type="number" styleClass="w3-input" value="#{staffBean.addStaffCommission}"/></p:column>
         </p:row>
         
         <p:row>
         	<p:column><p:outputLabel value="Abilities: " for="staffAbilities" /></p:column>
-        	<p:column>
-        		<p:panelGrid>
+        	<p:column colspan="3">
+        		<p:panelGrid id="abilities">
         			<p:row><p:column>
 	        			<p:selectManyCheckbox id="staffAbilities" value="#{staffBean.selectedCates}">
 					        <f:selectItems value="#{staffBean.serviceCates}" var="group" itemLabel="#{group.name}" itemValue="#{group.name}" />
 					    </p:selectManyCheckbox>
         			</p:column></p:row>
 			        <p:row><p:column>
-				    	<p:selectBooleanCheckbox style="margin-right:20px; padding-top:-10px" itemLabel="Select all" />
-				    	<p:selectBooleanCheckbox itemLabel="Unselect all" />
+				    	<p:selectBooleanCheckbox style="margin-right:20px; padding-top:-10px" itemLabel="Select all"  value="#{staffBean.abilityAll}">
+				    		<p:ajax event="change" listener="#{staffBean.changedCheckAll()}" execute="add_staff:abilities" update="add_staff:abilities"></p:ajax>
+				    	</p:selectBooleanCheckbox>
 				    </p:column></p:row>
 		        </p:panelGrid>
         	</p:column>
         </p:row>
         
         <p:row>
-        	<p:column><p:outputLabel value="Schedule: "/></p:column>
-        	<p:column>
-        		<p:row>
-        			<p:column>
-			        	<p:panelGrid id="schedule">
+        	<p:column><p:outputLabel value="Schedule: " for="schedule"/></p:column>
+        	<p:column colspan="3">
+        		<p:dataTable id="schedule" var="addStaffAvailable" value="#{staffBean.addStaffAvailables}">
+        			<p:column id="scheduleCol">
+			        	<p:panelGrid>
 			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[0].day}" value="#{staffBean.addStaffAvailables[0].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[0].allday}" /></p:column>
+			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{addStaffAvailable.day}" value="#{addStaffAvailable.day}" /></p:column>
+			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{addStaffAvailable.allday}" /></p:column>
 			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange0" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[0].startHour} To #{staffBean.addStaffAvailables[0].endHour}" /></p:column></p:row>
+			        				<p:panelGrid>
+			        					<p:row><p:column>
+			        						<h:outputText id="displayRange" styleClass="displayRange" value="From #{addStaffAvailable.startHour} To #{addStaffAvailable.endHour}" ></h:outputText>
+			        					</p:column></p:row>
 							        	<p:row><p:column>
-							        		<p:slider for="txt00,txt01" display="displayRange0" range="true" displayTemplate="From {min} To {max}" minValue="1" maxValue="24"/>
+							        		<p:slider for="txt6,txt7" styleClass="slider" display="displayRange" range="true" displayTemplate="From {min} To {max}" onSlide="window.setTimeout(formatSlider,20)" minValue="1" maxValue="24"/>
 							        	</p:column></p:row>
 								        <p:row>
-								        	<p:column><h:inputHidden id="txt00" value="#{staffBean.addStaffAvailables[0].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt01" value="#{staffBean.addStaffAvailables[0].endHour}" /></p:column>
+								        	<p:column><h:inputHidden id="txt6" value="#{addStaffAvailable.startHour}" /></p:column>
+								        	<p:column><h:inputHidden id="txt7" value="#{addStaffAvailable.endHour}" /></p:column>
 								        </p:row>
-								        
+								        <script>
+								        	$(formatSlider);
+								        	function formatSlider() {
+								        		$('#add_staff\\:schedule .displayRange').each(function(index, value) {
+								        			var txs = $(this).text().split(" ");
+								        			if( isNaN(parseInt(txs[3]))) return;
+								        			$(this).text("From " + time24To12(txs[1]) + " To " + time24To12(txs[3]));
+								        		});
+								        	}
+								        </script>
 									</p:panelGrid>
 			        			</p:column>
 			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[1].day}" value="#{staffBean.addStaffAvailables[1].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[1].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange1" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[1].startHour} To #{staffBean.addStaffAvailables[1].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt10,txt11" display="displayRange1" range="true" displayTemplate="From {min} To {max}" widgetVar="slider" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt10" value="#{staffBean.addStaffAvailables[1].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt11" value="#{staffBean.addStaffAvailables[1].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[2].day}" value="#{staffBean.addStaffAvailables[2].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[2].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange2" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[2].startHour} To #{staffBean.addStaffAvailables[2].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt20,txt21" display="displayRange1" range="true" displayTemplate="From {min} To {max}" widgetVar="slider" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt20" value="#{staffBean.addStaffAvailables[2].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt21" value="#{staffBean.addStaffAvailables[2].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[3].day}" value="#{staffBean.addStaffAvailables[3].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[3].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange3" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[3].startHour} To #{staffBean.addStaffAvailables[3].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt30,txt31" display="displayRange1" range="true" displayTemplate="From {min} To {max}" widgetVar="slider" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt30" value="#{staffBean.addStaffAvailables[3].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt31" value="#{staffBean.addStaffAvailables[3].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[4].day}" value="#{staffBean.addStaffAvailables[4].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[4].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange4" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[4].startHour} To #{staffBean.addStaffAvailables[4].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt40,txt41" display="displayRange1" range="true" displayTemplate="From {min} To {max}" widgetVar="slider" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt40" value="#{staffBean.addStaffAvailables[4].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt41" value="#{staffBean.addStaffAvailables[4].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[5].day}" value="#{staffBean.addStaffAvailables[5].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[5].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange5" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[5].startHour} To #{staffBean.addStaffAvailables[5].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt50,txt51" display="displayRange5" range="true" displayTemplate="From {min} To {max}" widgetVar="slider" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt50" value="#{staffBean.addStaffAvailables[5].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt51" value="#{staffBean.addStaffAvailables[5].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{staffBean.addStaffAvailables[6].day}" value="#{staffBean.addStaffAvailables[6].day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{staffBean.addStaffAvailables[6].allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid styleClass="slider">
-			        					<p:row><p:column><h:outputText id="displayRange6" styleClass="displayRange" value="From #{staffBean.addStaffAvailables[6].startHour} To #{staffBean.addStaffAvailables[6].endHour}" /></p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt60,txt61" display="displayRange6" range="true" displayTemplate="From {min} To {max}" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt60" value="#{staffBean.addStaffAvailables[6].startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt61" value="#{staffBean.addStaffAvailables[6].endHour}" /></p:column>
-								        </p:row>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        		<script>
-					        	$(function(){
-					        		//formatSlider();
-					        	})
-					        	function formatSlider() {
-					        		$('#add_staff\\:schedule').find('.displayRange').each(function(index, value) {
-					        			alert($(this).text());
-					        			var txs = $(this).text().split(" ");
-					        			$(this).text("From " + time24To12(txs[1]) + " To " + time24To12(txs[3]));
-					        		});
-					        	}
-					        </script>
 			        	</p:panelGrid>
 		        	</p:column>
-		        </p:row>
+		        </p:dataTable>
         	</p:column>
         </p:row>
         
         <f:facet name="footer">
         	<p:row>
-        		<p:column colspan="2">
+        		<p:column colspan="4">
         	<div class="w3-center">
-	        <p:commandButton value="Add" style="width:100px" actionListener="#{serviceBean.addService()}"/>
+	        <p:commandButton value="Add" style="width:100px" actionListener="#{staffBean.changedCheckAll}"/>
         	<p:commandButton value="Cancel" style="width:100px"/>
         	</div>
         	</p:column>

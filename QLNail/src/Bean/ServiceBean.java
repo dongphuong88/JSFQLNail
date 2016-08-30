@@ -27,7 +27,7 @@ public class ServiceBean implements Serializable{
 	private Map<String,String> groups;
 	
 	private List<Object> serviceGroups;
-	private List<String> colors = new ArrayList<>(Arrays.asList("Red", "Green", "Blue", "Orange", "Yellow", "Cyan"));
+	private List<String> colors = new ArrayList<>(Arrays.asList("red", "green", "blue", "orange", "yellow", "cyan", "black"));
 	
 	public ServiceBean() {
 		// Load groups

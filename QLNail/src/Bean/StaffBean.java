@@ -29,6 +29,7 @@ public class StaffBean implements Serializable{
 	private List<StaffAvailable> addStaffAvailables = new ArrayList<>();
 	private List<String> workHours = Arrays.asList("8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM","7PM","8PM","9PM");
 	private float addStaffCommission;
+	private boolean abilityAll;
 	
 	private int number6 = 30;  
     private int number7 = 80;
@@ -58,6 +59,14 @@ public class StaffBean implements Serializable{
 		sA = new StaffAvailable();
 		sA.setDay("Sunday");
 		addStaffAvailables.add(sA);
+	}
+	
+	public void changedCheckAll() {
+		selectedCates.clear();
+		if( abilityAll )
+			for( ServiceCategory cate : serviceCates) {
+				selectedCates.add(cate.getName());
+			}
 	}
 	
 	public Staff getAddStaff() {
@@ -129,6 +138,14 @@ public class StaffBean implements Serializable{
 
 	public void setNumber8(String number8) {
 		this.number8 = number8;
+	}
+
+	public boolean isAbilityAll() {
+		return abilityAll;
+	}
+
+	public void setAbilityAll(boolean abilityAll) {
+		this.abilityAll = abilityAll;
 	}
 	
 	

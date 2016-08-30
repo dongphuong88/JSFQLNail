@@ -29,13 +29,6 @@
 	<title>Add Service</title>
 </h:head>
 <h:body>
-<p:stack icon="/resources/images/calendar.png" expanded="false">
-    <p:menuitem value="Home" icon="/resources/images/calendar.png" url="#"/>
-    <p:menuitem value="Music" icon="/resources/images/calendar.png" url="#"/>
-    <p:menuitem value="Video" icon="/resources/images/calendar.png" url="#"/>
-    <p:menuitem value="Email" icon="/resources/images/calendar.png" url="#"/>
-    <p:menuitem value="Portfolio" icon="/resources/images/calendar.png" url="#"/>
-</p:stack>
 
 <!-- 
 <h:form id="nav" styleClass="w3-container w3-quarter">
@@ -99,13 +92,13 @@
         
         <p:outputLabel value="Group: " for="serviceGroup" />
         <p:selectOneMenu id="serviceGroup" value="#{serviceBean.addServiceCate.name}" editable="true" var="sel">
-        	<p:ajax listener="#{serviceBean.changeServiceCate}" event="change" oncomplete="changeColor()" update="@form"></p:ajax>
+        	<p:ajax listener="#{serviceBean.changeServiceCate}" event="change" oncomplete="fillColorRadio()" update="@form"></p:ajax>
         	<f:selectItem itemLabel="Select Group" itemValue="" />
             <f:selectItems value="#{serviceBean.groups}" />
         </p:selectOneMenu>
         
         <p:outputLabel value="Color: " for="serviceColor" />
-        <p:selectOneRadio id="serviceColor" value="#{serviceBean.addServiceCate.color}"  layout="grid" columns="3" onchange="changeColor()">
+        <p:selectOneRadio id="serviceColor" value="#{serviceBean.addServiceCate.color}" layout="grid" columns="3" onchange="changeColor()">
             <f:selectItems value="#{serviceBean.colors}" var="c" itemLabel=" " itemValue="#{c}"/>
         </p:selectOneRadio>
 
@@ -125,13 +118,14 @@
 
 	<h:outputScript library="js" name="common.js"></h:outputScript>
 	<script>
-		$(function fillColorRadio(){
+		$(fillColorRadio);
+		function fillColorRadio(){
 			$('#add_service\\:serviceColor label').each(function(index, value){
 				$(this).css({"width":25,"height":25});
 				$(this).css("background",$(this).parent().prev().find('input').val());
 			});
 			changeColor();
-		});
+		}
 		function changeColor(){
 			$('#add_service\\:serviceGroup input:last').css('background', $('#add_service\\:serviceColor :checked').val());
 		}

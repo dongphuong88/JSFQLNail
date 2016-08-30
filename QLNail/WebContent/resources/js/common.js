@@ -1,6 +1,7 @@
 // 
 function time24To12( tx24) {
-	var t = parseInt( tx24);
+	var txs = tx24.split(" ");
+	var t = parseInt( txs[0]);
 	if( t == 12) return "12 PM";
 	if (t == 24) return "0 AM"
 	return (t < 12) ? t + " AM" : (t-12) + " PM";

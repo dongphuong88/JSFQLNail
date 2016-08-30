@@ -4,7 +4,8 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets" 
-	xmlns:p="http://primefaces.org/ui">
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 <h:head>
 	<meta http-equiv="x-ua-compatible" content="ie=edge" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,88 +31,95 @@
 <h:body>
 <h:form id="salaryReport">
 	<!-- Title -->
-	<div class="w3-container w3-xlarge">
-		<label class="w3-label">Salaries Report: </label>
-	</div>
+		<label class="w3-label w3-xlarge">Salaries Report: </label>
 	<!-- Title END -->
 	
 	<!-- Menu -->
-	<div class="w3-container">
-		<p:panelGrid columns="3" layout="grid">
-		<p:selectOneMenu value="#{salaryReportBean.selectedStaff}">
-			<f:selectItem itemLabel="All staffs" itemValue="All staffs"></f:selectItem>
-			<f:selectItems value="#{salaryReportBean.staffNames}"></f:selectItems>
-		</p:selectOneMenu>
-		<p:panel styleClass="date">
-			<p:outputLabel for="fromDate" value="From:" />
-			<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" />
-		</p:panel>
-		<p:panel styleClass="date">
-			<p:outputLabel for="toDate" value="To:" />
-			<p:calendar id="toDate" value="#{salaryReportBean.toDate}" showOn="button" />
-		</p:panel>
-		
+		<p:panelGrid>
+			<p:row>
+				<p:column style="width:200px">
+					<p:selectOneMenu value="#{salaryReportBean.selectedStaff}" >
+						<p:ajax event="change" update="@form" listener="#{salaryReportBean.calOneStaff}"></p:ajax>
+						<f:selectItem itemLabel="All staffs" itemValue="All staffs"></f:selectItem>
+						<f:selectItems value="#{salaryReportBean.staffNames}"></f:selectItems>
+					</p:selectOneMenu>
+				</p:column>
+				<p:column  style="width:300px">
+					<p:outputLabel for="fromDate" value="From:" />
+					<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" />
+				</p:column>
+				<p:column>
+					<p:outputLabel for="toDate" value="To:" />
+					<p:calendar id="toDate" value="#{salaryReportBean.toDate}" showOn="button" />
+				</p:column>
+			</p:row>		
 		</p:panelGrid>
-	</div>
 	<!-- Menu END -->
 	
 	<!-- Individual Report -->
-		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}" styleClass="w3-container">
-			<p:column headerText="Date" sortBy="#{transactionService.date}">
-				<h:outputText value="#{transactionService.date}">
-					<f:convertDateTime pattern="MM/dd/yyyy hh:mm a"></f:convertDateTime>
-				</h:outputText>
+	<p:panelGrid rendered="#{not salaryReportBean.showAllStaffs}">
+		<p:row>
+			<p:column style="width:250px">
+				<p:outputLabel value="Staff Name: #{salaryReportBean.selectedStaff}" />
 			</p:column>
-			<p:column headerText="Service" sortBy="#{transactionService.service_group} #{transactionService.service_name}">
-				<h:outputText value="#{transactionService.service_group} #{transactionService.service_name}"></h:outputText>
+			<p:column>
+				<p:outputLabel value="Total: " />
+				<p:outputLabel value="#{salaryReportBean.oneStaffTotalAmount}" >
+					<f:convertNumber type="currency"></f:convertNumber>
+				</p:outputLabel>
 			</p:column>
-			<p:column headerText="Amount" sortBy="#{transactionService.amount}">
-				<h:outputText value="#{transactionService.amount}"></h:outputText>
+			<p:column>
+				<p:outputLabel value="Tip: " />
+				<p:outputLabel value="#{salaryReportBean.oneStaffTotalTip}" >
+					<f:convertNumber type="currency"></f:convertNumber>
+				</p:outputLabel>
 			</p:column>
-			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
-				<h:outputText value="#{transactionService.commission}"></h:outputText>
+			<p:column>
+				<p:outputLabel value="Salary: " />
+				<p:outputLabel value="#{salaryReportBean.oneStaffTotal}" >
+					<f:convertNumber type="currency"></f:convertNumber>
+				</p:outputLabel>
 			</p:column>
-			<p:column headerText="Service Deduction" sortBy="#{transactionService.service_deduction}">
-				<h:outputText value="#{transactionService.service_deduction}"></h:outputText>
-			</p:column>
-			<p:column headerText="Tip" sortBy="#{transactionService.tip}">
-				<h:outputText value="#{transactionService.tip}"></h:outputText>
-			</p:column>
-			<p:column headerText="Discount" sortBy="#{transactionService.discount}">
-				<h:outputText value="#{transactionService.discount}"></h:outputText>
-			</p:column>
-			
-			<p:columnGroup type="footer">
-				<p:row>
-					<p:column colspan="2" style="text-align:right" footerText="Total:"></p:column>
-				</p:row>
-			</p:columnGroup>
-		</p:dataTable>
+		</p:row>
+		<p:row><p:column colspan="4">
+			<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}">
+				<p:column headerText="Date" sortBy="#{transactionService.date}">
+					<h:outputText value="#{transactionService.date}">
+						<f:convertDateTime pattern="MM/dd/yyyy hh:mm a"></f:convertDateTime>
+					</h:outputText>
+				</p:column>
+				<p:column headerText="Service" sortBy="#{transactionService.service_group} #{transactionService.service_name}">
+					<h:outputText value="#{transactionService.service_group} #{transactionService.service_name}"></h:outputText>
+				</p:column>
+				<p:column headerText="Amount" sortBy="#{transactionService.amount}">
+					<h:outputText value="#{transactionService.amount}"></h:outputText>
+				</p:column>
+				<p:column headerText="Tip" sortBy="#{transactionService.tip}">
+					<h:outputText value="#{transactionService.tip}"></h:outputText>
+				</p:column>
+				<p:column headerText="Salary" sortBy="#{transactionService.commission}">
+					<h:outputText value="#{transactionService.commission}"></h:outputText>
+				</p:column>
+			</p:dataTable>
+		</p:column></p:row>
+	</p:panelGrid>
 	<!-- Individual Report END -->
 	
 	<!-- Shop Report -->
-	<div class="w3-container">
-		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}">
+		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}"  rendered="#{salaryReportBean.showAllStaffs}">
 			<p:column headerText="Staff" sortBy="#{transactionService.staff_name}">
 				<h:outputText value="#{transactionService.staff_name}"></h:outputText>
 			</p:column>
 			<p:column headerText="Amount" sortBy="#{transactionService.amount}">
 				<h:outputText value="#{transactionService.amount}"></h:outputText>
 			</p:column>
-			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
-				<h:outputText value="#{transactionService.commission}"></h:outputText>
-			</p:column>
-			<p:column headerText="Service Deduction" sortBy="#{transactionService.service_deduction}">
-				<h:outputText value="#{transactionService.service_deduction}"></h:outputText>
-			</p:column>
 			<p:column headerText="Tip" sortBy="#{transactionService.tip}">
 				<h:outputText value="#{transactionService.tip}"></h:outputText>
 			</p:column>
-			<p:column headerText="Discount" sortBy="#{transactionService.discount}">
-				<h:outputText value="#{transactionService.discount}"></h:outputText>
+			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
+				<h:outputText value="#{transactionService.commission}"></h:outputText>
 			</p:column>
 		</p:dataTable>
-	</div>
 	<!-- Shop Report END -->
 </h:form>
 
