@@ -9,9 +9,9 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 
+import CARGO.Service;
+import CARGO.ServiceCategory;
 import DAO.ServicesDAO;
-import POJO.Service;
-import POJO.ServiceCategory;
 
 @ManagedBean
 @ViewScoped

@@ -10,32 +10,29 @@ import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 
+import CARGO.ServiceCategory;
+import CARGO.Staff;
+import CARGO.StaffAvailable;
+import CARGO.StaffRef;
+import CARGO.StaffSkill;
 import DAO.ServicesDAO;
 import DAO.ShopInfoDAO;
-import POJO.ServiceCategory;
-import POJO.Staff;
-import POJO.StaffAvailable;
 
 @ManagedBean
 @RequestScoped
-public class StaffBean implements Serializable{
+public class AddStaffBean implements Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7036839071853606019L;
-	private Staff addStaff = new Staff();
+	private Staff staff = new Staff();
+	private StaffRef staffRef = new StaffRef();
+	private List<StaffSkill> staffSkills = new ArrayList<>(); 
 	private List<ServiceCategory> serviceCates;
-	private List<String> selectedCates = new ArrayList<>();
-	private List<StaffAvailable> addStaffAvailables = new ArrayList<>();
-	private List<String> workHours = Arrays.asList("8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM","7PM","8PM","9PM");
-	private float addStaffCommission;
+	private List<StaffAvailable> staffAvailables = new ArrayList<>();
 	private boolean abilityAll;
 	
-	private int number6 = 30;  
-    private int number7 = 80;
-    private String number8 ="test";
-	
-	public StaffBean() {
+	public AddStaffBean() {
 		serviceCates = ServicesDAO.getServiceCategoriesList();
 		
 		StaffAvailable sA = new StaffAvailable();

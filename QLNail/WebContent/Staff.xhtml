@@ -5,130 +5,200 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets" 
 	xmlns:p="http://primefaces.org/ui">
-<h:head>
-	<meta http-equiv="x-ua-compatible" content="ie=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	
-	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
-	<h:outputStylesheet library="css" name="common.css" />
-	<style>
-		#add_staff\:schedule\:scheduleCol{
-			display:none;
-		}
-		#add_staff\:schedule .ui-panelgrid-cell{
-			padding:0px !important;
-			border:0px !important;
-		}
-		#add_staff\:schedule_data tr {
-			border:0px !important;
-		}
-		#add_staff\:schedule_data td {
-			border-color: #a6c9e2;
-		}
-		#add_staff\:schedule {
-			border-right: 1px solid #a6c9e2;
-		}
-		.ui-datatable-tablewrapper {
-			overflow-x:hidden !important;
-		}
-	</style>
-	<title>Staff</title>
-</h:head>
 <h:body>
-	
-<h:form id="add_staff">
-	<p:panelGrid>
-		<f:facet name="header">
-			<p:row><p:column colspan="4">
-	        	<h:outputText value="Add Staff"></h:outputText>
-	        </p:column></p:row>
-	    </f:facet>
-	    
-	    <p:row>
-	    	<p:column style="width:50px"><p:outputLabel value="Name: " for="staffName" /></p:column>
-	    	<p:column><p:inputText id="staffName" styleClass="w3-input" value="#{staffBean.addStaff.name}"/></p:column>
-	    	<p:column style="width:50px"><p:outputLabel value="Phone: " for="staffPhone" /></p:column>
-        	<p:column><p:inputText id="staffPhone" styleClass="w3-input" value="#{staffBean.addStaff.phone}"/></p:column>
-	    </p:row>
- 
- 		<p:row>
-        	<p:column><p:outputLabel value="Title: " for="staffTitle"/></p:column>
-        	<p:column><p:inputText id="staffTitle" styleClass="w3-input" value="#{staffBean.addStaff.title}"/></p:column>
-        	<p:column><p:outputLabel value="Commission(%): " /></p:column>
-        	<p:column><p:inputText type="number" styleClass="w3-input" value="#{staffBean.addStaffCommission}"/></p:column>
-        </p:row>
-        
-        <p:row>
-        	<p:column><p:outputLabel value="Abilities: " for="staffAbilities" /></p:column>
-        	<p:column colspan="3">
-        		<p:panelGrid id="abilities">
-        			<p:row><p:column>
-	        			<p:selectManyCheckbox id="staffAbilities" value="#{staffBean.selectedCates}">
-					        <f:selectItems value="#{staffBean.serviceCates}" var="group" itemLabel="#{group.name}" itemValue="#{group.name}" />
-					    </p:selectManyCheckbox>
-        			</p:column></p:row>
-			        <p:row><p:column>
-				    	<p:selectBooleanCheckbox style="margin-right:20px; padding-top:-10px" itemLabel="Select all"  value="#{staffBean.abilityAll}">
-				    		<p:ajax event="change" listener="#{staffBean.changedCheckAll()}" execute="add_staff:abilities" update="add_staff:abilities"></p:ajax>
-				    	</p:selectBooleanCheckbox>
-				    </p:column></p:row>
-		        </p:panelGrid>
-        	</p:column>
-        </p:row>
-        
-        <p:row>
-        	<p:column><p:outputLabel value="Schedule: " for="schedule"/></p:column>
-        	<p:column colspan="3">
-        		<p:dataTable id="schedule" var="addStaffAvailable" value="#{staffBean.addStaffAvailables}">
-        			<p:column id="scheduleCol">
-			        	<p:panelGrid>
-			        		<p:row>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="#{addStaffAvailable.day}" value="#{addStaffAvailable.day}" /></p:column>
-			        			<p:column style="width:150px"><p:selectBooleanCheckbox itemLabel="All day" value="#{addStaffAvailable.allday}" /></p:column>
-			        			<p:column>
-			        				<p:panelGrid>
-			        					<p:row><p:column>
-			        						<h:outputText id="displayRange" styleClass="displayRange" value="From #{addStaffAvailable.startHour} To #{addStaffAvailable.endHour}" ></h:outputText>
-			        					</p:column></p:row>
-							        	<p:row><p:column>
-							        		<p:slider for="txt6,txt7" styleClass="slider" display="displayRange" range="true" displayTemplate="From {min} To {max}" onSlide="window.setTimeout(formatSlider,20)" minValue="1" maxValue="24"/>
-							        	</p:column></p:row>
-								        <p:row>
-								        	<p:column><h:inputHidden id="txt6" value="#{addStaffAvailable.startHour}" /></p:column>
-								        	<p:column><h:inputHidden id="txt7" value="#{addStaffAvailable.endHour}" /></p:column>
-								        </p:row>
-								        <script>
-								        	$(formatSlider);
-								        	function formatSlider() {
-								        		$('#add_staff\\:schedule .displayRange').each(function(index, value) {
-								        			var txs = $(this).text().split(" ");
-								        			if( isNaN(parseInt(txs[3]))) return;
-								        			$(this).text("From " + time24To12(txs[1]) + " To " + time24To12(txs[3]));
-								        		});
-								        	}
-								        </script>
-									</p:panelGrid>
-			        			</p:column>
-			        		</p:row>
-			        	</p:panelGrid>
-		        	</p:column>
-		        </p:dataTable>
-        	</p:column>
-        </p:row>
-        
-        <f:facet name="footer">
-        	<p:row>
-        		<p:column colspan="4">
-        	<div class="w3-center">
-	        <p:commandButton value="Add" style="width:100px" actionListener="#{staffBean.changedCheckAll}"/>
-        	<p:commandButton value="Cancel" style="width:100px"/>
-        	</div>
-        	</p:column>
-        	</p:row>
-	    </f:facet>
-	</p:panelGrid>
-</h:form>
+	<ui:composition template="templates/commonLayout.xhtml">
+		<ui:define name="content">
+    		<style>
+				#add_staff\:schedule\:scheduleCol{
+					display:none;
+				}
+				#add_staff\:schedule .ui-panelgrid-cell{
+					padding:0px !important;
+					border:0px !important;
+				}
+				#add_staff\:schedule_data tr {
+					border:0px !important;
+				}
+				#add_staff\:schedule_data td {
+					border-color: #a6c9e2;
+				}
+				#add_staff\:schedule {
+					border-right: 1px solid #a6c9e2;
+				}
+				.ui-datatable-tablewrapper {
+					overflow-x:hidden !important;
+				}
+			</style>
 
-	<h:outputScript library="js" name="common.js"></h:outputScript>
+			<h:form id="add_staff">
+				<p:panelGrid>
+					<f:facet name="header">
+						<p:row>
+							<p:column colspan="4">
+								<h:outputText value="Add Staff"></h:outputText>
+							</p:column>
+						</p:row>
+					</f:facet>
+
+					<p:row>
+						<p:column style="width:50px">
+							<p:outputLabel value="Name: " for="staffName" />
+						</p:column>
+						<p:column>
+							<p:inputText id="staffName" styleClass="w3-input"
+								value="#{staffBean.addStaff.name}" />
+						</p:column>
+						<p:column style="width:50px">
+							<p:outputLabel value="Phone: " for="staffPhone" />
+						</p:column>
+						<p:column>
+							<p:inputText id="staffPhone" styleClass="w3-input"
+								value="#{staffBean.addStaff.phone}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Title: " for="staffTitle" />
+						</p:column>
+						<p:column>
+							<p:inputText id="staffTitle" styleClass="w3-input"
+								value="#{staffBean.addStaff.title}" />
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Commission(%): " />
+						</p:column>
+						<p:column>
+							<p:inputText type="number" styleClass="w3-input"
+								value="#{staffBean.addStaffCommission}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Abilities: " for="staffAbilities" />
+						</p:column>
+						<p:column colspan="3">
+							<p:panelGrid id="abilities">
+								<p:row>
+									<p:column>
+										<p:selectManyCheckbox id="staffAbilities"
+											value="#{staffBean.selectedCates}">
+											<f:selectItems value="#{staffBean.serviceCates}" var="group"
+												itemLabel="#{group.name}" itemValue="#{group.name}" />
+										</p:selectManyCheckbox>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column>
+										<p:selectBooleanCheckbox
+											style="margin-right:20px; padding-top:-10px"
+											itemLabel="Select all" value="#{staffBean.abilityAll}">
+											<p:ajax event="change"
+												listener="#{staffBean.changedCheckAll()}"
+												execute="add_staff:abilities" update="add_staff:abilities"></p:ajax>
+										</p:selectBooleanCheckbox>
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Schedule: " for="schedule" />
+						</p:column>
+						<p:column colspan="3">
+							<p:dataTable id="schedule" var="addStaffAvailable"
+								value="#{staffBean.addStaffAvailables}">
+								<p:column id="scheduleCol">
+									<p:panelGrid>
+										<p:row>
+											<p:column style="width:150px">
+												<p:selectBooleanCheckbox
+													itemLabel="#{addStaffAvailable.day}"
+													value="#{addStaffAvailable.day}" />
+											</p:column>
+											<p:column style="width:150px">
+												<p:selectBooleanCheckbox itemLabel="All day"
+													value="#{addStaffAvailable.allday}" />
+											</p:column>
+											<p:column>
+												<p:panelGrid>
+													<p:row>
+														<p:column>
+															<h:outputText id="displayRange" styleClass="displayRange"
+																value="From #{addStaffAvailable.startHour} To #{addStaffAvailable.endHour}"></h:outputText>
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>
+															<p:slider for="txt6,txt7" styleClass="slider"
+																display="displayRange" range="true"
+																displayTemplate="From {min} To {max}"
+																onSlide="window.setTimeout(formatSlider,20)"
+																minValue="1" maxValue="24" />
+														</p:column>
+													</p:row>
+													<p:row>
+														<p:column>
+															<h:inputHidden id="txt6"
+																value="#{addStaffAvailable.startHour}" />
+														</p:column>
+														<p:column>
+															<h:inputHidden id="txt7"
+																value="#{addStaffAvailable.endHour}" />
+														</p:column>
+													</p:row>
+													<script>
+														$(formatSlider);
+														function formatSlider() {
+															$(
+																	'#add_staff\\:schedule .displayRange')
+																	.each(
+																			function(
+																					index,
+																					value) {
+																				var txs = $(
+																						this)
+																						.text()
+																						.split(
+																								" ");
+																				if (isNaN(parseInt(txs[3])))
+																					return;
+																				$(
+																						this)
+																						.text(
+																								"From "
+																										+ time24To12(txs[1])
+																										+ " To "
+																										+ time24To12(txs[3]));
+																			});
+														}
+													</script>
+												</p:panelGrid>
+											</p:column>
+										</p:row>
+									</p:panelGrid>
+								</p:column>
+							</p:dataTable>
+						</p:column>
+					</p:row>
+
+					<f:facet name="footer">
+						<p:row>
+							<p:column colspan="4">
+								<div class="w3-center">
+									<p:commandButton value="Add" style="width:100px"
+										actionListener="#{staffBean.changedCheckAll}" />
+									<p:commandButton value="Cancel" style="width:100px" />
+								</div>
+							</p:column>
+						</p:row>
+					</f:facet>
+				</p:panelGrid>
+			</h:form>
+    	</ui:define>
+	</ui:composition>
 </h:body>
 </html>

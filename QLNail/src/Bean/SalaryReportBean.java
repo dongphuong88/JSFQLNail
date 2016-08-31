@@ -9,8 +9,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.bean.ViewScoped;
 
+import CARGO.TransactionService;
 import DAO.StaffsDAO;
-import POJO.TransactionService;
 
 @ManagedBean
 @RequestScoped

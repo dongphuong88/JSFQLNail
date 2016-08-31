@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:p="http://primefaces.org/ui">
+ 	<body>
+ 		<ui:composition>
+ 			<nav class="w3-sidenav w3-white w3-card-2" style="right:0px;display:none" id="mySidenav">
+			  <a href="javascript:void(0)" onclick="w3_close()"
+			  class="w3-closenav w3-large">Close &times;</a>
+			  <p:link outcome="Calendar" value="Calendar"></p:link>
+			  <p:link outcome="SalaryReport" value="Salary Report"></p:link>
+			  <p:link outcome="Checkout" value="Checkout"></p:link>
+			  <p:link outcome="Service" value="Add Service"></p:link>
+			  <p:link outcome="Staff" value="Add Staff"></p:link>
+			</nav>
+			<div style="position:relative;">
+				<h:graphicImage style="position:absolute;right:10px;top:10px;width:50px;heigh:50px;" onclick="w3_open()" library="images" name="calendar.png"/>
+			</div>
+			
+			<script>
+			function w3_open() {
+			  $("#mySidenav").css("display","block");
+			}
+			function w3_close() {
+				$("#mySidenav").css("display","none");
+			}
+			</script>
+ 		</ui:composition>
+ 	</body>
+</html>
