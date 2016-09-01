@@ -5,26 +5,9 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-<h:head>
-	<meta http-equiv="x-ua-compatible" content="ie=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
-	<h:outputStylesheet library="css" name="common.css" />
-	
-	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
-	<h:outputScript library="js" name="jquery-dateFormat.min.js"></h:outputScript>
-	
-	<style>
-	.ui-datatable .ui-datatable-header, .ui-datatable .ui-datatable-footer {
-		text-align: left;
-	}
-	
-	</style>
-
-	<title>Checkout</title>
-</h:head>
 <h:body>
+<ui:composition template="templates/commonLayout.xhtml">
+		<ui:define name="content">
 	<!-- Date/Time -->
 	<div class="w3-container w3-xlarge">
 		<label class="w3-label">Date/Time: </label>
@@ -152,9 +135,9 @@
 		<!-- Services End -->
 		
 		<!-- Transaction -->
-	<div class="w3-container">
-		<div class="w3-container w3-half w3-xlarge"></div>
-		<div class="w3-container w3-half">
+	<div class="w3-container" style="padding:0px">
+		<div class="w3-container w3-onethird w3-xlarge"></div>
+		<div class="w3-container w3-twothird w3-right" style="padding:0px">
 			<p:panelGrid style="margin-top:10px; margin-bottom:10px">
 				<f:facet name="header">
 					<p:row>
@@ -291,8 +274,8 @@
 		<p:inputText id="transaction_data" value="#{checkoutBean.transactionData}" style="display:none"></p:inputText>
 		<!-- Action -->
 		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" actionListener="#{checkoutBean.print}" update="growlWV"></p:commandButton>
-			<p:commandButton style="width:180px;height:50px;" value="Email" actionListener="#{checkoutBean.email}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" action="#{checkoutBean.print}" update="growlWV"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Email" action="#{checkoutBean.email}"></p:commandButton>
 		</div>
 		<!-- Action END-->
 	</h:form>
@@ -302,7 +285,6 @@
 	<script>
 		$(function() {
 			updateServicesAmount();
-			
 		});
 
 		function updateServicesAmount() {
@@ -346,6 +328,7 @@
 		}
 		function fillData() {
 			// Convert all invalid number
+			var serviceAmount = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
 			var dcAmount;
 			if($('.totalDCAmount').find('input').prop('checked')) {
 				dcAmount = +$('.totalDCInpAmount').val();
@@ -360,7 +343,7 @@
 			if($('.cash').find('input').prop('checked')) {
 				cash = +$('.inpCash').val();
 			}
-			
+
 			// Collect
 			var transactionServiceData = '{"TransactionServices":[';
 			$('.serviceRow').each( function(index) {
@@ -380,11 +363,12 @@
 			transactionData += '"cash":' + cash + ',';
 			transactionData += '"datetime":"' + $.format.date("#{checkoutBean.currDate}", "yyyy-MM-dd HH:mm") +'"';
 			transactionData += '}';
-			
+
 			$('#dataF\\:transactionService_data').val( transactionServiceData);
 			$('#dataF\\:transaction_data').val( transactionData);
 		}
 	</script>
-	 
+	 </ui:define>
+	 </ui:composition>
 </h:body>
 </html>

@@ -10,13 +10,6 @@ public class Staff implements Serializable{
 	 */
 	private static final long serialVersionUID = -5002571083526165524L;
 	
-	class StaffSchedule {
-		public String day;
-		public boolean allday;
-		public int startHour;
-		public int endHour;
-	}
-	
 	private long id;
 	private String name;
 	private String title;
@@ -24,6 +17,16 @@ public class Staff implements Serializable{
 	private String phone;
 	private List<String> abilities = new ArrayList<>();
 	private List<StaffSchedule> schedules = new ArrayList<>();
+	
+	public Staff() {
+		schedules.add(new StaffSchedule("Monday", true, 9, 20));
+		schedules.add(new StaffSchedule("Tuesday", true, 9, 20));
+		schedules.add(new StaffSchedule("Wednesday", true, 9, 20));
+		schedules.add(new StaffSchedule("Thursday", true, 9, 20));
+		schedules.add(new StaffSchedule("Friday", true, 9, 20));
+		schedules.add(new StaffSchedule("Saterday", true, 9, 20));
+		schedules.add(new StaffSchedule("Sunday", true, 9, 20));
+	}
 	
 	public String getName() {
 		return name;

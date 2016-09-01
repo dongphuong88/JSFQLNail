@@ -4,16 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
+import DAO.ERROR_CODE;
 import DAO.ServicesDAO;
 import DAO.StaffsDAO;
 import DAO.TransactionsDAO;
@@ -37,25 +32,21 @@ public class CheckoutBean implements Serializable{
 		serviceGroups = ServicesDAO.getServiceGroupsJSONObject();
 	}
 	
-	public void print() throws Exception{
+	public String print(){
 		// Validation
-		JSONParser parser = new JSONParser();
-		JSONObject services = (JSONObject)parser.parse(transactionServiceData);
 		FacesContext context = FacesContext.getCurrentInstance();
         
-		switch ( TransactionsDAO.setTransactionFromServices(transactionServiceData, transactionData) ) {
-		case INVALID_SQL :
-			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, "Could not save!", "Please contact your administrator." ));
-			break;
-		case SERVICE_EMPTY:
-			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, "Services are empty!", "Please add one Service." ));
-			break;
-		default:
-			break;
-		}
+		ERROR_CODE err = TransactionsDAO.setTransactionFromServices(transactionServiceData, transactionData);
+		
+		if ( ERROR_CODE.SUCCEED == err ) 
+			return "index?faces-redirect=true";
+		
+		context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, err.toString(), "ERROR" ));
+		return "";
 	}
 	
-	public void email() {
+	public String email() {
+		return "";
 	}
 
 	public Date getCurrDate() {

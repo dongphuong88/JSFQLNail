@@ -46,14 +46,14 @@
 						</p:column>
 						<p:column>
 							<p:inputText id="staffName" styleClass="w3-input"
-								value="#{staffBean.addStaff.name}" />
+								value="#{addStaffBean.staff.name}" />
 						</p:column>
 						<p:column style="width:50px">
 							<p:outputLabel value="Phone: " for="staffPhone" />
 						</p:column>
 						<p:column>
 							<p:inputText id="staffPhone" styleClass="w3-input"
-								value="#{staffBean.addStaff.phone}" />
+								value="#{addStaffBean.staff.phone}" />
 						</p:column>
 					</p:row>
 
@@ -63,14 +63,14 @@
 						</p:column>
 						<p:column>
 							<p:inputText id="staffTitle" styleClass="w3-input"
-								value="#{staffBean.addStaff.title}" />
+								value="#{addStaffBean.staff.title}" />
 						</p:column>
 						<p:column>
 							<p:outputLabel value="Commission(%): " />
 						</p:column>
 						<p:column>
 							<p:inputText type="number" styleClass="w3-input"
-								value="#{staffBean.addStaffCommission}" />
+								value="#{addStaffBean.staff.commission}" />
 						</p:column>
 					</p:row>
 
@@ -83,9 +83,9 @@
 								<p:row>
 									<p:column>
 										<p:selectManyCheckbox id="staffAbilities"
-											value="#{staffBean.selectedCates}">
-											<f:selectItems value="#{staffBean.serviceCates}" var="group"
-												itemLabel="#{group.name}" itemValue="#{group.name}" />
+											value="#{addStaffBean.staff.abilities}">
+											<f:selectItems value="#{addStaffBean.serviceCates}" var="group"
+												itemLabel="#{group}" itemValue="#{group}" />
 										</p:selectManyCheckbox>
 									</p:column>
 								</p:row>
@@ -93,9 +93,9 @@
 									<p:column>
 										<p:selectBooleanCheckbox
 											style="margin-right:20px; padding-top:-10px"
-											itemLabel="Select all" value="#{staffBean.abilityAll}">
+											itemLabel="Select all" value="#{addStaffBean.abilityAll}">
 											<p:ajax event="change"
-												listener="#{staffBean.changedCheckAll()}"
+												listener="#{addStaffBean.changedCheckAll()}"
 												execute="add_staff:abilities" update="add_staff:abilities"></p:ajax>
 										</p:selectBooleanCheckbox>
 									</p:column>
@@ -110,21 +110,22 @@
 						</p:column>
 						<p:column colspan="3">
 							<p:dataTable id="schedule" var="addStaffAvailable"
-								value="#{staffBean.addStaffAvailables}">
+								value="#{addStaffBean.staff.schedules}">
 								<p:column id="scheduleCol">
 									<p:panelGrid>
 										<p:row>
 											<p:column style="width:150px">
 												<p:selectBooleanCheckbox
 													itemLabel="#{addStaffAvailable.day}"
-													value="#{addStaffAvailable.day}" />
+													value="#{addStaffAvailable.available}" onchange="$(this).parent().parent().parent().next().toggle()"/>
 											</p:column>
-											<p:column style="width:150px">
+											<p:column style="width:150px;display:none">
 												<p:selectBooleanCheckbox itemLabel="All day"
-													value="#{addStaffAvailable.allday}" />
+													value="#{addStaffAvailable.allday}" onchange="$(this).parent().parent().parent().next().find('table').toggle()">
+													</p:selectBooleanCheckbox>
 											</p:column>
 											<p:column>
-												<p:panelGrid>
+												<p:panelGrid style="display:none">
 													<p:row>
 														<p:column>
 															<h:outputText id="displayRange" styleClass="displayRange"
@@ -189,9 +190,8 @@
 						<p:row>
 							<p:column colspan="4">
 								<div class="w3-center">
-									<p:commandButton value="Add" style="width:100px"
-										actionListener="#{staffBean.changedCheckAll}" />
-									<p:commandButton value="Cancel" style="width:100px" />
+									<p:commandButton value="Add" style="width:100px" action="#{addStaffBean.add}" />
+									<p:commandButton value="Cancel" style="width:100px" action="#{addStaffBean.cancel}" />
 								</div>
 							</p:column>
 						</p:row>

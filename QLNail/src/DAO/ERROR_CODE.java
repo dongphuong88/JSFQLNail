@@ -1,0 +1,5 @@
+package DAO;
+
+public enum ERROR_CODE {
+	SERVICE_EMPTY, INVALID_SQL, SUCCEED
+}
