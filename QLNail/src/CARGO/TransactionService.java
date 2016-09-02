@@ -19,6 +19,7 @@ public class TransactionService implements Serializable{
 	private double commission;
 	private double service_deduction;
 	private Date date;
+	private double salary;
 	
 	public double getAmount() {
 		return amount;
@@ -85,6 +86,12 @@ public class TransactionService implements Serializable{
 	}
 	public void setDate(Date date) {
 		this.date = date;
+	}
+	public double getSalary() {
+		return salary;
+	}
+	public void setSalary(double salary) {
+		this.salary = salary;
 	}
 	
 	

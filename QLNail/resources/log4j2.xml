@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE xml>
-<Configuration status="DEBUG">
+<Configuration status="warn">
 	<Properties>
-		<Property name="log-path"></Property>
+		<Property name="log-path">..</Property>
 	</Properties>
 	<Appenders>
-		<RollingFile name="RollingFile" fileName="Logs/Logging.log"
+		<RollingFile name="RollingFile" fileName="${log-path}/Logs/Logging.log"
 			filePattern="Logs/Logging-%d{yyyy-MM-dd}-%i.log">
 			<PatternLayout>
 				<pattern>%d{dd/MMM/yyyy HH:mm:ss,SSS}- %c{1}: %m%n</pattern>
@@ -15,13 +15,16 @@
 			</Policies>
 			<DefaultRolloverStrategy max="4" />
 		</RollingFile>
+		<Console name="console" target="SYSTEM_OUT">
+            <PatternLayout
+                pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1} - %msg%n" />
+        </Console>
 	</Appenders>
 	<Loggers>
-		<Logger name="root" level="debug" additivity="false">
-			<appender-ref ref="RollingFile" level="debug" />
-		</Logger>
-		<Root level="debug" additivity="false">
-			<AppenderRef ref="RollingFile" />
-		</Root>
+		<Root level="debug" additivity="true">
+            <AppenderRef ref="console" level="debug"/>
+            <AppenderRef ref="RollingFile" level="warn"/>
+        </Root>
+        
 	</Loggers>
 </Configuration>

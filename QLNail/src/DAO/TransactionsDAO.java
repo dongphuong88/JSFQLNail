@@ -2,14 +2,21 @@ package DAO;
 
 import java.io.Serializable;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
+import org.apache.logging.log4j.Level;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import CARGO.TransactionService;
 
 public class TransactionsDAO implements Serializable {
 	
@@ -19,42 +26,132 @@ public class TransactionsDAO implements Serializable {
 	private static final long serialVersionUID = 8892117335504826904L;
 	
 	public static void main(String[] args) {
-		JSONArray resultSet = new JSONArray();
-				
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/qlnail?useSSL=false", "pduong", "2H@aclong");
-			Statement stmt = conn.createStatement();
-			String sql;
-			sql = "INSERT INTO services (services.name, services.price, services.group) VALUES ('Pedi Deluxe', '45', 'Pedi');SELECT LAST_INSERT_ID();";
-			ResultSet rs = stmt.executeQuery(sql);
-			while (rs.next()) {
-				//resultSet.put(rs.getString("name"));
+	}
+	
+	public static List<TransactionService> getSalaryReport( Date fromDate, Date toDate) {
+		List<TransactionService> resultSet = new ArrayList<>();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try{
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime( toDate);
+			c.add(Calendar.DATE, 1);
+			Date increaseDate = c.getTime();
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT staff_name, SUM(amount) as amount, SUM(tip) as tip, SUM((amount - discount - service_deduction)* (1 - commission / 100) + tip) as Salary "
+							+ "FROM transaction_services "
+							+ "WHERE datetime BETWEEN '" + df.format(fromDate) + "' AND '" + df.format(increaseDate) + "' "
+							+ "GROUP BY staff_name");
+			while( rs != null && rs.next()) {
+				TransactionService sr = new TransactionService();
+				sr.setStaff_name(rs.getString(1));
+				sr.setAmount(rs.getDouble(2));
+				sr.setTip(rs.getDouble(3));
+				sr.setSalary(rs.getDouble(4));
+				resultSet.add(sr);
 			}
 			rs.close();
-			stmt.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
 		}
 		
-		System.out.println(resultSet);
+		return resultSet;
+	}
+	public static TransactionService getSalaryReport( Date fromDate, Date toDate, String staff_name) {
+		TransactionService resultSet = new TransactionService();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try{
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime( toDate);
+			c.add(Calendar.DATE, 1);
+			Date increaseDate = c.getTime();
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT staff_name, SUM(amount) as amount, SUM(tip) as tip, SUM((amount - discount - service_deduction)* (1 - commission / 100) + tip) as Salary "
+							+ "FROM transaction_services "
+							+ "WHERE staff_name = '" + staff_name + "' AND datetime BETWEEN '" + df.format(fromDate) + "' AND '" + df.format(increaseDate) + "' "
+							+ "GROUP BY staff_name");
+			if( rs != null && rs.next()) {
+				resultSet.setStaff_name(rs.getString(1));
+				resultSet.setAmount(rs.getDouble(2));
+				resultSet.setTip(rs.getDouble(3));
+				resultSet.setSalary(rs.getDouble(4));
+			}
+			rs.close();
+		} catch (Exception e) {
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
+		}
+		
+		return resultSet;
+	}
+	
+	public static List<TransactionService> getSalaryReportDetails( Date fromDate, Date toDate, String staff_name) {
+		List<TransactionService> resultSet = new ArrayList<>();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try{
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			Calendar c = Calendar.getInstance();
+			c.setTime( toDate);
+			c.add(Calendar.DATE, 1);
+			Date increaseDate = c.getTime();
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT datetime, service_group, service_name, amount, tip "
+												+ "FROM transaction_services "
+												+ "WHERE staff_name = '" + staff_name + "' AND datetime BETWEEN '" + df.format(fromDate) + "' AND '" + df.format(increaseDate) + "';");
+			SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+			while( rs != null && rs.next()) {
+				TransactionService sr = new TransactionService();
+				sr.setDate( df1.parse(rs.getString(1)));
+				sr.setService_group( rs.getString(2));
+				sr.setService_name(rs.getString(3));
+				sr.setAmount(rs.getDouble(4));
+				sr.setTip(rs.getDouble(5));
+				resultSet.add(sr);
+			}
+			rs.close();
+		} catch (Exception e) {
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
+		}
+		
+		return resultSet;
 	}
 	
 	public static ERROR_CODE setTransactionFromServices( String servicesJSON, String transactionJSON) {
 		JSONParser jsonParser = new JSONParser();
+		Connection conn = null;
+		Statement stmt = null;
+		PreparedStatement ptmt = null;
+		ResultSet rs = null;
 
 		try {
 			JSONObject transactionServices = (JSONObject)jsonParser.parse(servicesJSON);
 			JSONObject transaction = (JSONObject)jsonParser.parse(transactionJSON);
 			JSONArray services = (JSONArray)transactionServices.get("TransactionServices");
-			
 			if( 0 == services.size()) {
 				return ERROR_CODE.SERVICE_EMPTY;
 			}
 			
-			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/qlnail?useSSL=false", "pduong", "2H@aclong");
-			Statement stmt = conn.createStatement();
+			conn = UtilsDAO.getConnection();
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
 			double transactionTotal = Double.parseDouble(transaction.get("total").toString());
 			double transactionTip = Double.parseDouble(transaction.get("tip").toString());
 			String datetime = transaction.get("datetime").toString();
@@ -66,13 +163,15 @@ public class TransactionsDAO implements Serializable {
 					+",'" + datetime
 					+"')";
 			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-			ResultSet rs = stmt.getGeneratedKeys();
+			rs = stmt.getGeneratedKeys();
 			long transactionServiceID = -1;
 			while (rs != null && rs.next()) {
 				transactionServiceID = rs.getLong(1);
 			}
+			rs.close();
+			rs = null;
 			
-			PreparedStatement ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount, service_deduction,tip,commission, datetime) values (?,?,?,?,?,?,?,?,?,?)");
+			ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount, service_deduction,tip,commission, datetime) values (?,?,?,?,?,?,?,?,?,?)");
 			ptmt.setLong(1, transactionServiceID);
 			for( int i = 0; i < services.size(); ++i) {
 				JSONObject obj = (JSONObject)services.get(i);
@@ -85,6 +184,8 @@ public class TransactionsDAO implements Serializable {
 				if (rs != null && rs.next()) {
 					serviceDeduction = rs.getDouble(1);
 				}
+				rs.close();
+				rs = null;
 				
 				String staffName = obj.get("staffName").toString();
 				float commission = 0f;
@@ -92,6 +193,8 @@ public class TransactionsDAO implements Serializable {
 				if (rs != null && rs.next()) {
 					commission = rs.getFloat(1);
 				}
+				rs.close();
+				rs = null;
 				
 				double serviceAmount = Double.parseDouble(obj.get("amount").toString());
 				ptmt.setString(2, serviceGroup);
@@ -100,18 +203,19 @@ public class TransactionsDAO implements Serializable {
 				ptmt.setDouble(5, serviceAmount);
 				ptmt.setDouble(6, Double.parseDouble(obj.get("discount").toString()));
 				ptmt.setDouble(7, serviceDeduction);
-				ptmt.setDouble(8, transactionTip * serviceAmount / transactionTotal); // tip
+				ptmt.setDouble(8, transactionTip * serviceAmount * 0.8 / transactionTotal); // tip
 				ptmt.setFloat(9, commission); // commission
 				ptmt.setString(10, datetime);
-				ptmt.executeUpdate();
+				ptmt.addBatch();
 			}
-			// STEP 6: Clean-up environment
-			rs.close();
-			stmt.close();
-			ptmt.close();
+			ptmt.executeBatch();
+			conn.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
-			return ERROR_CODE.INVALID_SQL;
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			return UtilsDAO.rollbackConnection(conn);
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt, ptmt);
 		}
 		
 		return ERROR_CODE.SUCCEED;

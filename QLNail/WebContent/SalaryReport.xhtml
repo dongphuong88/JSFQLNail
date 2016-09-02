@@ -39,18 +39,22 @@
 			<p:row>
 				<p:column style="width:200px">
 					<p:selectOneMenu value="#{salaryReportBean.selectedStaff}" >
-						<p:ajax event="change" update="@form" listener="#{salaryReportBean.calOneStaff}"></p:ajax>
+						<p:ajax event="change" update="@form" listener="#{salaryReportBean.refresh}"></p:ajax>
 						<f:selectItem itemLabel="All staffs" itemValue="All staffs"></f:selectItem>
 						<f:selectItems value="#{salaryReportBean.staffNames}"></f:selectItems>
 					</p:selectOneMenu>
 				</p:column>
 				<p:column  style="width:300px">
 					<p:outputLabel for="fromDate" value="From:" />
-					<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" />
+					<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" >
+						<p:ajax event="dateSelect" update="@form" listener="#{salaryReportBean.refresh}" process="@this"/>
+					</p:calendar>
 				</p:column>
 				<p:column>
 					<p:outputLabel for="toDate" value="To:" />
-					<p:calendar id="toDate" value="#{salaryReportBean.toDate}" showOn="button" />
+					<p:calendar id="toDate" value="#{salaryReportBean.toDate}" showOn="button" >
+						<p:ajax event="dateSelect" update="@form" listener="#{salaryReportBean.refresh}" process="@this"/>
+					</p:calendar>
 				</p:column>
 			</p:row>		
 		</p:panelGrid>
@@ -60,23 +64,23 @@
 	<p:panelGrid rendered="#{not salaryReportBean.showAllStaffs}">
 		<p:row>
 			<p:column style="width:250px">
-				<p:outputLabel value="Staff Name: #{salaryReportBean.selectedStaff}" />
+				<p:outputLabel value="Staff Name: #{salaryReportBean.staff.staff_name}" />
 			</p:column>
 			<p:column>
 				<p:outputLabel value="Total: " />
-				<p:outputLabel value="#{salaryReportBean.oneStaffTotalAmount}" >
+				<p:outputLabel value="#{salaryReportBean.staff.amount}" >
 					<f:convertNumber type="currency"></f:convertNumber>
 				</p:outputLabel>
 			</p:column>
 			<p:column>
 				<p:outputLabel value="Tip: " />
-				<p:outputLabel value="#{salaryReportBean.oneStaffTotalTip}" >
+				<p:outputLabel value="#{salaryReportBean.staff.tip}" >
 					<f:convertNumber type="currency"></f:convertNumber>
 				</p:outputLabel>
 			</p:column>
 			<p:column>
 				<p:outputLabel value="Salary: " />
-				<p:outputLabel value="#{salaryReportBean.oneStaffTotal}" >
+				<p:outputLabel value="#{salaryReportBean.staff.salary}" >
 					<f:convertNumber type="currency"></f:convertNumber>
 				</p:outputLabel>
 			</p:column>
@@ -97,16 +101,13 @@
 				<p:column headerText="Tip" sortBy="#{transactionService.tip}">
 					<h:outputText value="#{transactionService.tip}"></h:outputText>
 				</p:column>
-				<p:column headerText="Salary" sortBy="#{transactionService.commission}">
-					<h:outputText value="#{transactionService.commission}"></h:outputText>
-				</p:column>
 			</p:dataTable>
 		</p:column></p:row>
 	</p:panelGrid>
 	<!-- Individual Report END -->
 	
-	<!-- Shop Report -->
-		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}"  rendered="#{salaryReportBean.showAllStaffs}">
+	<!-- All Staffs Report -->
+		<p:dataTable var="transactionService" value="#{salaryReportBean.transactionServices}"  rendered="#{salaryReportBean.showAllStaffs}" sortMode="multiple">
 			<p:column headerText="Staff" sortBy="#{transactionService.staff_name}">
 				<h:outputText value="#{transactionService.staff_name}"></h:outputText>
 			</p:column>
@@ -116,16 +117,13 @@
 			<p:column headerText="Tip" sortBy="#{transactionService.tip}">
 				<h:outputText value="#{transactionService.tip}"></h:outputText>
 			</p:column>
-			<p:column headerText="Commission" sortBy="#{transactionService.commission}">
+			<p:column headerText="Commission" sortBy="#{transactionService.salary}">
 				<h:outputText value="#{transactionService.commission}"></h:outputText>
 			</p:column>
 		</p:dataTable>
-	<!-- Shop Report END -->
+	<!-- All Staffs Report END -->
 </h:form>
 
 	<h:outputScript library="js" name="common.js"></h:outputScript>
-	<script>
-		var dataJSON;
-	</script>
 </h:body>
 </html>
