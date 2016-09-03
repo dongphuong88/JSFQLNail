@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import CARGO.Service;
 import DAO.ERROR_CODE;
@@ -30,9 +32,13 @@ public class AddServiceBean implements Serializable{
 	}
 	
 	public String add() {
-		if( ERROR_CODE.SUCCEED == ServicesDAO.setService(service))
-			return "index?faces-redirect=true";
-		
+		FacesContext context = FacesContext.getCurrentInstance();
+		ERROR_CODE err = ServicesDAO.setService(service);
+
+		if( ERROR_CODE.SUCCEED == err)
+			return "Service?faces-redirect=true";
+
+		context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, err.toString(), "ERROR" ));
 		return "";
 	}
 	

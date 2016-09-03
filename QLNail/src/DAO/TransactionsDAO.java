@@ -55,7 +55,7 @@ public class TransactionsDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -88,7 +88,7 @@ public class TransactionsDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -125,7 +125,7 @@ public class TransactionsDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -153,6 +153,10 @@ public class TransactionsDAO implements Serializable {
 			conn.setAutoCommit(false);
 			stmt = conn.createStatement();
 			double transactionTotal = Double.parseDouble(transaction.get("total").toString());
+			if( 0 == transactionTotal) {
+				return ERROR_CODE.SERVICE_EMPTY;
+			}
+			
 			double transactionTip = Double.parseDouble(transaction.get("tip").toString());
 			String datetime = transaction.get("datetime").toString();
 			String sql = "insert into transactions (cash, total, tip, total_discount, datetime) values ("
@@ -211,7 +215,7 @@ public class TransactionsDAO implements Serializable {
 			ptmt.executeBatch();
 			conn.commit();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 			return UtilsDAO.rollbackConnection(conn);
 		}
 		finally {

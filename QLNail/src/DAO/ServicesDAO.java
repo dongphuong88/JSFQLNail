@@ -42,7 +42,7 @@ public class ServicesDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -78,14 +78,19 @@ public class ServicesDAO implements Serializable {
 		
 		try {
 			conn = UtilsDAO.getConnection();
+			stmt = conn.createStatement();
+			
+			if( service.getCate_name().trim().equals(""))
+				return ERROR_CODE.SERVICE_GROUP_EMPTY;
+			if( service.getName().trim().equals(""))
+				return ERROR_CODE.SERVICE_NAME_EMPTY;
 
 			// Update service_categories
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT id FROM service_categories WHERE name='" + service.getCate_name() + "'");
+			ResultSet rs = stmt.executeQuery("SELECT id FROM service_categories WHERE name='" + service.getCate_name().trim() + "'");
 			long cate_id = -1;
 			if( rs!= null && !rs.next()) {
 				// new cate
-				stmt.executeUpdate("INSERT INTO service_categories(name, color) VALUES ("+ service.getCate_name() + "," + service.getCate_color() + ")", Statement.RETURN_GENERATED_KEYS);
+				stmt.executeUpdate("INSERT INTO service_categories(name, color) VALUES ('"+ service.getCate_name().trim() + "','" + service.getCate_color().trim() + "')", Statement.RETURN_GENERATED_KEYS);
 				rs = stmt.getGeneratedKeys();
 				if( rs != null && rs.next())
 					cate_id = rs.getLong(1);
@@ -95,6 +100,12 @@ public class ServicesDAO implements Serializable {
 			}
 			rs.close();
 			rs = null;
+			
+			rs = stmt.executeQuery("SELECT name FROM services WHERE service_group_id =" + cate_id + " AND name='" + service.getName().trim() + "'");
+			if( rs != null && rs.next()) {
+				rs.close();
+				return ERROR_CODE.SERVICE_ALREADY_EXIST;
+			}
 			
 			// Update services
 			ptmt = conn.prepareStatement("INSERT INTO services(name, price, duration, turn, description, additional_info, service_group_id, supply_deduction) VALUES (?,?,?,?,?,?,?,?)");
@@ -110,7 +121,7 @@ public class ServicesDAO implements Serializable {
 			
 			conn.commit();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
 			return UtilsDAO.rollbackConnection(conn);
 		}
 		finally {
@@ -134,7 +145,7 @@ public class ServicesDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Services", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -157,7 +168,7 @@ public class ServicesDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Services", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -189,7 +200,7 @@ public class ServicesDAO implements Serializable {
 			}
 			rs.close();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Services", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);

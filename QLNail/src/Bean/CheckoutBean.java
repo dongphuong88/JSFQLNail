@@ -39,7 +39,7 @@ public class CheckoutBean implements Serializable{
 		ERROR_CODE err = TransactionsDAO.setTransactionFromServices(transactionServiceData, transactionData);
 		
 		if ( ERROR_CODE.SUCCEED == err ) 
-			return "index?faces-redirect=true";
+			return "Checkout?faces-redirect=true";
 		
 		context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, err.toString(), "ERROR" ));
 		return "";

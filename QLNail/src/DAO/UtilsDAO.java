@@ -20,10 +20,10 @@ public class UtilsDAO {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/qlnail?useSSL=false", "pduong", "2H@aclong");
 			conn.setAutoCommit( autoCommit);
 		} catch (ClassNotFoundException e) {
-			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e);
 		}
 		catch (SQLException e) {
-			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e);
 		}
 		return conn;
 	}
@@ -38,7 +38,7 @@ public class UtilsDAO {
 			}
 		}
 		catch ( SQLException ee) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, ee.getMessage());
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, ee);
 		}
 		return ERROR_CODE.INVALID_SQL;
 	}
@@ -53,12 +53,16 @@ public class UtilsDAO {
 				conn.close();
 		}
 		catch( SQLException e) {
-			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage( "Database Connection", Level.ERROR, e);
 		}
 	}
 	
 	public static void logMessage( String location, Level lv, String msg) {
 		logger = LogManager.getLogger( location);
 		logger.log( lv, msg);
+	}
+	
+	public static void logMessage( String location, Level lv, Exception msg) {
+		logger.log( lv, msg, msg);
 	}
 }

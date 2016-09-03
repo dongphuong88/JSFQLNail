@@ -3,8 +3,10 @@ package Bean;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 
 import CARGO.Staff;
 import DAO.ERROR_CODE;
@@ -35,8 +37,12 @@ public class AddStaffBean implements Serializable{
 	}
 	
 	public String add() {
-		if( ERROR_CODE.SUCCEED == StaffsDAO.setStaff(staff))
-			return "index?faces-redirect=true";
+		FacesContext context = FacesContext.getCurrentInstance();
+		ERROR_CODE err = StaffsDAO.setStaff(staff);
+		if( ERROR_CODE.SUCCEED == err)
+			return "Staff?faces-redirect=true";
+		
+		context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, err.toString(), "ERROR" ));
 		return "";
 	}
 	public String cancel() {

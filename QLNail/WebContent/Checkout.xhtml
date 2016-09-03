@@ -273,8 +273,7 @@
 		<p:inputText id="transaction_data" value="#{checkoutBean.transactionData}" style="display:none"></p:inputText>
 		<!-- Action -->
 		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Print" onclick="fillData()" action="#{checkoutBean.print}" update="growlWV"></p:commandButton>
-			<p:commandButton style="width:180px;height:50px;" value="Email" action="#{checkoutBean.email}"></p:commandButton>
+			<p:commandButton style="width:180px;height:50px;" value="Save" onclick="fillData()" action="#{checkoutBean.print}" update="growlWV" ></p:commandButton>
 		</div>
 		<!-- Action END-->
 	</h:form>

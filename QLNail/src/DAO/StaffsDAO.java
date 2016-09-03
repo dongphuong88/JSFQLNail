@@ -27,13 +27,22 @@ public class StaffsDAO {
 		try {
 			conn = UtilsDAO.getConnection();
 			stmt = conn.createStatement();
+			
+			if( staff.getName().trim().equals(""))
+				return ERROR_CODE.STAFF_NAME_EMPTY;
+			
+			rs = stmt.executeQuery("SELECT name FROM staffs WHERE name='" + staff.getName().trim() + "'");
+			if( rs!= null && rs.next()) {
+				rs.close();
+				return ERROR_CODE.STAFF_ALREADY_EXISTED;
+			}
 
 			// Update staffs
 			ptmt = conn.prepareStatement("INSERT INTO staffs(name, title,phone) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS );
 			ptmt.setString(1, staff.getName().trim());
 			ptmt.setString(2, staff.getTitle().trim());
 			ptmt.setString(3, staff.getPhone().trim());
-			ptmt.addBatch();
+			ptmt.executeUpdate();
 			
 			rs = ptmt.getGeneratedKeys();
 			long staffId = -1;
@@ -47,7 +56,7 @@ public class StaffsDAO {
 			ptmt = conn.prepareStatement("INSERT INTO staff_refs(staff_id,commision) VALUES (?,?)");
 			ptmt.setLong(1, staffId);
 			ptmt.setFloat(2, staff.getCommission());
-			ptmt.addBatch();
+			ptmt.executeUpdate();
 			
 			// Update staff_skills
 			long cate_id = -1;
@@ -61,6 +70,7 @@ public class StaffsDAO {
 				ptmt.setLong(2, cate_id);
 				ptmt.addBatch();
 			}
+			ptmt.executeBatch();
 			
 			// Update staff_availables
 			ptmt = conn.prepareStatement("INSERT INTO staff_availables(staff_id,day,startHour,endHour,allday) VALUES (?,?,?,?,?)");
@@ -77,7 +87,7 @@ public class StaffsDAO {
 			ptmt.executeBatch();
 			conn.commit();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Staffs", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Staffs", Level.ERROR, e);
 			return UtilsDAO.rollbackConnection(conn);
 		}
 		finally {
@@ -100,7 +110,7 @@ public class StaffsDAO {
 				resultSet.put(rs.getString("name"));
 			}
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Staffs", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Staffs", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
@@ -122,7 +132,7 @@ public class StaffsDAO {
 				resultSet.add(rs.getString("name"));
 			}
 		} catch (Exception e) {
-			UtilsDAO.logMessage("Staffs", Level.ERROR, e.getMessage());
+			UtilsDAO.logMessage("Staffs", Level.ERROR, e);
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
