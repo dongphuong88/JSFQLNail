@@ -9,20 +9,20 @@
 	<ui:composition template="templates/commonLayout.xhtml">
 		<ui:define name="content">
     		<style>
-				#add_staff\:schedule\:scheduleCol{
+				#staff\:schedule\:scheduleCol{
 					display:none;
 				}
-				#add_staff\:schedule .ui-panelgrid-cell{
+				#staff\:schedule .ui-panelgrid-cell{
 					padding:0px !important;
 					border:0px !important;
 				}
-				#add_staff\:schedule_data tr {
+				#staff\:schedule_data tr {
 					border:0px !important;
 				}
-				#add_staff\:schedule_data td {
+				#staff\:schedule_data td {
 					border-color: #a6c9e2;
 				}
-				#add_staff\:schedule {
+				#staff\:schedule {
 					border-right: 1px solid #a6c9e2;
 				}
 				.ui-datatable-tablewrapper {
@@ -30,8 +30,10 @@
 				}
 			</style>
 
-			<h:form id="add_staff">
-				<p:panelGrid>
+			<h:form id="staff">
+				<p:commandButton value="Add Staff" style="width:200px" actionListener="#{staffBean.openAddStaff}" update="staff add_staff"/>
+				
+				<p:panelGrid id="add_staff" rendered="#{staffBean.addShow}">
 					<f:facet name="header">
 						<p:row>
 							<p:column colspan="4">
@@ -46,14 +48,14 @@
 						</p:column>
 						<p:column>
 							<p:inputText id="staffName" styleClass="w3-input"
-								value="#{addStaffBean.staff.name}" />
+								value="#{staffBean.newStaff.name}" />
 						</p:column>
 						<p:column style="width:50px">
 							<p:outputLabel value="Phone: " for="staffPhone" />
 						</p:column>
 						<p:column>
 							<p:inputText id="staffPhone" styleClass="w3-input"
-								value="#{addStaffBean.staff.phone}" />
+								value="#{staffBean.newStaff.phone}" />
 						</p:column>
 					</p:row>
 
@@ -63,14 +65,14 @@
 						</p:column>
 						<p:column>
 							<p:inputText id="staffTitle" styleClass="w3-input"
-								value="#{addStaffBean.staff.title}" />
+								value="#{staffBean.newStaff.title}" />
 						</p:column>
 						<p:column>
 							<p:outputLabel value="Commission(%): " />
 						</p:column>
 						<p:column>
 							<p:inputText type="number" styleClass="w3-input"
-								value="#{addStaffBean.staff.commission}" />
+								value="#{staffBean.newStaff.commission}" />
 						</p:column>
 					</p:row>
 					
@@ -79,7 +81,7 @@
 							<p:outputLabel value="Permission: " for="permission" />
 						</p:column>
 						<p:column>
-							<p:selectOneRadio id="permission" value="#{addStaffBean.staff.permission}">
+							<p:selectOneRadio id="permission" value="#{staffBean.newStaff.permission}">
 					            <f:selectItem itemLabel="Staff" itemValue="Staff" />
 					            <f:selectItem itemLabel="Manager" itemValue="Manager" />
 					            <f:selectItem itemLabel="Admin" itemValue="Admin" />
@@ -90,7 +92,7 @@
 						</p:column>
 						<p:column>
 							<p:inputText type="number" styleClass="w3-input"
-								value="#{addStaffBean.staff.hourly_rate}" />
+								value="#{staffBean.newStaff.hourly_rate}" />
 						</p:column>
 					</p:row>
 
@@ -103,8 +105,8 @@
 								<p:row>
 									<p:column>
 										<p:selectManyCheckbox id="staffAbilities"
-											value="#{addStaffBean.staff.abilities}">
-											<f:selectItems value="#{addStaffBean.serviceCates}" var="group"
+											value="#{staffBean.newStaff.abilities}">
+											<f:selectItems value="#{staffBean.serviceCates}" var="group"
 												itemLabel="#{group}" itemValue="#{group}" />
 										</p:selectManyCheckbox>
 									</p:column>
@@ -113,10 +115,10 @@
 									<p:column>
 										<p:selectBooleanCheckbox
 											style="margin-right:20px; padding-top:-10px"
-											itemLabel="Select all" value="#{addStaffBean.abilityAll}">
+											itemLabel="Select all" value="#{staffBean.abilityAll}">
 											<p:ajax event="change"
-												listener="#{addStaffBean.changedCheckAll()}"
-												execute="add_staff:abilities" update="add_staff:abilities"></p:ajax>
+												listener="#{staffBean.changedCheckAll()}"
+												execute="staff:abilities" update="staff abilities"></p:ajax>
 										</p:selectBooleanCheckbox>
 									</p:column>
 								</p:row>
@@ -130,7 +132,7 @@
 						</p:column>
 						<p:column colspan="3">
 							<p:dataTable id="schedule" var="addStaffAvailable"
-								value="#{addStaffBean.staff.schedules}">
+								value="#{staffBean.newStaff.schedules}">
 								<p:column id="scheduleCol">
 									<p:panelGrid>
 										<p:row>
@@ -175,7 +177,7 @@
 														$(formatSlider);
 														function formatSlider() {
 															$(
-																	'#add_staff\\:schedule .displayRange')
+																	'#staff\\:schedule .displayRange')
 																	.each(
 																			function(
 																					index,
@@ -210,13 +212,19 @@
 						<p:row>
 							<p:column colspan="4">
 								<div class="w3-center">
-									<p:commandButton value="Add" style="width:100px" action="#{addStaffBean.add}"  update="growlWV"/>
-									<p:commandButton value="Cancel" style="width:100px" action="#{addStaffBean.cancel}" />
+									<p:commandButton value="Add" style="width:100px" actionListener="#{staffBean.add}" update="growlWV, @form"/>
+									<p:commandButton value="Cancel" style="width:100px" actionListener="#{staffBean.closeAddStaff}" update="staff add_staff"/>
 								</div>
 							</p:column>
 						</p:row>
 					</f:facet>
 				</p:panelGrid>
+				<p:dataTable value="#{staffBean.staffs}" var="staff">
+					<f:facet name="header">
+						<h:outputText value="Staffs"></h:outputText>
+					</f:facet>
+					<p:column><h:outputText value="#{staff.name}" /></p:column>
+	            </p:dataTable>
 			</h:form>
     	</ui:define>
 	</ui:composition>

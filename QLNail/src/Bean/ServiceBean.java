@@ -39,21 +39,21 @@ public class ServiceBean implements Serializable{
 		groups = ServicesDAO.getServiceCategories();
 		// Load Colors
 		colors = ServicesDAO.get9AvailableServiceGroupColors();
-		// Load Services
-		services = ServicesDAO.getServices();
-		for( int i = 0; i < services.size(); ++i)
-			accordionOpenAll += i + ",";
+		
 		newService = new Service();
 	}
 	
 	public String add() {
 		FacesContext context = FacesContext.getCurrentInstance();
-		System.out.println(newService.getCate_name() + " --- " + newService.getCate_color());
 		ERROR_CODE err = ServicesDAO.setService(newService);
 
 		if( ERROR_CODE.SUCCEED == err) {
 			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_INFO, "Service Added!", "INFO" ));
 			closeAddService();
+			// Load Services
+			services = ServicesDAO.getServices();
+			for( int i = 0; i < services.size(); ++i)
+				accordionOpenAll += i + ",";
 		}
 		else
 			context.addMessage(null, new FacesMessage( FacesMessage.SEVERITY_ERROR, err.toString(), "ERROR" ));

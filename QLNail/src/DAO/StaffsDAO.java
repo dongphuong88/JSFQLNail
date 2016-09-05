@@ -94,6 +94,32 @@ public class StaffsDAO {
 		return ERROR_CODE.SUCCEED;
 	}
 	
+	public static List<Staff> getStaffs() {
+		List<Staff> resultSet = new ArrayList<Staff>();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try{
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT name FROM staffs");
+			while (rs != null && rs.next()) {
+				Staff s = new Staff();
+				s.setName(rs.getString(1));
+				resultSet.add(s);
+			}
+			rs.close();
+			
+		}catch (Exception e) {
+			UtilsDAO.logMessage("Staffs", Level.ERROR, e);
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
+		}
+		
+		return resultSet;
+	}
+	
 	public static String getStaffNameListJSONArray(){
 		JSONArray resultSet = new JSONArray();
 		Connection conn = null;

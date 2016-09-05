@@ -105,9 +105,8 @@
 							<p:column colspan="5" styleClass="w3-center">
 								<p:commandButton value="Add" style="width:100px" actionListener="#{serviceBean.add}" update="growlWV, @form" oncomplete="fillColorRadio()">
 								</p:commandButton>
-								<p:commandButton value="Cancel" style="width:100px">
-									<p:ajax event="click" listener="#{serviceBean.closeAddService}" update="service add_service"/>
-								</p:commandButton>
+								<p:commandButton value="Cancel" style="width:100px" actionListener="#{serviceBean.closeAddService}" update="service add_service"/>
+								
 							</p:column>
 						</p:row>
 					</f:facet>

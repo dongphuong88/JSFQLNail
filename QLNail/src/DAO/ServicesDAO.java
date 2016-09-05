@@ -67,7 +67,7 @@ public class ServicesDAO implements Serializable {
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
 		}
-		System.out.println(resultSet);
+
 		return resultSet;
 	}
 
