@@ -38,6 +38,7 @@
 				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even serviceRow"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell serviceType"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell serviceStaff"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceAmount"><label>0.00</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceDiscout"><label>0.00</label></td></tr>';
 				var employeeNames = #{checkoutBean.employeeNames};
 				var JSONservices = 	'#{checkoutBean.serviceGroups}';
+				var gservices = JSON.parse(JSONservices);
 				
 				function addService() {
 					$("#serviceForm\\:services").append(rowHtml);
@@ -46,24 +47,30 @@
 				}
 				function serviceEdit( obj) {
 					if( 0 == $(obj).find('select').length) {
-						$(obj).html( '<select class="w3-select serviceCate" style="width:50%" onchange="loadServiceType(this)"/><select class="w3-select serviceType" style="width:50%"/>');
+						$(obj).html( '<select class="w3-select serviceCate" style="width:50%" onchange="loadServiceType(this)"/><select class="w3-select serviceType" style="width:50%" onchange="loadServicePrice(this)"/>');
 						$(obj).find('.serviceCate').append('<option value=""> Select Category </option>');
 						$(obj).find('.serviceType').append('<option value=""> Select Type </option>');
-						var services = JSON.parse(JSONservices);
 						var servicesCate = [];
-						for(var k in services) servicesCate.push(k);
+						for(var k in gservices) servicesCate.push(k);
 						$(servicesCate).each( function(index, value) {
 							$(obj).find('.serviceCate').append('<option>' + value + '</option>');
 						});
 					}
 				}
 				function loadServiceType(obj) {
-					var services = JSON.parse(JSONservices);
 					var key = $(obj).val();
 					var target = $(obj).parent().find('.serviceType');
 					target.html('<option value=""> Select Type </option>');
-					$(services[key]).each( function(index, value) {
-						$(target).append('<option>' + value + '</option>');
+					$(gservices[key]).each( function(index, value) {
+						$(target).append('<option>' + value["serviceName"] + '</option>');
+					});
+				}
+				function loadServicePrice(obj) {
+					var key = $(obj).parent().find('.serviceCate').val();
+					var service = $(obj).val();
+					$(gservices[key]).each( function() {
+						if( service == this["serviceName"])
+							$(obj).parent().parent().find('.serviceAmount label').text(this["price"]);
 					});
 				}
 				function staffEdit( obj) {

@@ -38,10 +38,13 @@ public class StaffsDAO {
 			}
 
 			// Update staffs
-			ptmt = conn.prepareStatement("INSERT INTO staffs(name, title,phone) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS );
+			ptmt = conn.prepareStatement("INSERT INTO staffs(name,title,phone,commission,hourly_rate,permission) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS );
 			ptmt.setString(1, staff.getName().trim());
 			ptmt.setString(2, staff.getTitle().trim());
 			ptmt.setString(3, staff.getPhone().trim());
+			ptmt.setFloat(4, staff.getCommission());
+			ptmt.setFloat(5, staff.getHourly_rate());
+			ptmt.setString(6, staff.getPermission());
 			ptmt.executeUpdate();
 			
 			rs = ptmt.getGeneratedKeys();
@@ -51,12 +54,6 @@ public class StaffsDAO {
 			}
 			rs.close();
 			rs = null;
-			
-			// Update staff_refs
-			ptmt = conn.prepareStatement("INSERT INTO staff_refs(staff_id,commision) VALUES (?,?)");
-			ptmt.setLong(1, staffId);
-			ptmt.setFloat(2, staff.getCommission());
-			ptmt.executeUpdate();
 			
 			// Update staff_skills
 			long cate_id = -1;

@@ -193,7 +193,7 @@ public class TransactionsDAO implements Serializable {
 				
 				String staffName = obj.get("staffName").toString();
 				float commission = 0f;
-				rs = stmt.executeQuery("SELECT commision FROM staff_refs WHERE staff_id = (SELECT id from staffs WHERE name = '" + staffName + "')");
+				rs = stmt.executeQuery("SELECT commission FROM staffs WHERE name = '" + staffName + "'");
 				if (rs != null && rs.next()) {
 					commission = rs.getFloat(1);
 				}

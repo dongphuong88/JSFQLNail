@@ -67,7 +67,7 @@ public class ServicesDAO implements Serializable {
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
 		}
-
+		System.out.println(resultSet);
 		return resultSet;
 	}
 
@@ -96,7 +96,10 @@ public class ServicesDAO implements Serializable {
 					cate_id = rs.getLong(1);
 			}
 			else {
+				// update color
 				cate_id = rs.getLong(1);
+				if( !service.getCate_color().trim().equals(""))
+					stmt.executeUpdate("UPDATE service_categories SET color='" + service.getCate_color().trim() + "' WHERE id=" + cate_id);
 			}
 			rs.close();
 			rs = null;
@@ -129,6 +132,39 @@ public class ServicesDAO implements Serializable {
 		}
 		
 		return ERROR_CODE.SUCCEED;
+	}
+	
+	public static List<List<Service>> getServices() {
+		Map<String, List<Service>> services = new HashMap<String, List<Service>>();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try {
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select c.name as cate, s.name as service, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id;");
+			while (rs.next()) {
+				if( null == services.get(rs.getString(1)))
+					services.put(rs.getString(1), new ArrayList<Service>());
+				Service s = new Service();
+				s.setName(rs.getString(2));
+				s.setPrice(rs.getDouble(3));
+				s.setCate_name(rs.getString(1));
+				services.get(rs.getString(1)).add(s);
+			}
+			rs.close();
+		} catch (Exception e) {
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
+		}
+		List<List<Service>> resultSet = new ArrayList<List<Service>>();
+		for(String k : services.keySet()) {
+			resultSet.add(services.get(k));
+		}
+		
+		return resultSet;
 	}
 	
 	public static Map<String,String> getServiceCategories() {
@@ -186,17 +222,16 @@ public class ServicesDAO implements Serializable {
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from service_categories");
-			while (rs.next()) {
-				resultSet.put(rs.getString("name"), new JSONArray());
-			}
-			rs.close();
-			rs = null;
 			
-			rs = stmt.executeQuery("select a.name as n, b.name as g from services as a inner join service_categories as b on a.service_group_id = b.id");
+			ResultSet rs = stmt.executeQuery("select s.name as n, c.name as g, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id;");
 			while (rs.next()) {
-				JSONArray arr = (JSONArray) resultSet.get(rs.getString("g"));
-				arr.add(rs.getString("n"));
+				if( null == resultSet.get( rs.getString(2)))
+					resultSet.put(rs.getString(2), new JSONArray());
+				JSONArray arr = (JSONArray) resultSet.get(rs.getString(2));
+				JSONObject obj = new JSONObject();
+				obj.put( "serviceName", rs.getString(1));
+				obj.put( "price", rs.getDouble(3));
+				arr.add(obj);
 			}
 			rs.close();
 		} catch (Exception e) {

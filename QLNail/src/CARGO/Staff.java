@@ -15,6 +15,8 @@ public class Staff implements Serializable{
 	private String title;
 	private float commission;
 	private String phone;
+	private float hourly_rate;
+	private String permission;
 	private List<String> abilities = new ArrayList<>();
 	private List<StaffSchedule> schedules = new ArrayList<>();
 	
@@ -69,6 +71,22 @@ public class Staff implements Serializable{
 	}
 	public void setSchedules(List<StaffSchedule> schedules) {
 		this.schedules = schedules;
+	}
+
+	public float getHourly_rate() {
+		return hourly_rate;
+	}
+
+	public void setHourly_rate(float hourly_rate) {
+		this.hourly_rate = hourly_rate;
+	}
+
+	public String getPermission() {
+		return permission;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 	
 }

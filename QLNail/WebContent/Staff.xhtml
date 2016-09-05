@@ -73,6 +73,26 @@
 								value="#{addStaffBean.staff.commission}" />
 						</p:column>
 					</p:row>
+					
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Permission: " for="permission" />
+						</p:column>
+						<p:column>
+							<p:selectOneRadio id="permission" value="#{addStaffBean.staff.permission}">
+					            <f:selectItem itemLabel="Staff" itemValue="Staff" />
+					            <f:selectItem itemLabel="Manager" itemValue="Manager" />
+					            <f:selectItem itemLabel="Admin" itemValue="Admin" />
+					        </p:selectOneRadio>
+						</p:column>
+						<p:column>
+							<p:outputLabel value="Hourly rate: " />
+						</p:column>
+						<p:column>
+							<p:inputText type="number" styleClass="w3-input"
+								value="#{addStaffBean.staff.hourly_rate}" />
+						</p:column>
+					</p:row>
 
 					<p:row>
 						<p:column>
