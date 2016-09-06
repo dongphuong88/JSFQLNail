@@ -102,7 +102,7 @@ public class StaffsDAO {
 		try{
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT name FROM staffs");
+			ResultSet rs = stmt.executeQuery("SELECT name FROM staffs ORDER BY name");
 			while (rs != null && rs.next()) {
 				Staff s = new Staff();
 				s.setName(rs.getString(1));
@@ -128,7 +128,7 @@ public class StaffsDAO {
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT name FROM staffs");
+			ResultSet rs = stmt.executeQuery("SELECT name FROM staffs ORDER BY name");
 			while (rs != null && rs.next()) {
 				resultSet.put(rs.getString("name"));
 			}

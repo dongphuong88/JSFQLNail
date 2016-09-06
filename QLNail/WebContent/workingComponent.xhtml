@@ -6,10 +6,216 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 <h:body>
-	<ui:composition template="templates/commonLayout.xhtml">
-		<ui:define name="content">
-			
-		</ui:define>
-	</ui:composition>
+<ui:composition template="templates/commonLayout.xhtml">
+<ui:define name="content">
+	<!-- MainForm -->
+	<h:form id="transactionForm">
+		<!-- Date/Time -->
+		<div class="w3-container w3-xlarge">
+			<label class="w3-label">Date/Time: </label>
+			<h:outputText id="dateTime" value="#{workingBean.transaction.datetime}">
+				<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a" />
+			</h:outputText>
+		</div>
+		<!-- Date/Time END -->
+		<!-- Services -->
+		<p:dataTable id="services" value="#{workingBean.transactionServices}" var="transactionService" emptyMessage="Click plus button to add Service">
+			<p:columnGroup type="header">
+	            <p:row>
+	                <p:column style="width:60px">
+	                	<f:facet name="header">
+	                		<p:commandButton icon="fa fa-plus">
+	                			<p:ajax event="click" listener="#{workingBean.addTransactionService()}" update="@form"></p:ajax>
+	                		</p:commandButton>
+	                	</f:facet>
+	                </p:column>
+	                <p:column headerText="Service" />	
+	                <p:column style="width:250px" headerText="Staff" />
+	                <p:column style="width:150px" headerText="Price" />
+	                <p:column style="width:150px" headerText="Discount" />
+	            </p:row>
+	        </p:columnGroup>
+	 		
+	 		<p:column>
+	            <p:commandButton icon="fa fa-times">
+	            	<p:ajax event="click" listener="#{workingBean.deleteTransactionService(transactionService)}" update="@form"/>
+	            </p:commandButton>
+	        </p:column>
+	        <p:column>
+	        	<style>
+	        		.cate td{ padding: 0px !important; border: 0px !important;}
+	        		.cate tr{ border: 0px !important; }
+	        	</style>
+	        	<p:panelGrid styleClass="cate">
+	        		<p:row>
+	        			<p:column>
+	        				<p:selectOneMenu value="#{transactionService.service_group}">
+				            	<p:ajax event="change" update="@form"/>
+								<f:selectItem itemLabel="Select Group" itemValue="" />
+								<f:selectItems value="#{workingBean.serviceSelection.keySet()}" var="cate" itemLabel="#{cate}" itemValue="#{cate}" />
+							</p:selectOneMenu>
+	        			</p:column>
+	        			<p:column>
+	        				<p:selectOneMenu value="#{transactionService.service_name}" >
+								<p:ajax event="change" listener="#{workingBean.updateServicePrice(transactionService)}" update="@form"/>
+								<f:selectItem itemLabel="Select Service" itemValue="" />
+								<f:selectItems value="#{workingBean.serviceSelection[transactionService.service_group]}" var="cate" itemLabel="#{cate.name}" itemValue="#{cate.name}" />
+							</p:selectOneMenu>
+	        			</p:column>
+	        		</p:row>
+	        	</p:panelGrid>
+	            
+				
+	        </p:column>
+	        <p:column>
+	            <p:selectOneMenu value="#{transactionService.staff_name}">
+	            	<p:ajax event="change" process="@this"/>
+					<f:selectItem itemLabel="Select Staff" itemValue="" />
+					<f:selectItems value="#{workingBean.staffSelection}" />
+				</p:selectOneMenu>
+	        </p:column>
+	        <p:column>
+	            <p:inputText value="#{transactionService.amount}" onfocus="$(this).select()" type="number" styleClass="w3-input">
+	            	<f:convertNumber pattern="0.00"/>
+	            	<p:ajax event="change" listener="#{workingBean.calServicesTotal}" update="@form"/>
+	            </p:inputText>
+	        </p:column>
+	        <p:column>
+	            <p:inputText value="#{transactionService.discount}" onfocus="$(this).select()" type="number" styleClass="w3-input">
+	            	<f:convertNumber pattern="0.00"/>
+	            	<p:ajax event="change" listener="#{workingBean.calDiscountsTotal}" update="@form"/>
+	            </p:inputText>
+	        </p:column>
+	        
+	 
+	        <p:columnGroup type="footer">
+	        	<p:row>
+	                <p:column colspan="4" style="text-align:right" footerText="Discount:" />
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<p:selectBooleanButton value="#{workingBean.showTransactionDiscount}" onLabel="$" offLabel="$" rendered="#{not workingBean.showTransactionDiscountPercent}" style="float:left">
+	                			<p:ajax event="change" listener="#{workingBean.calDiscountsTotal}" update="@form"></p:ajax>
+	                		</p:selectBooleanButton >
+	                		<p:inputText value="#{workingBean.transactionDiscount}" type="number" rendered="#{workingBean.showTransactionDiscount}" style="width:80px" onfocus="$(this).select()">
+	                			<f:convertNumber pattern="0.00"/>
+	                			<p:ajax event="change" listener="#{workingBean.calDiscountsTotal}" update="@form"/>
+	                		</p:inputText>
+	                		<p:selectBooleanButton value="#{workingBean.showTransactionDiscountPercent}" onLabel="%" offLabel="%" rendered="#{not workingBean.showTransactionDiscount}" style="float:left">
+	                			<p:ajax event="change" listener="#{workingBean.calDiscountsTotal}" update="@form"></p:ajax>
+	                		</p:selectBooleanButton >
+	                		<p:inputText value="#{workingBean.transactionDiscountPercent}" type="number" rendered="#{workingBean.showTransactionDiscountPercent}" style="width:70px" onfocus="$(this).select()">
+	                			<f:convertNumber pattern="0.0"/>
+	                			<p:ajax event="change" listener="#{workingBean.calDiscountsTotal}" update="@form"/>
+	                		</p:inputText>
+	                	</f:facet>
+	                </p:column>
+	            </p:row>
+	            <p:row>
+	                <p:column colspan="3" style="text-align:right" footerText="Total:" />
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<h:outputText value="#{workingBean.transactionServicesTotal}">
+	                			<f:convertNumber type="currency"></f:convertNumber>
+	                		</h:outputText>
+	                	</f:facet>
+	                </p:column>
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<h:outputText value="#{workingBean.transaction.total_discount}">
+	                			<f:convertNumber type="currency"></f:convertNumber>
+	                		</h:outputText>
+	                	</f:facet>
+	                </p:column>
+	            </p:row>
+	        </p:columnGroup>
+		</p:dataTable>
+		<!-- Services End -->
+		
+		<!-- Transaction -->
+		<p:panelGrid style="margin-top:10px; width:65%; float:right">
+			<f:facet name="header">
+				<p:row><p:column colspan="2"><h:outputText value="Pay"></h:outputText></p:column></p:row>
+			</f:facet>
+			<p:row>
+				<p:column style="width:100px"><h:outputText value="Total:"></h:outputText></p:column>
+				<p:column>
+					<h:outputText value="#{workingBean.transaction.total}">
+						<f:convertNumber type="currency"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Pay by:"></h:outputText></p:column>
+				<p:column id="payBy">
+					<style>
+						#transactionForm\:payTypes thead tr { display:none;}
+						#transactionForm\:payTypes tbody, #transactionForm\:payTypes tbody tr { border: 0px !important}
+						#transactionForm\:payTypes tbody td {padding:0px !important;border:0px !important}
+					</style>
+					<p:dataTable value="#{workingBean.payBys}" var="payBy" id="payTypes">
+						<p:column>
+							<p:selectBooleanButton value="#{payBy.showCash}" onLabel="Cash" offLabel="Cash" rendered="#{(not payBy.showCredit) and (not payBy.showGift) and (payBy.firstRow)}" style="float:left">
+	                			<p:ajax event="change" listener="#{workingBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText styleClass="cash" type="number" value="#{payBy.cash}" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText styleClass="cashReceive" type="number" placeholder="receive" onchange="calChange()" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText styleClass="cashChange" type="number" placeholder="change" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<script>
+								function calChange() {
+									$('.cashChange').val($('.cashReceive').val() - $('.cash').val());
+								}
+							</script>
+							<p:selectBooleanButton value="#{payBy.showCredit}" onLabel="Credit" offLabel="Credit" rendered="#{(not payBy.showCash) and (not payBy.showGift)}" style="float:left">
+	                			<p:ajax event="change" listener="#{workingBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText type="number" value="#{payBy.credit}" style="width:100px" rendered="#{payBy.showCredit}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:selectBooleanButton value="#{payBy.showGift}" onLabel="Gift" offLabel="Gift" rendered="#{(not payBy.showCash) and (not payBy.showCredit)}" style="float:left">
+	                			<p:ajax event="change" listener="#{workingBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText value="#{payBy.giftNo}" placeholder="Gift Number" style="width:100px" rendered="#{payBy.showGift}" onfocus="$(this).select()">
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText type="number" value="#{payBy.gift}" style="width:100px" rendered="#{payBy.showGift}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:commandButton value="Add pay" style="float:right" rendered="#{payBy.firstRow}">
+								<p:ajax event="click" listener="#{workingBean.addPayType}" update="transactionForm payTypes"/>
+							</p:commandButton>
+							<p:commandButton icon="fa fa-times" style="float:right" rendered="#{not payBy.firstRow}">
+								<p:ajax event="click" listener="#{workingBean.deletePayType(payBy)}" update="transactionForm payTypes"/>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Tip:"></h:outputText></p:column>
+				<p:column>
+					<p:inputText type="number" value="#{workingBean.transaction.tip}" styleClass="w3-input" onfocus="$(this).select()">
+						<f:convertNumber pattern="0.00"/>
+					</p:inputText>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+		<p:panel style="clear:both; border:0px" styleClass="w3-center">
+			<p:commandButton style="width:180px;height:50px;" value="Save" action="#{workingBean.save}" update="growlWV" ></p:commandButton>
+	
+		</p:panel>
+	</h:form>
+</ui:define>
+</ui:composition>
 </h:body>
 </html>

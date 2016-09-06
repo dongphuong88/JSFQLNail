@@ -63,6 +63,7 @@ public class UtilsDAO {
 	}
 	
 	public static void logMessage( String location, Level lv, Exception msg) {
+		logger = LogManager.getLogger( location);
 		logger.log( lv, msg, msg);
 	}
 }

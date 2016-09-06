@@ -6,29 +6,9 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets" 
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-<h:head>
-	<meta http-equiv="x-ua-compatible" content="ie=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	
-	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
-	<h:outputStylesheet library="css" name="common.css" />
-	
-	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
-	<style>
-		.ui-selectonemenu{
-			width:200px;
-		}
-		.date {
-			padding:0px;
-			border:0px;
-		}
-		.date>div {
-			padding:0px !important;
-		}
-	</style>
-	<title>Insert title here</title>
-</h:head>
 <h:body>
+	<ui:composition template="templates/commonLayout.xhtml">
+		<ui:define name="content">
 <h:form id="salaryReport">
 	<!-- Title -->
 		<label class="w3-label w3-xlarge">Salaries Report: </label>
@@ -44,7 +24,7 @@
 						<f:selectItems value="#{salaryReportBean.staffNames}"></f:selectItems>
 					</p:selectOneMenu>
 				</p:column>
-				<p:column  style="width:300px">
+				<p:column  style="width:350px">
 					<p:outputLabel for="fromDate" value="From:" />
 					<p:calendar id="fromDate" value="#{salaryReportBean.fromDate}" showOn="button" >
 						<p:ajax event="dateSelect" update="@form" listener="#{salaryReportBean.refresh}" process="@this"/>
@@ -123,7 +103,7 @@
 		</p:dataTable>
 	<!-- All Staffs Report END -->
 </h:form>
-
-	<h:outputScript library="js" name="common.js"></h:outputScript>
+</ui:define>
+</ui:composition>
 </h:body>
 </html>

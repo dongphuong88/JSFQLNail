@@ -14,7 +14,7 @@ $(function () {
     $('input').on("focus", function() {
         $(this).select();
     });
-})
+});
 
 // Get back number from currency string
 $.fn.getCurrencyNumber = function() {

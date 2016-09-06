@@ -10,9 +10,9 @@ public class TransactionService implements Serializable{
 	private static final long serialVersionUID = -1005108082893154569L;
 	private long id;
 	private long transaction_id;
-	private String service_group = "";
-	private String service_name = "";
-	private String staff_name = "";
+	private String service_group;
+	private String service_name;
+	private String staff_name;
 	private double amount;
 	private double discount;
 	private double tip;

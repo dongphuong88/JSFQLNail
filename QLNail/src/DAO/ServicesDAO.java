@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +124,7 @@ public class ServicesDAO implements Serializable {
 			
 			conn.commit();
 		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
 			return UtilsDAO.rollbackConnection(conn);
 		}
 		finally {
@@ -135,14 +135,14 @@ public class ServicesDAO implements Serializable {
 	}
 	
 	public static List<List<Service>> getServices() {
-		Map<String, List<Service>> services = new HashMap<String, List<Service>>();
+		Map<String, List<Service>> services = new LinkedHashMap<String, List<Service>>();
 		Connection conn = null;
 		Statement stmt = null;
 		
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select c.name as cate, s.name as service, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id;");
+			ResultSet rs = stmt.executeQuery("select c.name as cate, s.name as service, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id ORDER BY cate, service;");
 			while (rs.next()) {
 				if( null == services.get(rs.getString(1)))
 					services.put(rs.getString(1), new ArrayList<Service>());
@@ -167,15 +167,44 @@ public class ServicesDAO implements Serializable {
 		return resultSet;
 	}
 	
-	public static Map<String,String> getServiceCategories() {
-		Map<String, String> resultSet = new HashMap<String,String>();
+	public static Map<String,List<Service>> getServicesMap() {
+		Map<String, List<Service>> resultSet = new LinkedHashMap<String, List<Service>>();
 		Connection conn = null;
 		Statement stmt = null;
 		
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from service_categories");
+			ResultSet rs = stmt.executeQuery("select c.name as cate, s.name as service, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id ORDER BY cate, service;");
+			while (rs.next()) {
+				if( null == resultSet.get(rs.getString(1)))
+					resultSet.put(rs.getString(1), new ArrayList<Service>());
+				Service s = new Service();
+				s.setName(rs.getString(2));
+				s.setPrice(rs.getDouble(3));
+				s.setCate_name(rs.getString(1));
+				resultSet.get(rs.getString(1)).add(s);
+			}
+			rs.close();
+		} catch (Exception e) {
+			UtilsDAO.logMessage("Services", Level.ERROR, e);
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt);
+		}
+		
+		return resultSet;
+	}
+	
+	public static Map<String,String> getServiceCategories() {
+		Map<String, String> resultSet = new LinkedHashMap<String,String>();
+		Connection conn = null;
+		Statement stmt = null;
+		
+		try {
+			conn = UtilsDAO.getConnection(true);
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select * from service_categories ORDER BY name");
 			while (rs.next()) {
 				resultSet.put(rs.getString("name"), rs.getString("color"));
 			}
@@ -198,7 +227,7 @@ public class ServicesDAO implements Serializable {
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("select * from service_categories");
+			ResultSet rs = stmt.executeQuery("select * from service_categories ORDER BY name");
 			while (rs.next()) {
 				resultSet.add(rs.getString("name"));
 			}
@@ -218,20 +247,21 @@ public class ServicesDAO implements Serializable {
 		JSONObject resultSet = new JSONObject();
 		Connection conn = null;
 		Statement stmt = null;
+		Map<String, List<Service>> services = new LinkedHashMap<>();
 		
 		try {
 			conn = UtilsDAO.getConnection(true);
 			stmt = conn.createStatement();
 			
-			ResultSet rs = stmt.executeQuery("select s.name as n, c.name as g, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id;");
+			ResultSet rs = stmt.executeQuery("select s.name as n, c.name as g, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id ORDER BY g, n;");
 			while (rs.next()) {
-				if( null == resultSet.get( rs.getString(2)))
-					resultSet.put(rs.getString(2), new JSONArray());
-				JSONArray arr = (JSONArray) resultSet.get(rs.getString(2));
-				JSONObject obj = new JSONObject();
-				obj.put( "serviceName", rs.getString(1));
-				obj.put( "price", rs.getDouble(3));
-				arr.add(obj);
+				if( null == services.get( rs.getString(2)))
+					services.put(rs.getString(2), new ArrayList<>());
+				List<Service> arr = services.get(rs.getString(2));
+				Service s = new Service();
+				s.setName(rs.getString(1));
+				s.setPrice(rs.getDouble(3));
+				arr.add(s);
 			}
 			rs.close();
 		} catch (Exception e) {
@@ -239,6 +269,17 @@ public class ServicesDAO implements Serializable {
 		}
 		finally {
 			UtilsDAO.closeConnection(conn, stmt);
+		}
+		for( String key : services.keySet()) {
+			List<Service> ss = services.get(key);
+			JSONArray arr = new JSONArray();
+			for( Service s : ss) {
+				JSONObject obj = new JSONObject();
+				obj.put( "serviceName", s.getName());
+				obj.put( "price", s.getPrice());
+				arr.add(obj);
+			}
+			resultSet.put(key,arr);
 		}
 
 		return resultSet.toString();

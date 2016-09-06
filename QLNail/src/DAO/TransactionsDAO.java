@@ -16,6 +16,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import Bean.WorkingBean.PayBy;
+import CARGO.Transaction;
 import CARGO.TransactionService;
 
 public class TransactionsDAO implements Serializable {
@@ -206,6 +208,93 @@ public class TransactionsDAO implements Serializable {
 				ptmt.setString(4, staffName);
 				ptmt.setDouble(5, serviceAmount);
 				ptmt.setDouble(6, Double.parseDouble(obj.get("discount").toString()));
+				ptmt.setDouble(7, serviceDeduction);
+				ptmt.setDouble(8, transactionTip * serviceAmount * 0.8 / transactionTotal); // tip
+				ptmt.setFloat(9, commission); // commission
+				ptmt.setString(10, datetime);
+				ptmt.addBatch();
+			}
+			ptmt.executeBatch();
+			conn.commit();
+		} catch (Exception e) {
+			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
+			return UtilsDAO.rollbackConnection(conn);
+		}
+		finally {
+			UtilsDAO.closeConnection(conn, stmt, ptmt);
+		}
+		
+		return ERROR_CODE.SUCCEED;
+	}
+	
+	public static ERROR_CODE setTransactionFromServices( Transaction transaction, List<TransactionService> services, List<PayBy> payBys) {
+		Connection conn = null;
+		Statement stmt = null;
+		PreparedStatement ptmt = null;
+		ResultSet rs = null;
+
+		try {
+			if( 0 == services.size()) {
+				return ERROR_CODE.SERVICE_EMPTY;
+			}
+			
+			conn = UtilsDAO.getConnection();
+			conn.setAutoCommit(false);
+			stmt = conn.createStatement();
+			double transactionTotal = transaction.getTotal();
+			if( 0 == transactionTotal) {
+				return ERROR_CODE.SERVICE_EMPTY;
+			}
+			
+			double transactionTip = transaction.getTip();
+			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+			String datetime = df.format(transaction.getDatetime());
+			String sql = "insert into transactions (cash, total, tip, total_discount, datetime) values ("
+					+payBys.get(0).getCash()
+					+"," + transactionTotal
+					+"," + transactionTip
+					+"," + transaction.getTotal_discount()
+					+",'" + datetime
+					+"')";
+			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			rs = stmt.getGeneratedKeys();
+			long transactionServiceID = -1;
+			while (rs != null && rs.next()) {
+				transactionServiceID = rs.getLong(1);
+			}
+			rs.close();
+			rs = null;
+			
+			ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount, service_deduction,tip,commission, datetime) values (?,?,?,?,?,?,?,?,?,?)");
+			ptmt.setLong(1, transactionServiceID);
+			for( TransactionService s : services) {
+				
+				String serviceGroup = s.getService_group();
+				String serviceName = s.getService_name();
+				double serviceDeduction = 0;
+				
+				rs = stmt.executeQuery("SELECT supply_deduction from services where name='"+ serviceName +"' AND service_group_id = (SELECT id from service_categories where name='"+ serviceGroup +"')");
+				if (rs != null && rs.next()) {
+					serviceDeduction = rs.getDouble(1);
+				}
+				rs.close();
+				rs = null;
+				
+				String staffName = s.getStaff_name();
+				float commission = 0f;
+				rs = stmt.executeQuery("SELECT commission FROM staffs WHERE name = '" + staffName + "'");
+				if (rs != null && rs.next()) {
+					commission = rs.getFloat(1);
+				}
+				rs.close();
+				rs = null;
+				
+				double serviceAmount = s.getAmount();
+				ptmt.setString(2, serviceGroup);
+				ptmt.setString(3, serviceName);
+				ptmt.setString(4, staffName);
+				ptmt.setDouble(5, serviceAmount);
+				ptmt.setDouble(6, s.getDiscount());
 				ptmt.setDouble(7, serviceDeduction);
 				ptmt.setDouble(8, transactionTip * serviceAmount * 0.8 / transactionTotal); // tip
 				ptmt.setFloat(9, commission); // commission
