@@ -7,7 +7,7 @@
 	xmlns:p="http://primefaces.org/ui">
  	<body>
  		<ui:composition>
- 			<nav class="w3-sidenav w3-white w3-card-2" style="right:0px;display:none" id="mySidenav">
+ 			<nav class="w3-sidenav w3-white w3-card-2" style="z-index:2;right:0px;display:none" id="mySidenav">
 			  <a href="javascript:void(0)" onclick="w3_close()"
 			  class="w3-closenav w3-large">Close &times;</a>
 			  <p:link outcome="Calendar" value="Calendar"></p:link>
@@ -17,7 +17,7 @@
 			  <p:link outcome="Staff" value="Add Staff"></p:link>
 			</nav>
 			<div style="position:relative;">
-				<h:graphicImage style="position:absolute;right:10px;top:10px;width:50px;heigh:50px;" onclick="w3_open()" library="images" name="calendar.png"/>
+				<h:graphicImage style="z-index:1;position:fixed;right:10px;top:10px;width:50px;heigh:50px;" onclick="w3_open()" library="images" name="calendar.png"/>
 			</div>
 			
 			<script>

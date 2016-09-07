@@ -1,14 +1,15 @@
 
 var cal_hours;
-	var cal_hour_start = 9;
+	var cal_hour_start = 5;
 	var cal_hour_end = 20;
 	var cal_data_cols_JSON;
 	var cal_data_cols;
 	var cal_data_display; // contains only show data_cols
 	var cal_timeWidth = 50;
-	var cal_timeHeight = 44;
+	var cal_timeHeight = 22;
+	var cal_numTimeBlock = 4;
 	var cal_headerHeight = 22;
-	var cal_navHeight;
+	var cal_navHeight = 70;
 	var cal_dataWidth = 0;
 	var cal_dataRemainingWidth = 0;
 	var cal_data_col_min_width = 300;
@@ -17,20 +18,7 @@ var cal_hours;
 
 	$(function() {
 		// testing data
-		cal_data_cols_JSON = '['
-				+ '{"Kelly": [{"eventName":"Kelly1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event2", "startHour": 13, "startMinute":30, "endHour": 15, "endMinute": 15},'
-				+ '{"eventName": "event3", "startHour": 9, "startMinute":0, "endHour": 9, "endMinute": 15}]},'
-				+ '{"David": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
-				+ '{"Lynx": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]},'
-				+ '{"Nancy": [{"eventName":"event1", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event2", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15},'
-				+ '{"eventName": "event3", "startHour": 10, "startMinute":30, "endHour": 13, "endMinute": 15}]}'
-				+ ']';
+		
 		cal_data_cols = JSON.parse(cal_data_cols_JSON);
 		// get all display hours
 		cal_hours = [];
@@ -74,12 +62,12 @@ var cal_hours;
 						cal_data_display.push(value);
 					}
 				});
-
 		$('.cal_data, .cal_header').css("width", w);
 		$('.cal_data, .cal_header').html("");
 		addHeader();
 		addTime();
 		addColumn();
+		fillTimeOff();
 		addEvent();
 		calendarApplyTheme();
 	}
@@ -155,7 +143,7 @@ var cal_hours;
 		});
 		$(cal_hours).each(function(index, value) {
 			var timeBlockDiv = document.createElement('div');
-			$(timeBlockDiv).css("height", cal_timeHeight);
+			$(timeBlockDiv).css("height", cal_timeHeight * cal_numTimeBlock);
 			$(timeBlockDiv).addClass('cal_data_cell');
 			$(timeBlockDiv).text(value);
 			$(timeDiv).append(timeBlockDiv);
@@ -163,7 +151,6 @@ var cal_hours;
 		$('.cal_data').append(timeDiv);
 	}
 	function addColumn() {
-		var separateHeight = cal_timeHeight / 2;
 		$(cal_data_display).each(function(index, value) {
 			var colDiv = document.createElement('div');
 			$(colDiv).attr("id", "cal_data_col_" + index);
@@ -174,14 +161,12 @@ var cal_hours;
 				"top" : cal_headerHeight + cal_navHeight
 			});
 			$(cal_hours).each(function(index, value) {
-				var timeBlockDiv = document.createElement('div');
-				var timeBlockDiv1 = document.createElement('div');
-				$(timeBlockDiv).addClass('cal_data_cell');
-				$(timeBlockDiv1).addClass('cal_data_cell');
-				$(timeBlockDiv).css("height", separateHeight);
-				$(timeBlockDiv1).css("height", separateHeight);
-				$(colDiv).append(timeBlockDiv);
-				$(colDiv).append(timeBlockDiv1);
+				for( var i = 0; i < cal_numTimeBlock; ++i) {
+					var timeBlockDiv = document.createElement('div');
+					$(timeBlockDiv).addClass('cal_data_cell');
+					$(timeBlockDiv).css("height", cal_timeHeight);
+					$(colDiv).append(timeBlockDiv);
+				}
 			});
 			$('.cal_data').append(colDiv);
 
@@ -198,11 +183,20 @@ var cal_hours;
 		$('.cal_data').append(lineHr);
 		updateCurrentTimeLine();
 	}
+	function fillTimeOff() {
+		$(cal_data_display).each(function(index, value) {
+			//$(colDiv).attr("id", "cal_header_col_" + index);
+			var staff = value[Object.keys(value)];
+			$('#cal_data_col_'+index + ' .cal_data_cell').eq((staff['startHour']-cal_hour_start)*cal_numTimeBlock).prevAll().addClass('cal_data_cell_off');
+			$('#cal_data_col_'+index + ' .cal_data_cell').eq((staff['endHour']-cal_hour_start)*cal_numTimeBlock-1).nextAll().addClass('cal_data_cell_off');
+			console.log(value);
+		});
+	}
 	// Limitation: cut off all out range event
 	function addEvent() {
 		$(cal_data_display).each(
 				function(personIndex, personEvents) {
-					$(personEvents[Object.keys(personEvents)]).each(
+					$(personEvents[Object.keys(personEvents)]['events']).each(
 							function(eventIndex, eventValue) {
 								var startTime = new Date(0, 0, 0,
 										eventValue['startHour'],
@@ -231,7 +225,7 @@ var cal_hours;
 					+ cal_navHeight;
 			var windowHeightHalf = $(window).height() / 2;
 			if (currTimeTopPos > windowHeightHalf)
-				$(window).scrollTop(currTimeTopPos);
+				$(window).scrollTop(currTimeTopPos - windowHeightHalf);
 			else
 				$(window).scrollTop(0);
 			$('.cal_time_line').css("top", currTimeTopPos);
@@ -241,10 +235,10 @@ var cal_hours;
 	function getEventTop(startTime) {
 		var px = (startTime.getHours() - cal_hour_start) + startTime.getMinutes()
 				/ 60;
-		return px * cal_timeHeight;
+		return px * cal_timeHeight * cal_numTimeBlock;
 	}
 	function getEventHeight(startTime, endTime) {
 		var px = (endTime.getHours() - startTime.getHours())
 				+ (endTime.getMinutes() - startTime.getMinutes()) / 60;
-		return px * cal_timeHeight;
+		return px * cal_timeHeight * cal_numTimeBlock;
 	}

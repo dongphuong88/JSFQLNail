@@ -5,37 +5,58 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-<h:head>
-	<meta http-equiv="x-ua-compatible" content="ie=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	<h:outputStylesheet library="css" name="w3.css"></h:outputStylesheet>
-	<h:outputStylesheet library="css" name="calendar.css" />
-	<h:outputStylesheet library="css" name="common.css" />
-
-	<h:outputScript library="js" name="jquery.formatCurrency-1.4.0.min.js"></h:outputScript>
-	
-	<style>
-	</style>
-
-	<title>Calendar</title>
-</h:head>
 <h:body>
+<ui:composition template="templates/fullScreenLayout.xhtml">
+<ui:define name="content">
+<!-- MainForm -->
+<h:form id="transactionForm" style="z-index:-1">
+	
 	<!-- Calendar -->
 	<div id="scheduler_here" style='width:100%;'>
-		<div class="cal_navline">
-			<p:calendar id="calDatePick" mode="inline" style="display:none; z-index:0" />
-            <p:commandButton value="submit" onclick="$('#calDatePick').toggle()"></p:commandButton>
-            <p:commandButton value="New Appoinment" onclick="$('#calDatePick').toggle()"></p:commandButton>
-        </div>
+		<h:outputStylesheet library="css" name="calendar.css" />
+		<p:panelGrid styleClass="cal_navline" style="padding:0 10 0 10;">
+			<p:row>
+				<p:column style="padding-left:50px;width:100px"><p:commandButton icon="fa fa-calendar" onclick="$('#transactionForm\\:calDatePick').toggle()"></p:commandButton></p:column>
+				<p:column style="width:150px">
+					<p:selectCheckboxMenu id="staffMenu" value="#{calendarBean.selectedStaffs}" label="Staffs"
+			                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px" style="width:100%">
+			            <f:selectItems value="#{calendarBean.staffNames}" />
+			        </p:selectCheckboxMenu>
+				</p:column>
+				<p:column style="text-align:center">
+					<h:outputText value="#{calendarBean.selectedDate}">
+						<f:convertDateTime pattern="MM/dd/yyyy"></f:convertDateTime>
+					</h:outputText>
+				</p:column>
+				<p:column style="width:50px;padding-right:0px">
+					<p:commandButton icon="fa fa-chevron-left">
+						<p:ajax event="click" listener="#{calendarBean.prevDate}" update="@form"></p:ajax>
+					</p:commandButton>
+				</p:column>
+				<p:column style="width:100px;padding:0px">
+					<p:commandButton value="today" style="width:100%; border-radius:0px">
+						<p:ajax event="click" listener="#{calendarBean.currDate}" update="@form"></p:ajax>
+					</p:commandButton>
+				</p:column>
+				<p:column style="width:100px;padding-left:0px">
+					<p:commandButton icon="fa fa-chevron-right">
+						<p:ajax event="click" listener="#{calendarBean.nextDate}" update="@form"></p:ajax>
+					</p:commandButton>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+		<div style="position:fixed;top:40px">
+			<p:calendar id="calDatePick" value="#{calendarBean.selectedDate}" mode="inline" style="display:none; z-index:0" >
+				<p:ajax event="dateSelect" update="@form" oncomplete="$('#transactionForm\\:calDatePick').hide()"></p:ajax>
+			</p:calendar>
+		</div>
 		<div class="cal_header" ></div>
 		<div class="cal_data" ></div>
 	</div>
-	<div class="w3-container">
 	
-	</div>
-	
-	<h:outputScript library="js" name="common.js"></h:outputScript>
+	<script>
+	cal_data_cols_JSON = '#{calendarBean.eventsJSON}';
+	</script>
 	<h:outputScript library="js" name="calendar.js"></h:outputScript>
 	
 	<script>
@@ -49,6 +70,8 @@
 		$('.cal_header_right_nav').html('<i class="fa fa-chevron-right" aria-hidden="true"></i>');
 	}
 	</script>
-	 
+</h:form>
+</ui:define>
+</ui:composition>
 </h:body>
 </html>

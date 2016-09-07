@@ -7,14 +7,14 @@ public class GiftCard implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -2617154254463332020L;
-	private int id;
+	private long id;
 	private String no;
 	private double amount;
 	private String status;
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getStatus() {

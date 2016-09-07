@@ -1,13 +1,13 @@
 #scheduler_here {
 	position: relative;
-	z-index:1000;
+	height:100%;
 }
 
 .cal_navline {
 	width:100%;
 	position:fixed;
 	top:0px;
-	height:50px;
+	height:70px;
 }
 
 .cal_event {
@@ -20,8 +20,8 @@
 .cal_header {
 	display: inline-block;
 	position: fixed;
-	top:50px;
-	z-index: -1;
+	top:70px;
+	z-index: 1;
 }
 
 .cal_header_col {
@@ -50,10 +50,14 @@
 	display: inline-block;
 	width: 100%;
 	position: relative;
-	z-index: -2;
+	z-index: -3;
 }
 
 .cal_data_cell {
+}
+
+.cal_data_cell_off {
+	background: grey;
 }
 
 .cal_data_col {
@@ -64,4 +68,8 @@
 
 .cal_time_line {
 	position: absolute;
+}
+
+.cal_navline .ui-panelgrid-cell {
+	border: 0px !important;
 }
