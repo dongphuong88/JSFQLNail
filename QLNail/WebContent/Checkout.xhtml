@@ -7,373 +7,216 @@
 	xmlns:p="http://primefaces.org/ui">
 <h:body>
 <ui:composition template="templates/commonLayout.xhtml">
-		<ui:define name="content">
-	<!-- Date/Time -->
-	<div class="w3-container w3-xlarge">
-		<label class="w3-label">Date/Time: </label>
-		<h:outputText id="dateTime" value="#{checkoutBean.currDate}">
-			<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a" />
-		</h:outputText>
-	</div>
-	<!-- Date/Time END -->
-	
+<ui:define name="content">
 	<!-- MainForm -->
-	<h:form id="serviceForm" >
+	<h:form id="transactionForm">
+		<!-- Date/Time -->
+		<div class="w3-container w3-xlarge">
+			<label class="w3-label">Date/Time: </label>
+			<h:outputText id="dateTime" value="#{checkoutBean.transaction.datetime}">
+				<f:convertDateTime pattern="MM/dd/yyyy - hh:mm a" />
+			</h:outputText>
+		</div>
+		<!-- Date/Time END -->
 		<!-- Services -->
-		<p:panelGrid id="services">
-			<f:facet name="header">
-				<p:row>
-		            <p:column style="width:60px"></p:column>
-		            <p:column style="width:300px">
-		            	<p:commandButton onclick="addService()" value="Add"
-						styleClass="w3-left"></p:commandButton>
-		            	<h:outputText value="Service"></h:outputText>
-		            </p:column>
-		            <p:column width="50%">Staff</p:column>
-		            <p:column style="width:200px">Amount</p:column>
-		            <p:column style="width:200px">Discount</p:column>
-		        </p:row>
-			</f:facet>
-			<script>
-				var rowHtml = '<tr class="ui-widget-content ui-panelgrid-even serviceRow"><td class="ui-panelgrid-cell"><button onclick="$(this).parent().parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" ><span class="ui-button-icon-left ui-icon ui-c fa fa-times"></span><span class="ui-button-text ui-c">ui-button</span></button></td><td onclick="serviceEdit(this)" class="ui-panelgrid-cell serviceType"></td><td onclick="staffEdit(this)" class="ui-panelgrid-cell serviceStaff"><label>Select Staff</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceAmount"><label>0.00</label></td><td onclick="amountEdit(this)" class="ui-panelgrid-cell serviceDiscout"><label>0.00</label></td></tr>';
-				var employeeNames = #{checkoutBean.employeeNames};
-				var JSONservices = 	'#{checkoutBean.serviceGroups}';
-				var gservices = JSON.parse(JSONservices);
+		<p:dataTable id="services" value="#{checkoutBean.transactionServices}" var="transactionService" emptyMessage="Click plus button to add Service">
+			<p:columnGroup type="header">
+	            <p:row>
+	                <p:column style="width:60px">
+	                	<f:facet name="header">
+	                		<p:commandButton icon="fa fa-plus">
+	                			<p:ajax event="click" listener="#{checkoutBean.addTransactionService()}" update="@form"></p:ajax>
+	                		</p:commandButton>
+	                	</f:facet>
+	                </p:column>
+	                <p:column headerText="Service" />	
+	                <p:column style="width:250px" headerText="Staff" />
+	                <p:column style="width:150px" headerText="Price" />
+	                <p:column style="width:150px" headerText="Discount" />
+	            </p:row>
+	        </p:columnGroup>
+	 		
+	 		<p:column>
+	            <p:commandButton icon="fa fa-times">
+	            	<p:ajax event="click" listener="#{checkoutBean.deleteTransactionService(transactionService)}" update="@form"/>
+	            </p:commandButton>
+	        </p:column>
+	        <p:column>
+	        	<style>
+	        		.cate td{ padding: 0px !important; border: 0px !important;}
+	        		.cate tr{ border: 0px !important; }
+	        	</style>
+	        	<p:panelGrid styleClass="cate">
+	        		<p:row>
+	        			<p:column>
+	        				<p:selectOneMenu value="#{transactionService.service_group}">
+				            	<p:ajax event="change" update="@form"/>
+								<f:selectItem itemLabel="Select Group" itemValue="" />
+								<f:selectItems value="#{checkoutBean.serviceSelection.keySet()}" var="cate" itemLabel="#{cate}" itemValue="#{cate}" />
+							</p:selectOneMenu>
+	        			</p:column>
+	        			<p:column>
+	        				<p:selectOneMenu value="#{transactionService.service_name}" >
+								<p:ajax event="change" listener="#{checkoutBean.updateServicePrice(transactionService)}" update="@form"/>
+								<f:selectItem itemLabel="Select Service" itemValue="" />
+								<f:selectItems value="#{checkoutBean.serviceSelection[transactionService.service_group]}" var="cate" itemLabel="#{cate.name}" itemValue="#{cate.name}" />
+							</p:selectOneMenu>
+	        			</p:column>
+	        		</p:row>
+	        	</p:panelGrid>
+	            
 				
-				function addService() {
-					$("#serviceForm\\:services").append(rowHtml);
-					staffEdit($("#serviceForm\\:services").find('.serviceStaff').last());
-					serviceEdit($("#serviceForm\\:services").find('.serviceType').last());
-				}
-				function serviceEdit( obj) {
-					if( 0 == $(obj).find('select').length) {
-						$(obj).html( '<select class="w3-select serviceCate" style="width:50%" onchange="loadServiceType(this)"/><select class="w3-select serviceType" style="width:50%" onchange="loadServicePrice(this)"/>');
-						$(obj).find('.serviceCate').append('<option value=""> Select Category </option>');
-						$(obj).find('.serviceType').append('<option value=""> Select Type </option>');
-						var servicesCate = [];
-						for(var k in gservices) servicesCate.push(k);
-						$(servicesCate).each( function(index, value) {
-							$(obj).find('.serviceCate').append('<option>' + value + '</option>');
-						});
-					}
-				}
-				function loadServiceType(obj) {
-					var key = $(obj).val();
-					var target = $(obj).parent().find('.serviceType');
-					target.html('<option value=""> Select Type </option>');
-					$(gservices[key]).each( function(index, value) {
-						$(target).append('<option>' + value["serviceName"] + '</option>');
-					});
-				}
-				function loadServicePrice(obj) {
-					var key = $(obj).parent().find('.serviceCate').val();
-					var service = $(obj).val();
-					$(gservices[key]).each( function() {
-						if( service == this["serviceName"])
-							$(obj).parent().parent().find('.serviceAmount label').text(this["price"]);
-					});
-				}
-				function staffEdit( obj) {
-					if( 0 == $(obj).find('select').length) {
-						var staff = $(obj).find('label').text();
-						$(obj).html( '<select class="w3-select"/>');
-						$(obj).find('select').append('<option value=""> Select Staff </option>');
-						$(employeeNames).each( function(index, value) {
-							$(obj).find('select').append('<option>' + value + '</option>');
-						});
-						$(obj).find('select').val( staff);
-					}
-				}
-				function amountEdit( obj) {
-					if( 0 == $(obj).find('input').length) {
-						$(obj).html( '<input class="w3-input" type="number" value="'+ $(obj).find('label').text() +'"/>');
-						$(obj).find('input').select();
-						$(obj).find('input').on( "blur", function() {
-							$(obj).html( '<label>'+ $(this).val() +'</label>');
-							updateServicesAmount();
-						});
-					}
-				}
-			</script>
-			<f:facet name="footer">
-				<p:row>
-		            <p:column colspan="4" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Discount: "></h:outputText></p:column>
-		            <p:column styleClass="ui-state-default">
-		            	<p:selectBooleanButton styleClass="totalDCAmount" onLabel="$" offLabel="$" onchange="selectTotalDCAmount()"></p:selectBooleanButton>
-						<p:inputText styleClass="totalDCInpAmount" onfocus="this.select()" onchange="updateServicesAmount()" type="number" style="width:100px; display:none"></p:inputText>
-						<p:selectBooleanButton styleClass="totalDCPercent" onLabel="%" offLabel="%" onchange="selectTotalDCPercent()"></p:selectBooleanButton>
-						<p:inputText styleClass="totalDCInpPercent" onfocust="this.select()"  onchange="updateServicesAmount()" type="number" style="width:100px; display:none"></p:inputText>
-		            </p:column>
-		        </p:row>
-				<p:row>
-		            <p:column colspan="3" styleClass="ui-state-default"><h:outputText styleClass="w3-right" value="Total: "></h:outputText></p:column>
-		            <p:column styleClass="ui-state-default serviceTotal">0.00</p:column>
-		            <p:column styleClass="ui-state-default serviceDiscoutTotal">0.00</p:column>
-		        </p:row>
-		        
-			</f:facet>
-			<script>
-            	function selectTotalDCAmount() {
-            		if($('.totalDCAmount').find('input').prop('checked')) {
-            			$('.totalDCInpAmount').show();
-            			$('.totalDCPercent').hide();
-            			$('.totalDCInpPercent').hide();
-            		}
-            		else {
-            			$('.totalDCInpAmount').hide();
-            			$('.totalDCPercent').show();
-            			$('.totalDCInpPercent').hide();
-            		}
-            	}
-            	function selectTotalDCPercent() {
-            		if($('.totalDCPercent').find('input').prop('checked')) {
-            			$('.totalDCInpPercent').show();
-            			$('.totalDCAmount').hide();
-            			$('.totalDCAmount').hide();
-            		}
-            		else {
-            			$('.totalDCInpPercent').hide();
-            			$('.totalDCAmount').show();
-            			$('.totalDCInpAmount').hide();
-            		}
-            	}
-            </script>
-		</p:panelGrid>
+	        </p:column>
+	        <p:column>
+	            <p:selectOneMenu value="#{transactionService.staff_name}">
+	            	<p:ajax event="change" process="@this"/>
+					<f:selectItem itemLabel="Select Staff" itemValue="" />
+					<f:selectItems value="#{checkoutBean.staffSelection}" />
+				</p:selectOneMenu>
+	        </p:column>
+	        <p:column>
+	            <p:inputText value="#{transactionService.amount}" onfocus="$(this).select()" type="number" styleClass="w3-input">
+	            	<f:convertNumber pattern="0.00"/>
+	            	<p:ajax event="change" listener="#{checkoutBean.calServicesTotal}" update="@form"/>
+	            </p:inputText>
+	        </p:column>
+	        <p:column>
+	            <p:inputText value="#{transactionService.discount}" onfocus="$(this).select()" type="number" styleClass="w3-input">
+	            	<f:convertNumber pattern="0.00"/>
+	            	<p:ajax event="change" listener="#{checkoutBean.calDiscountsTotal}" update="@form"/>
+	            </p:inputText>
+	        </p:column>
+	        
+	 
+	        <p:columnGroup type="footer">
+	        	<p:row>
+	                <p:column colspan="4" style="text-align:right" footerText="Discount:" />
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<p:selectBooleanButton value="#{checkoutBean.showTransactionDiscount}" onLabel="$" offLabel="$" rendered="#{not checkoutBean.showTransactionDiscountPercent}" style="float:left">
+	                			<p:ajax event="change" listener="#{checkoutBean.calDiscountsTotal}" update="@form"></p:ajax>
+	                		</p:selectBooleanButton >
+	                		<p:inputText value="#{checkoutBean.transactionDiscount}" type="number" rendered="#{checkoutBean.showTransactionDiscount}" style="width:80px" onfocus="$(this).select()">
+	                			<f:convertNumber pattern="0.00"/>
+	                			<p:ajax event="change" listener="#{checkoutBean.calDiscountsTotal}" update="@form"/>
+	                		</p:inputText>
+	                		<p:selectBooleanButton value="#{checkoutBean.showTransactionDiscountPercent}" onLabel="%" offLabel="%" rendered="#{not checkoutBean.showTransactionDiscount}" style="float:left">
+	                			<p:ajax event="change" listener="#{checkoutBean.calDiscountsTotal}" update="@form"></p:ajax>
+	                		</p:selectBooleanButton >
+	                		<p:inputText value="#{checkoutBean.transactionDiscountPercent}" type="number" rendered="#{checkoutBean.showTransactionDiscountPercent}" style="width:70px" onfocus="$(this).select()">
+	                			<f:convertNumber pattern="0.0"/>
+	                			<p:ajax event="change" listener="#{checkoutBean.calDiscountsTotal}" update="@form"/>
+	                		</p:inputText>
+	                	</f:facet>
+	                </p:column>
+	            </p:row>
+	            <p:row>
+	                <p:column colspan="3" style="text-align:right" footerText="Total:" />
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<h:outputText value="#{checkoutBean.transactionServicesTotal}">
+	                			<f:convertNumber type="currency"></f:convertNumber>
+	                		</h:outputText>
+	                	</f:facet>
+	                </p:column>
+	                <p:column>
+	                	<f:facet name="footer">
+	                		<h:outputText value="#{checkoutBean.transaction.total_discount}">
+	                			<f:convertNumber type="currency"></f:convertNumber>
+	                		</h:outputText>
+	                	</f:facet>
+	                </p:column>
+	            </p:row>
+	        </p:columnGroup>
+		</p:dataTable>
 		<!-- Services End -->
 		
 		<!-- Transaction -->
-	<div class="w3-container" style="padding:0px">
-		<div class="w3-container w3-onethird w3-xlarge"></div>
-		<div class="w3-container w3-twothird w3-right" style="padding:0px">
-			<p:panelGrid style="margin-top:10px; margin-bottom:10px">
-				<f:facet name="header">
-					<p:row>
-						<p:column colspan="2">Pay</p:column>
-					</p:row>
-				</f:facet>
-				<p:row>
-					<p:column>Total:</p:column>
-					<p:column>
-						<h:outputText styleClass="total" value="$0.00"></h:outputText>
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column>Pay by:</p:column>
-					<p:column id="payType" styleClass="payType">
-						<div> 
-							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="cash payTypeHide" value="cash" onLabel="Cash" offLabel="Cash"></p:selectBooleanButton>
-							<p:inputText styleClass="inpCash payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
-							<p:inputText styleClass="inpCashReceive payTypeHide" onchange="$('.inpCashChange').val($(this).val() - $('.inpCash').val())" placeholder="Receive" onfocus="$(this).select()" style="width:100px; display:none" type="number"></p:inputText>
-							<p:inputText styleClass="inpCashChange payTypeHide" onfocus="$(this).select()" placeholder="Change" style="width:100px; display:none" type="number"></p:inputText>
-							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="credit payTypeHide" value="cash" onLabel="Credit" offLabel="Credit"></p:selectBooleanButton>
-							<p:inputText styleClass="inpCredit payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
-							<p:selectBooleanButton onchange="clickPayType(this)" styleClass="gift payTypeHide" value="cash" onLabel="Gift" offLabel="Gift"></p:selectBooleanButton>
-							<p:inputText styleClass="inpGiftNo payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" value="" placeholder="Number"></p:inputText>
-							<p:inputText styleClass="inpGift payTypeHide" onfocus="$(this).select()" style="width:100px; display:none" type="number" value="0.00"></p:inputText>
-							<p:commandButton value="Add Pay" styleClass="w3-right" onclick="addPay()">
-						        <script>
-						        	function addPay() {
-						        		var html = '<div style="padding-top:5px">'
-						        		+'<div type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only credit payTypeHide" >'
-						        		+'<label class="ui-button-text ui-c">'
-						        		+'<input style="display:none" type="checkbox" onchange="clickPayType(this);$(this).parent().parent().toggleClass(\'ui-state-active\')"/>'
-						        		+'Credit</label></div>'
-						        		+'<input type="number" value="0" onfocus="$(this).select()" style="width:100px; display:none" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all inpCredit payTypeHide" role="textbox" aria-disabled="false" aria-readonly="false"/>'
-						        		+'<div type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only gift payTypeHide" >'
-						        		+'<label class="ui-button-text ui-c">'
-						        		+'<input style="display:none" type="checkbox" onchange="clickPayType(this);$(this).parent().parent().toggleClass(\'ui-state-active\')"/>'
-						        		+'Gift</label></div>'
-						        		+'<input value="" onfocus="$(this).select()" style="width:100px; display:none" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all inpGiftNo payTypeHide" role="textbox" aria-disabled="false" aria-readonly="false" placeholder="Number"/>'
-						        		+'<input type="number" value="0" onfocus="$(this).select()" style="width:100px; display:none" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all inpGift payTypeHide" role="textbox" aria-disabled="false" aria-readonly="false"/>'
-						        		+'<div onclick="$(this).parent().remove()" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only w3-right" aria-disabled="false">'
-						        		+'<span class="ui-button-text ui-c">Delete</span></div>'
-						        		+'</div>';
-										$('.payType').append(html);
-						        	}
-						        </script>
-						    </p:commandButton>
-						     
-						</div>
-						<script>
-							function clickPayType( obj) {
-								var row = $(obj).parent().parent().parent();
-								// cal remaining amount
-								var remainingAmount = calRemaining( row);
-								$(row).find('.payTypeHide').hide();
-								if( $(obj).parent().parent().hasClass('cash')) {
-									if( $(obj).prop('checked')) {
-										$(row).find('.cash, .inpCash').show();
-										$(row).find('.cash, .inpCashReceive').show();
-										$(row).find('.cash, .inpCashChange').show();
-										
-										$(row).find('.inpCash').val(remainingAmount);
-									}
-									else {
-										$(row).find('.cash, .credit, .gift').show();
-									}
+		<p:panelGrid style="margin-top:10px; width:65%; float:right">
+			<f:facet name="header">
+				<p:row><p:column colspan="2"><h:outputText value="Pay"></h:outputText></p:column></p:row>
+			</f:facet>
+			<p:row>
+				<p:column style="width:100px"><h:outputText value="Total:"></h:outputText></p:column>
+				<p:column>
+					<h:outputText value="#{checkoutBean.transaction.total}">
+						<f:convertNumber type="currency"></f:convertNumber>
+					</h:outputText>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Pay by:"></h:outputText></p:column>
+				<p:column id="payBy">
+					<style>
+						#transactionForm\:payTypes thead tr { display:none;}
+						#transactionForm\:payTypes tbody, #transactionForm\:payTypes tbody tr { border: 0px !important}
+						#transactionForm\:payTypes tbody td {padding:0px !important;border:0px !important}
+					</style>
+					<p:dataTable value="#{checkoutBean.payBys}" var="payBy" id="payTypes">
+						<p:column>
+							<p:selectBooleanButton value="#{payBy.showCash}" onLabel="Cash" offLabel="Cash" rendered="#{(not payBy.showCredit) and (not payBy.showGift) and (payBy.firstRow)}" style="float:left">
+	                			<p:ajax event="change" listener="#{checkoutBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText styleClass="cash" type="number" value="#{payBy.cash}" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText styleClass="cashReceive" type="number" placeholder="receive" onchange="calChange()" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText styleClass="cashChange" type="number" placeholder="change" style="width:100px" rendered="#{payBy.showCash}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<script>
+								function calChange() {
+									$('.cashChange').val($('.cashReceive').val() - $('.cash').val());
 								}
-								else if ( $(obj).parent().parent().hasClass('credit')){
-									if( $(obj).prop('checked')) {
-										$(row).find('.credit, .inpCredit').show();
-										
-										$(row).find('.inpCredit').val(remainingAmount);
-									}
-									else {
-										$(row).find('.cash, .credit, .gift').show();
-									}
-								}
-								else if( $(obj).parent().parent().hasClass('gift')){
-									if( $(obj).prop('checked')) {
-										$(row).find('.gift, .inpGift, .inpGiftNo').show();
-										
-										$(row).find('.inpGift').val(remainingAmount);
-									}
-									else {
-										$(row).find('.cash, .credit, .gift').show();
-									}
-								}
-							}
-							function calRemaining(row) {
-								var serviceAmount = parseFloat($('.total').text().replace(/\\$|,/g, ''));
-								serviceAmount = isNaN(serviceAmount) ? 0 : serviceAmount;
-								$(row).parent().children().each( function(index, value) {
-									if( $(this).is(row))
-										return false;
-									serviceAmount -= findCurrRowAmount(this);
-								});
-								return serviceAmount;
-							}
-							function findCurrRowAmount( row) {
-								var amount = 0;
-								if( $(row).find('.inpCash').is(':visible') )
-									amount = +$(row).find('.inpCash').val();
-								else if( $(row).find('.inpCredit').is(':visible') )
-									amount = +$(row).find('.inpCredit').val();
-								else if( $(row).find('.inpGift').is(':visible') )
-									amount = +$(row).find('.inpGift').val();
-								return amount;
-							}
-						</script>
-					</p:column>
-				</p:row>
-				<p:row>
-					<p:column style="width:100px">Tip:</p:column>
-					<p:column>
-						<p:inputText styleClass="w3-input tip" type="number" onfocus="$(this).select()"></p:inputText>
-					</p:column>
-				</p:row>
-			</p:panelGrid>
-		</div>
-	</div>
-		<!-- Transaction END -->
-		
-		<!-- HIDDEN -->
-		
-		<!-- HIDDEN END -->
-		
+							</script>
+							<p:selectBooleanButton value="#{payBy.showCredit}" onLabel="Credit" offLabel="Credit" rendered="#{(not payBy.showCash) and (not payBy.showGift)}" style="float:left">
+	                			<p:ajax event="change" listener="#{checkoutBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText type="number" value="#{payBy.credit}" style="width:100px" rendered="#{payBy.showCredit}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:selectBooleanButton value="#{payBy.showGift}" onLabel="Gift" offLabel="Gift" rendered="#{(not payBy.showCash) and (not payBy.showCredit)}" style="float:left">
+	                			<p:ajax event="change" listener="#{checkoutBean.updatePayBy(payBy)}" update="transactionForm payTypes"></p:ajax>
+	                		</p:selectBooleanButton >
+							<p:inputText value="#{payBy.giftNo}" placeholder="Gift Number" style="width:100px" rendered="#{payBy.showGift}" onfocus="$(this).select()">
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:inputText type="number" value="#{payBy.gift}" style="width:100px" rendered="#{payBy.showGift}" onfocus="$(this).select()">
+								<f:convertNumber pattern="0.00"/>
+								<p:ajax event="change" process="@this"/>
+							</p:inputText>
+							<p:commandButton value="Add pay" style="float:right" rendered="#{payBy.firstRow}">
+								<p:ajax event="click" listener="#{checkoutBean.addPayType}" update="transactionForm payTypes"/>
+							</p:commandButton>
+							<p:commandButton icon="fa fa-times" style="float:right" rendered="#{not payBy.firstRow}">
+								<p:ajax event="click" listener="#{checkoutBean.deletePayType(payBy)}" update="transactionForm payTypes"/>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</p:column>
+			</p:row>
+			<p:row>
+				<p:column><h:outputText value="Tip:"></h:outputText></p:column>
+				<p:column>
+					<p:inputText type="number" value="#{checkoutBean.transaction.tip}" styleClass="w3-input" onfocus="$(this).select()">
+						<f:convertNumber pattern="0.00"/>
+						<p:ajax event="change" process="@this"/>
+					</p:inputText>
+				</p:column>
+			</p:row>
+		</p:panelGrid>
+		<p:panel style="clear:both; border:0px" styleClass="w3-center">
+			<p:commandButton style="width:180px;height:50px;" value="Save" action="#{checkoutBean.save}" update="growlWV" ></p:commandButton>
+	
+		</p:panel>
 	</h:form>
-	<!-- MainForm END -->
-	
-	
-	<h:form id="dataF">
-		<p:inputText id="transactionService_data" value="#{checkoutBean.transactionServiceData}" style="display:none"></p:inputText>
-		<p:inputText id="transaction_data" value="#{checkoutBean.transactionData}" style="display:none"></p:inputText>
-		<!-- Action -->
-		<div class="w3-center w3-container">
-			<p:commandButton style="width:180px;height:50px;" value="Save" onclick="fillData()" action="#{checkoutBean.print}" update="growlWV" ></p:commandButton>
-		</div>
-		<!-- Action END-->
-	</h:form>
-	
-	<h:outputScript library="js" name="common.js"></h:outputScript>
-	
-	<script>
-		$(function() {
-			updateServicesAmount();
-		});
-
-		function updateServicesAmount() {
-			var totalService = 0;
-			var totalDiscount = 0;
-			
-			$('.serviceAmount').each(function(index) {
-				totalService += parseFloat($(this).text().replace(/\\$|,/g, ''));
-			});
-			$('.serviceDiscout').each(function(index) {
-				totalDiscount += parseFloat($(this).text().replace(/\\$|,/g, ''));
-			});
-			totalDiscount = isNaN(totalDiscount) ? 0 : totalDiscount;
-			totalService = isNaN(totalService) ? 0 : totalService;
-			
-			// total Discount
-			var dcAmount = 0;
-			if($('.totalDCAmount').find('input').prop('checked')) {
-				dcAmount = +$('.totalDCInpAmount').val();
-			} else if($('.totalDCPercent').find('input').prop('checked')) {
-				dcAmount = +$('.totalDCInpPercent').val() * totalService / 100;
-			}
-			dcAmount = ( isNaN(dcAmount) ? +0 : dcAmount ); 
-			
-			$('.serviceTotal').text( totalService);
-			$('.serviceTotal').formatCurrency();			
-			
-			$('.serviceDiscoutTotal').text( totalDiscount + dcAmount);
-			$('.serviceDiscoutTotal').formatCurrency();
-
-			updateTotal();
-		}
-
-		function updateTotal() {
-			// services
-			var serviceAmount = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
-			var serviceDC = parseFloat($('.serviceDiscoutTotal').text().replace(/\\$|,/g, ''));
-			
-			$('.total').text( serviceAmount - serviceDC);
-			$('.total').formatCurrency();
-		}
-		function fillData() {
-			// Convert all invalid number
-			var serviceAmount = parseFloat($('.serviceTotal').text().replace(/\\$|,/g, ''));
-			var dcAmount;
-			if($('.totalDCAmount').find('input').prop('checked')) {
-				dcAmount = +$('.totalDCInpAmount').val();
-			} else if($('.totalDCPercent').find('input').prop('checked')) {
-				dcAmount = +$('.totalDCInpPercent').val() * serviceAmount / 100;
-			}
-			else
-				dcAmount = 0;
-			var total = parseFloat($('.total').text().replace(/\\$|,/g, ''));
-			var tip = (isNaN($('tip').val()) ? 0 : $('tip').val());
-			var cash = 0;
-			if($('.cash').find('input').prop('checked')) {
-				cash = +$('.inpCash').val();
-			}
-
-			// Collect
-			var transactionServiceData = '{"TransactionServices":[';
-			$('.serviceRow').each( function(index) {
-				transactionServiceData += '{';
-				transactionServiceData += '"serviceGroup":"' + $(this).find('td').eq(1).find('.serviceCate').val() + '",';
-				transactionServiceData += '"serviceName":"' + $(this).find('td').eq(1).find('.serviceType').val() + '",';
-				transactionServiceData += '"staffName":"' + $(this).find('td').eq(2).find('select').val() + '",';
-				transactionServiceData += '"amount":' + $(this).find('td').eq(3).find('label').text() + ',';
-				transactionServiceData += '"discount":' + $(this).find('td').eq(4).find('label').text() + '},';
-			});
-			transactionServiceData += ']}';
-			
-			var transactionData = '{';
-			transactionData += '"totalDiscount":' + dcAmount + ',';
-			transactionData += '"total":' + total + ',';
-			transactionData += '"tip":' + tip + ',';
-			transactionData += '"cash":' + cash + ',';
-			transactionData += '"datetime":"' + $.format.date("#{checkoutBean.currDate}", "yyyy-MM-dd HH:mm") +'"';
-			transactionData += '}';
-
-			$('#dataF\\:transactionService_data').val( transactionServiceData);
-			$('#dataF\\:transaction_data').val( transactionData);
-		}
-	</script>
-	 </ui:define>
-	 </ui:composition>
+</ui:define>
+</ui:composition>
 </h:body>
 </html>

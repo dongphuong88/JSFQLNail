@@ -12,11 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import Bean.WorkingBean.PayBy;
+import Bean.CheckoutBean.PayBy;
 import CARGO.Transaction;
 import CARGO.TransactionService;
 
@@ -136,98 +133,7 @@ public class TransactionsDAO implements Serializable {
 		return resultSet;
 	}
 	
-	public static ERROR_CODE setTransactionFromServices( String servicesJSON, String transactionJSON) {
-		JSONParser jsonParser = new JSONParser();
-		Connection conn = null;
-		Statement stmt = null;
-		PreparedStatement ptmt = null;
-		ResultSet rs = null;
-
-		try {
-			JSONObject transactionServices = (JSONObject)jsonParser.parse(servicesJSON);
-			JSONObject transaction = (JSONObject)jsonParser.parse(transactionJSON);
-			JSONArray services = (JSONArray)transactionServices.get("TransactionServices");
-			if( 0 == services.size()) {
-				return ERROR_CODE.SERVICE_EMPTY;
-			}
-			
-			conn = UtilsDAO.getConnection();
-			conn.setAutoCommit(false);
-			stmt = conn.createStatement();
-			double transactionTotal = Double.parseDouble(transaction.get("total").toString());
-			if( 0 == transactionTotal) {
-				return ERROR_CODE.SERVICE_EMPTY;
-			}
-			
-			double transactionTip = Double.parseDouble(transaction.get("tip").toString());
-			String datetime = transaction.get("datetime").toString();
-			String sql = "insert into transactions (cash, total, tip, total_discount, datetime) values ("
-					+Double.parseDouble(transaction.get("cash").toString())
-					+"," + transactionTotal
-					+"," + transactionTip
-					+"," + Double.parseDouble(transaction.get("totalDiscount").toString())
-					+",'" + datetime
-					+"')";
-			stmt.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
-			rs = stmt.getGeneratedKeys();
-			long transactionServiceID = -1;
-			while (rs != null && rs.next()) {
-				transactionServiceID = rs.getLong(1);
-			}
-			rs.close();
-			rs = null;
-			
-			ptmt = conn.prepareStatement("insert into transaction_services (transaction_id, service_group, service_name, staff_name, amount, discount, service_deduction,tip,commission, datetime) values (?,?,?,?,?,?,?,?,?,?)");
-			ptmt.setLong(1, transactionServiceID);
-			for( int i = 0; i < services.size(); ++i) {
-				JSONObject obj = (JSONObject)services.get(i);
-				
-				String serviceGroup = obj.get("serviceGroup").toString();
-				String serviceName = obj.get("serviceName").toString();
-				double serviceDeduction = 0;
-				
-				rs = stmt.executeQuery("SELECT supply_deduction from services where name='"+ serviceName +"' AND service_group_id = (SELECT id from service_categories where name='"+ serviceGroup +"')");
-				if (rs != null && rs.next()) {
-					serviceDeduction = rs.getDouble(1);
-				}
-				rs.close();
-				rs = null;
-				
-				String staffName = obj.get("staffName").toString();
-				float commission = 0f;
-				rs = stmt.executeQuery("SELECT commission FROM staffs WHERE name = '" + staffName + "'");
-				if (rs != null && rs.next()) {
-					commission = rs.getFloat(1);
-				}
-				rs.close();
-				rs = null;
-				
-				double serviceAmount = Double.parseDouble(obj.get("amount").toString());
-				ptmt.setString(2, serviceGroup);
-				ptmt.setString(3, serviceName);
-				ptmt.setString(4, staffName);
-				ptmt.setDouble(5, serviceAmount);
-				ptmt.setDouble(6, Double.parseDouble(obj.get("discount").toString()));
-				ptmt.setDouble(7, serviceDeduction);
-				ptmt.setDouble(8, transactionTip * serviceAmount * 0.8 / transactionTotal); // tip
-				ptmt.setFloat(9, commission); // commission
-				ptmt.setString(10, datetime);
-				ptmt.addBatch();
-			}
-			ptmt.executeBatch();
-			conn.commit();
-		} catch (Exception e) {
-			UtilsDAO.logMessage("TransactionService", Level.ERROR, e);
-			return UtilsDAO.rollbackConnection(conn);
-		}
-		finally {
-			UtilsDAO.closeConnection(conn, stmt, ptmt);
-		}
-		
-		return ERROR_CODE.SUCCEED;
-	}
-	
-	public static ERROR_CODE setTransactionFromServices( Transaction transaction, List<TransactionService> services, List<PayBy> payBys) {
+	public static ERROR_CODE setTransactionFromServices( Transaction transaction, List<TransactionService> services, double servicesTotal, List<PayBy> payBys) {
 		Connection conn = null;
 		Statement stmt = null;
 		PreparedStatement ptmt = null;
@@ -296,7 +202,7 @@ public class TransactionsDAO implements Serializable {
 				ptmt.setDouble(5, serviceAmount);
 				ptmt.setDouble(6, s.getDiscount());
 				ptmt.setDouble(7, serviceDeduction);
-				ptmt.setDouble(8, transactionTip * serviceAmount * 0.8 / transactionTotal); // tip
+				ptmt.setDouble(8, transactionTip * (serviceAmount * 0.8 / servicesTotal)); // tip
 				ptmt.setFloat(9, commission); // commission
 				ptmt.setString(10, datetime);
 				ptmt.addBatch();
