@@ -1,8 +1,6 @@
 
 var cal_hours;
-	var cal_hour_start = 5;
-	var cal_hour_end = 20;
-	var cal_data_cols_JSON;
+	
 	var cal_data_cols;
 	var cal_data_display; // contains only show data_cols
 	var cal_timeWidth = 50;

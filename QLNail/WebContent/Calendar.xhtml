@@ -55,7 +55,9 @@
 	</div>
 	
 	<script>
-	cal_data_cols_JSON = '#{calendarBean.eventsJSON}';
+	var cal_data_cols_JSON = '#{calendarBean.eventsJSON}';
+	var cal_hour_start = 5;
+	var cal_hour_end = 20;
 	</script>
 	<h:outputScript library="js" name="calendar.js"></h:outputScript>
 	
