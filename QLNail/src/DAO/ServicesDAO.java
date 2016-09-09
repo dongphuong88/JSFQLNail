@@ -256,7 +256,7 @@ public class ServicesDAO implements Serializable {
 			ResultSet rs = stmt.executeQuery("select s.name as n, c.name as g, price FROM services as s LEFT JOIN service_categories as c ON s.service_group_id = c.id ORDER BY g, n;");
 			while (rs.next()) {
 				if( null == services.get( rs.getString(2)))
-					services.put(rs.getString(2), new ArrayList<>());
+					services.put(rs.getString(2), new ArrayList<Service>());
 				List<Service> arr = services.get(rs.getString(2));
 				Service s = new Service();
 				s.setName(rs.getString(1));

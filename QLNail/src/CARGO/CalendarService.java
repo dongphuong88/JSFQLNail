@@ -15,7 +15,7 @@ public class CalendarService implements Serializable {
 	private long service_id;
 	private Date start_time;
 	private Date end_time;
-	private String ntoe;
+	private String note;
 	public long getId() {
 		return id;
 	}
@@ -52,10 +52,10 @@ public class CalendarService implements Serializable {
 	public void setEnd_time(Date end_time) {
 		this.end_time = end_time;
 	}
-	public String getNtoe() {
-		return ntoe;
+	public String getNote() {
+		return note;
 	}
-	public void setNtoe(String ntoe) {
-		this.ntoe = ntoe;
+	public void setNote(String note) {
+		this.note = note;
 	}
 }
